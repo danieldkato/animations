@@ -17,57 +17,16 @@ var spineLength = 20;
 var colorBaseStr = 'rgb(';
 var colorStep = new Array(3);
 
-
-/*
-var R = 255;
-var G = 0;
-var B = 0; 
-*/
-
-var tri = {
-    lowerLeftY: 200,   
-    lowerLeftX: 10,
-
-    rgbArray: [185, 185, 185],
-    colorStr: null,
-
-    draw: function(){
-	ctx.beginPath();
-	ctx.moveTo(this.lowerLeftX, this.lowerLeftY);
-	ctx.lineTo(this.lowerLeftX + pyramidalBase, this.lowerLeftY);
-	ctx.lineTo(this.lowerLeftX + pyramidalBase/2, this.lowerLeftY - pyramidalHeight);	
-        this.colorStr = rgb2str(this.rgbArray[0], this.rgbArray[1], this.rgbArray[2]);
-	ctx.fillStyle = this.colorStr;
-	ctx.fill();
-	ctx.fillRect(this.lowerLeftX + pyramidalBase/2 - apicalWidth/2, this.lowerLeftY - pyramidalHeight + 10 - apicalHeight, apicalWidth, apicalHeight);
-
+var spkr = new Image();
+spkr.src = "/home/dan/Documents/animations/speakers.png"
+spkr.onload = function(){
 	ctx.save();
-	ctx.fillRect(this.lowerLeftX + pyramidalBase/2 - axonWidth/2, this.lowerLeftY, axonWidth, axonLength);
-
-    }
-
+	ctx.translate(200, 100);
+	ctx.scale(-1,1);
+	ctx.drawImage(spkr, 0, 0, 100, 100);
+	ctx.restore()
 };
 
-//tri.draw();
-
-var tri2 = {
-    lowerLeftY: 200,   
-    lowerLeftX: 10 + pyramidalBase + 20,
-
-    rgbArray: [185, 185, 185],
-    colorStr: null,
-
-    draw: function(){
-	ctx.beginPath();
-	ctx.moveTo(this.lowerLeftX, this.lowerLeftY);
-	ctx.lineTo(this.lowerLeftX + pyramidalBase, this.lowerLeftY);
-	ctx.lineTo(this.lowerLeftX + pyramidalBase/2, this.lowerLeftY - pyramidalHeight);	
-        this.colorStr = rgb2str(this.rgbArray[0], this.rgbArray[1], this.rgbArray[2]);
-	ctx.fillStyle = this.colorStr;
-	ctx.fill();
-    }
-
-};
 
 class Pyramidal {
 	constructor(x, y){
@@ -121,108 +80,32 @@ class Inhibitory {
 }
 
 var pyr1 = new Pyramidal(10, 200);
-pyr1.draw();
-
 var pyr2 = new Pyramidal(10 + pyramidalBase + 20, 200);
-pyr2.draw();
-//tri2.draw();
+pyramidals = [pyr1, pyr2];
+
+/*
+for (var p = 0; p < pyramidals.length; p++){
+	pyramidals[p].draw();
+}
+*/
 
 var inh1 = new Inhibitory(50, 200);
 //inh1.draw();
 
-tris = [pyr1, pyr2];
-console.log(pyr1.R);
-console.log(pyr1.G);
-console.log(pyr1.B);
-
-function changeColor(obj,newRGB){
-	for (i = 0; i < 3; i++){
-		obj.rgbArray[i] = newRGB[i];
-	}
-	obj.draw();
-}
-
-
-function colorTween(obj, tgtColor, dur, numTimeSteps){
-
-	delay = dur/numTimeSteps;
-	
-
-	for(j = 0; j < 3; j++){
-		colorStep[j] = Math.floor((tgtColor[j] - obj.rgb[j])/numTimeSteps);
-	}
-
-	/*
-	colorStepR = tgtR-currR / numTimeSteps;
-	colorStepG = tgtG-currG / numTimeSteps;
-	colorStepB = tgtB-currB / numTimeSteps;;
-	*/
-
-	start = new Date().getTime();
-	now = start;	
-	while (now < start + dur * 1000){
-		
-				
-
-		/*
-		currR + = colorStepR;
-		currG + = colorStepG;
-		currB + = colorStepB;
-		*/		
-
-		//currColor = colorBaseStr.concat(currR.toString(), ',', currG.toString(), ',', currB.toString(), ')');
-		
-		for(k = 0; k <3; k++){
-			obj.rgbArray[k] += colorStep[k];
-		}
-
-		//window.requestAnimationFrame(changeColor(obj,currColor));
-		//window.requestAnimationFrame(obj.draw);
-		//obj.draw();
-		
-		now = new Date().getTime();
-	}	
-}
-
-
-function colorTween2(obj, tgtColor, dur, numTimeSteps){
-	delay = dur/numTimeSteps;
-
-	for(j = 0; j < 3; j++){
-		colorStep[j] = Math.floor((tgtColor[j] - obj.rgbArray[j])/numTimeSteps);
-	}
-
-	start = new Date().getTime()
-	now = start;
-	intId = setInterval(function(){
-
-		for(k = 0; k <3; k++){
-			obj.rgbArray[k] += colorStep[k];
-		}
-
-		obj.draw();
-		
-		if(new Date().getTime() > start + dur * 1000){
-			clearInterval(intId);
-			console.log('Done tweening');
-		}		
-		
-	}, delay);
-	
-}
-
-
 function colorTweenMulti(obj, tgtColor, dur, numTimeSteps){
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
 
-	// calculate color step for each color channel for each object
+	// for each vector object, for each color channel, calculate color step
 	for (var n = 0; n < obj.length; n++){
 		for(var j = 0; j < 3; j++){
 			colorStep[j] = (tgtColor[j] - obj[n].rgb[j])/numTimeSteps;
 		}
 	}
 
-	// start the color changes
+	// for each image object, calculate the alpha step
+	
+
+	// start the changes
 	start = new Date().getTime()
 	now = start;
 	intId = setInterval(function(){
@@ -268,7 +151,7 @@ function rgb2str(R, G, B){
 }
 
 canvas.addEventListener('click', function respond(e){
-	colorTweenMulti(tris, [0, 255, 0], 5, 100);
+	colorTweenMulti(pyramidals, [0, 255, 0], 5, 100);
 });
 
 
