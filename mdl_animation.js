@@ -15,7 +15,7 @@ var spineWidth = 5;
 var spineLength = 20;
 
 var colorBaseStr = 'rgb(';
-var colorStep = new Array(3);
+var step = new Array(3);
 
 var spkr = new Image();
 spkr.src = "/home/dan/Documents/animations/speakers.png"
@@ -79,9 +79,29 @@ class Inhibitory {
 	}
 }
 
+class imgContainer{
+	constructor(img){
+		this.img = img;
+		this.alpha = 100;
+		this.draw();	
+	}
+
+	draw(){
+		ctx.globalAlpha = this.alpha;
+		ctx.drawImage(this.img, 0, 0, 100, 100);
+	}
+}
+
 var pyr1 = new Pyramidal(10, 200);
 var pyr2 = new Pyramidal(10 + pyramidalBase + 20, 200);
 pyramidals = [pyr1, pyr2];
+
+var spkrContainer = new imgContainer(spkr);
+
+console.log(pyr1.constructor.name);
+console.log(spkr.constructor.name);
+
+//if(spkr.constructor.name == "HTMLImageElement"){console.log("test")}
 
 /*
 for (var p = 0; p < pyramidals.length; p++){
@@ -89,11 +109,14 @@ for (var p = 0; p < pyramidals.length; p++){
 }
 */
 
+
+
 var inh1 = new Inhibitory(50, 200);
 //inh1.draw();
 
-function colorTweenMulti(obj, tgtColor, dur, numTimeSteps){
+function colorTweenMulti(transitions, dur, numTimeSteps){
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
+
 
 	// for each vector object, for each color channel, calculate color step
 	for (var n = 0; n < obj.length; n++){
@@ -104,17 +127,53 @@ function colorTweenMulti(obj, tgtColor, dur, numTimeSteps){
 
 	// for each image object, calculate the alpha step
 	
+	
 
-	// start the changes
+
+	// for each object to be tweened, compute the appropriate color or alpha steps
+	for (var n = 0; n < transitions.length; n++){
+		
+		// if the object to be tweened is a vector graphic object, compute the appropriate color steps 		
+		if(transitions[n].obj.constructor.name != "imgContainer"){
+			
+			// do this for each color channel			
+			for(var p = 0; p < 3; p++){
+				step[p] = (transitions[n].tgt[p] - transitions[n].ojb.rgb[p]) / numTimeSteps;
+			}
+
+			transitions[n].step = step;
+		}
+
+		// if the object to be tweened is an image container, compute the appropriate alpha step
+		else if(transitions[n].obj.constructor.name == "imgContainer"){
+			transitions[n].step = (transitions[n].tgt - transitions[n].alpha) / numTimeSteps;
+		}
+
+	}
+	
+
+	// start drawing the changes
 	start = new Date().getTime()
 	now = start;
 	intId = setInterval(function(){
 
-		for(var m = 0; m < obj.length; m++){			
-			for(var k = 0; k <3; k++){
-				obj[m].rgbArray[k] = obj[m].rgbArray[k] + colorStep[k];
-			}
-			obj[m].draw();	
+		for(var m = 0; m < transitions.length; m++){	
+
+			// if the object to tween is a vector graphics object, update its rgb triple		
+			if(transitions[n].obj.constructor.name != "imgContainer"){
+				for(var k = 0; k <3; k++){
+					transitions[m].obj.rgbArray[k] = transitions[m].obj.rgbArray[k] + transitions.step[k];
+				}
+			}			
+
+			// if the object to tween is an image container, update its alpha and set the global alpha equal to it
+			else if (transitions[n].obj.constructor.name == "imgContainer"){
+				transitions[m].obj.alpha = transitions[m].obj.alpha + transitions[m].step;
+				ctx.save();				
+				ctx.globalAlpha = transitions[m].obj.alpha;
+			}			
+			transitions[m].obj.draw();	
+			ctx.restore();
 		}
 
 		if(new Date().getTime() > start + dur * 1000){
@@ -149,6 +208,12 @@ function rgb2str(R, G, B){
 	console.log(colorStr);
 	return colorStr;
 }
+
+var transition1 = [
+{obj: pyr1, tgt: [0, 255, 0]},
+{obj: pyr2, tgt: [0, 255, 0]},
+{obj:spkr, tgt: [50]}
+];
 
 canvas.addEventListener('click', function respond(e){
 	colorTweenMulti(pyramidals, [0, 255, 0], 5, 100);
