@@ -1,14 +1,17 @@
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
-var pyramidalHeight = 100;
+var pyramidalHeight = 50;
 var pyramidalBase = pyramidalHeight / Math.sin(Math.PI/3);
 
 var apicalHeight = 100;
-var apicalWidth = 10;
+var apicalWidth = 5;
 
-var axonLength = 100;
-var axonWidth = 10;
+var axonLength = 75;
+var axonWidth = 5;
+var boutonHeight = 15;
+var boutonBase = boutonHeight / Math.sin(Math.PI/3);
+var fudge = boutonHeight * axonWidth/boutonBase; // this is to make sure that the bouton overlaps with the axon properly
 
 var inhibitoryRadius = 40;
 var spineWidth = 5;
@@ -19,6 +22,8 @@ var step = new Array(3);
 
 
 class Pyramidal {
+	// x: x-coordinate of lower-left corner of soma
+	// y: y-coordinate of lower-left corner of soma
 	constructor(x, y){
 		this.LLx = x;
 		this.LLy = y;
@@ -28,24 +33,32 @@ class Pyramidal {
 	draw(){
 		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);
 
-		//draw soma
+		// draw soma
 		ctx.beginPath();
 		ctx.moveTo(this.LLx, this.LLy);
 		ctx.lineTo(this.LLx + pyramidalBase, this.LLy);
 		ctx.lineTo(this.LLx + pyramidalBase/2, this.LLy - pyramidalHeight);
 		ctx.fill();
 
-		//draw apical dendrite
+		// draw apical dendrite
 		ctx.fillRect(this.LLx + pyramidalBase/2 - apicalWidth/2, this.LLy - pyramidalHeight + 10 - apicalHeight, apicalWidth, apicalHeight);
 
-		//draw axon
+		// draw axon
 		ctx.fillRect(this.LLx + pyramidalBase/2 - axonWidth/2, this.LLy, axonWidth, axonLength);
+		
+		// draw bouton
+		ctx.moveTo(this.LLx + pyramidalBase/2, this.LLy + axonLength - fudge);
+		ctx.lineTo(this.LLx + pyramidalBase/2 - boutonBase/2, this.LLy + axonLength + boutonHeight - fudge);
+		ctx.lineTo(this.LLx + pyramidalBase/2 + boutonBase/2, this.LLy + axonLength + boutonHeight - fudge);
+		ctx.fill();
 	}
 }
 
 
 class Inhibitory {
 	constructor(x, y){
+		// x: x-coordinate of center of soma
+		// y: y-coordinate of center of soma
 		this.ctrX = x;
 		this.ctrY = y;
 		this.r = inhibitoryRadius;
@@ -87,6 +100,9 @@ class imgContainer{
 var pyr1 = new Pyramidal(10, 200);
 var pyr2 = new Pyramidal(10 + pyramidalBase + 20, 200);
 pyramidals = [pyr1, pyr2];
+
+pyr1.draw();
+pyr2.draw();
 
 var spkr = new Image();
 //spkr.src = "/home/dan/Documents/animations/speakers.png"
