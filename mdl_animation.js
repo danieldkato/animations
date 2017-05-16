@@ -13,9 +13,12 @@ var boutonHeight = 15;
 var boutonBase = boutonHeight / Math.sin(Math.PI/3);
 var fudge = boutonHeight * axonWidth/boutonBase; // this is to make sure that the bouton overlaps with the axon properly
 
-var inhibitoryRadius = 40;
+var gap = 5;
+var inhibitoryRadius = 30;
 var spineWidth = 5;
 var spineLength = 20;
+var inhibSynLength = 15;
+var inhibSynWidth = 5;
 
 var colorBaseStr = 'rgb(';
 var step = new Array(3);
@@ -51,6 +54,7 @@ class Pyramidal {
 		ctx.lineTo(this.LLx + pyramidalBase/2 - boutonBase/2, this.LLy + axonLength + boutonHeight - fudge);
 		ctx.lineTo(this.LLx + pyramidalBase/2 + boutonBase/2, this.LLy + axonLength + boutonHeight - fudge);
 		ctx.fill();
+		ctx.moveTo(0, 0);
 	}
 }
 
@@ -76,13 +80,41 @@ class Inhibitory {
 		ctx.save();
 		ctx.translate(this.ctrX, this.ctrY);
 		for (var s = 1; s < 3; s++){
-			ctx.rotate(2 * Math.PI / 8 * s);
+			ctx.rotate(Math.PI / 4 * s);
 			ctx.fillRect(0, 0, this.r + spineLength, spineWidth);
 		}
 		ctx.restore();
 	}
+
+	target(pyr){
+		ctx.save()
+		ctx.translate(this.ctrX, this.ctrY);
+		ctx.rotate( -1*Math.atan(  Math.abs(pyr.LLy - this.ctrY)  / Math.abs(pyr.LLx - this.ctrX) ) );
+		//ctx.translate(0, -spineWidth/2);
+		length = .85 * Math.sqrt( Math.pow(pyr.LLx - this.ctrX, 2) + Math.pow(pyr.LLy - this.ctrY, 2) );
+		ctx.fillRect(0, 0, length, spineWidth);
+		ctx.fillRect(length-inhibSynWidth/2, axonWidth/2 - inhibSynLength/2, inhibSynWidth, inhibSynLength);
+		ctx.restore();
+		//console.log(Math.pow(2,2));
+	}
 }
 
+class CC {
+	constructor(x, y, length){
+		this.x = x;
+		this.y = y;
+		this.length = length;
+		this.rgb = [185, 185, 185]; 	
+	}
+
+	draw(){
+		ctx.moveTo(this.x, this.y);
+		ctx.lineTo(this.x, this.y + boutonBase);
+		ctx.lineTo(this.x + boutonHeight, this.y + boutonBase/2);
+		ctx.fill();
+		ctx.fillRect(this.x + boutonHeight - fudge, this.y + boutonBase/2 - axonWidth/2, this.length, axonWidth);
+	}
+}
 
 class imgContainer{
 	constructor(img){
@@ -119,8 +151,13 @@ var spkrContainer = new imgContainer(spkr);
 console.log(pyr1.constructor.name);
 console.log(spkr.constructor.name);
 
-var inh1 = new Inhibitory(50, 200);
-//inh1.draw();
+var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius);
+//var inh1 = new Inhibitory(100, 100);
+inh1.draw();
+inh1.target(pyr2);
+
+var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - axonLength * .75, 100);
+cc1.draw();
 
 function colorTweenMulti(transitions, dur, numTimeSteps){
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
@@ -181,7 +218,7 @@ function rgb2str(R, G, B){
 var transition1 = [
 {obj: pyr1, tgt: [0, 255, 0]},
 {obj: pyr2, tgt: [0, 255, 0]},
-{obj: spkr, tgt: [50]}
+{obj: spkrContainer, tgt: [50]}
 ];
 
 canvas.addEventListener('click', function respond(e){
