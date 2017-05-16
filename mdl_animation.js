@@ -17,16 +17,6 @@ var spineLength = 20;
 var colorBaseStr = 'rgb(';
 var step = new Array(3);
 
-var spkr = new Image();
-spkr.src = "/home/dan/Documents/animations/speakers.png"
-spkr.onload = function(){
-	ctx.save();
-	ctx.translate(200, 100);
-	ctx.scale(-1,1);
-	ctx.drawImage(spkr, 0, 0, 100, 100);
-	ctx.restore()
-};
-
 
 class Pyramidal {
 	constructor(x, y){
@@ -52,6 +42,7 @@ class Pyramidal {
 		ctx.fillRect(this.LLx + pyramidalBase/2 - axonWidth/2, this.LLy, axonWidth, axonLength);
 	}
 }
+
 
 class Inhibitory {
 	constructor(x, y){
@@ -79,6 +70,7 @@ class Inhibitory {
 	}
 }
 
+
 class imgContainer{
 	constructor(img){
 		this.img = img;
@@ -96,20 +88,20 @@ var pyr1 = new Pyramidal(10, 200);
 var pyr2 = new Pyramidal(10 + pyramidalBase + 20, 200);
 pyramidals = [pyr1, pyr2];
 
+var spkr = new Image();
+//spkr.src = "/home/dan/Documents/animations/speakers.png"
+spkr.src = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
+spkr.onload = function(){
+	ctx.save();
+	ctx.translate(200, 100);
+	ctx.scale(-1,1);
+	ctx.drawImage(spkr, 0, 0, 100, 100);
+	ctx.restore()
+};
 var spkrContainer = new imgContainer(spkr);
 
 console.log(pyr1.constructor.name);
 console.log(spkr.constructor.name);
-
-//if(spkr.constructor.name == "HTMLImageElement"){console.log("test")}
-
-/*
-for (var p = 0; p < pyramidals.length; p++){
-	pyramidals[p].draw();
-}
-*/
-
-
 
 var inh1 = new Inhibitory(50, 200);
 //inh1.draw();
@@ -117,40 +109,21 @@ var inh1 = new Inhibitory(50, 200);
 function colorTweenMulti(transitions, dur, numTimeSteps){
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
 
-
-	// for each vector object, for each color channel, calculate color step
-	for (var n = 0; n < obj.length; n++){
-		for(var j = 0; j < 3; j++){
-			colorStep[j] = (tgtColor[j] - obj[n].rgb[j])/numTimeSteps;
-		}
-	}
-
-	// for each image object, calculate the alpha step
-	
-	
-
-
 	// for each object to be tweened, compute the appropriate color or alpha steps
-	for (var n = 0; n < transitions.length; n++){
-		
+	for (var n = 0; n < transitions.length; n++){	
 		// if the object to be tweened is a vector graphic object, compute the appropriate color steps 		
-		if(transitions[n].obj.constructor.name != "imgContainer"){
-			
+		if(transitions[n].obj.constructor.name != "imgContainer"){			
 			// do this for each color channel			
 			for(var p = 0; p < 3; p++){
 				step[p] = (transitions[n].tgt[p] - transitions[n].ojb.rgb[p]) / numTimeSteps;
 			}
-
 			transitions[n].step = step;
 		}
-
 		// if the object to be tweened is an image container, compute the appropriate alpha step
 		else if(transitions[n].obj.constructor.name == "imgContainer"){
 			transitions[n].step = (transitions[n].tgt - transitions[n].alpha) / numTimeSteps;
 		}
-
 	}
-	
 
 	// start drawing the changes
 	start = new Date().getTime()
@@ -183,26 +156,6 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 	}, delay);
 }
 
-/*
-function flash(objects, tgtColor, numTimes, duration){
-	//one "flash" is one cycle of changing color, then changing back to the original color
-	//each flash will thus consist of two colorTween operations: one to the new color, then one back to the original color
-	//compute the duration of each colorTween (i.e., of each half-cycle of a flash):
-	halfCycle = Math.floor(numTimes/duration);
-
-	// need to save the original colors of the objects
-	origColors = new Array(objects.length);
-
-	for(){}
-}
-*/
-
-/*
-function rgb2str(R, G, B){
-	return colorBaseStr.concat(R.toString(), ',', G.toString(), ',', B.toString(), ')');
-}
-*/
-
 function rgb2str(R, G, B){
 	colorStr = colorBaseStr.concat(String(Math.floor(R)), ',', String(Math.floor(G)), ',', String(Math.floor(B)), ')');
 	console.log(colorStr);
@@ -212,19 +165,9 @@ function rgb2str(R, G, B){
 var transition1 = [
 {obj: pyr1, tgt: [0, 255, 0]},
 {obj: pyr2, tgt: [0, 255, 0]},
-{obj:spkr, tgt: [50]}
+{obj: spkr, tgt: [50]}
 ];
 
 canvas.addEventListener('click', function respond(e){
 	colorTweenMulti(pyramidals, [0, 255, 0], 5, 100);
 });
-
-
-
-
-
-       
-
-
-
-
