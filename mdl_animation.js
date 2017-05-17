@@ -25,6 +25,16 @@ var spineLength = 20;
 var inhibSynLength = 30;
 var inhibSynWidth = spineWidth;
 
+var tcHorizLength = 150;
+var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
+var filterBoxSize = 150;
+
+var arrowWidth = 20;
+var arrowLength = 60;
+var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
+var arrowHeadBase = arrowHeadRatio * arrowWidth;
+var arrowHeadHeight = arrowHeadBase / 2 * Math.tan(Math.PI/3);
+
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
 	// y: y-coordinate of lower-left corner of soma
@@ -163,11 +173,91 @@ class CC {
 			if(new Date().getTime() > start + duration * 1000){
 				clearInterval(intID);
 			}
-		}, delay)
-		
-
+		}, delay)	
 	}
 }
+
+class Arrow {
+	constructor(){
+		this.color = [185, 185, 185];
+	}
+
+	draw(){
+		ctx.fillStyle = this.color;
+		ctx.fillRect(-arrowWidth/2, -arrowLength/2, arrowWidth, arrowLength);
+		ctx.beginPath();
+		ctx.moveTo(-arrowHeadBase/2, -arrowLength/2);
+		ctx.lineTo(arrowHeadBase/2, -arrowLength/2);
+		ctx.lineTo(0, -arrowLength/2 - arrowHeadHeight);
+		ctx.fill();
+	}
+}
+
+
+class TC {
+	// pyr: identity of pyramidal cell targeted by TC
+	// prferredStim: orentation of preferred direction stimulus
+	// lr: whether the axon should target the left side or the right side of the targeted pyramidal cell
+	constructor(pyr, preferredStim, lr){
+		this.pyr = pyr;
+		this.preferredStim = preferredStim;
+		this.rgb = [185, 185, 185];
+		this.yOffset = pyr.LLy - pyramidalHeight - gap; // the y-coordinate of the of the TC bouton horizontal midline
+		this.lr = lr;
+		if (lr === "right"){
+			this.sign = 1;
+		} else if (lr === "left"){
+			this.sign = -1;
+		} 
+		this.xOffset = pyr.LLx + pyramidalBase/2 + this.sign * (axonWidth/2 + gap)
+		this.arrowCtrX = tcHorizLength;
+		this.arrowCtrY = tcVertLength/2;
+		this.arrow = new Arrow();
+	}
+
+	draw(){
+		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);
+		ctx.save();
+		ctx.translate(this.xOffset, this.yOffset);
+		
+		if(this.lr === "left"){
+			ctx.scale(-1,1);
+		}
+
+		// draw bouton
+		ctx.beginPath();
+		ctx.moveTo(0, -boutonBase/2);
+		ctx.lineTo(0, boutonBase/2);
+		ctx.lineTo(boutonHeight, 0);
+		ctx.fill();
+
+		// draw horizontal branch
+		ctx.fillRect(0, -axonWidth/2, tcHorizLength, axonWidth);
+
+		// draw vertical branch 
+		ctx.fillRect(tcHorizLength, -axonWidth/2, axonWidth, tcVertLength);
+
+		// draw box depicting direction filter 
+		ctx.beginPath();
+		ctx.strokeStyle = "black";
+		ctx.fillStyle = "white";
+		ctx.rect(tcHorizLength - filterBoxSize/2, tcVertLength/2 - filterBoxSize/2 - axonWidth/2, filterBoxSize, filterBoxSize);
+		ctx.fill();
+		ctx.stroke();
+		
+		//draw arrow
+		ctx.translate(this.arrowCtrX, this.arrowCtrY);
+		ctx.rotate(preferredStim/360 * 2 * Math.PI);
+		ctx.restore();
+
+		/*
+		// draw continuation of vertical branch
+		ctx.fillRect(tcHorizLength, tcVertLength - axonWidth/2 + filterBoxSize, axonWidth, tcVertLength);
+		*/
+
+		ctx.restore();
+	}
+} 
 
 class imgContainer{
 	constructor(img){
@@ -182,7 +272,7 @@ class imgContainer{
 	}
 }
 
-var pyr1 = new Pyramidal(width/5, height/3); pyr1.draw();
+var pyr1 = new Pyramidal(width/5, height/3 + pyramidalHeight/2); pyr1.draw();
 var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); pyr2.draw();
 var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr2); inh1.draw(); //inh1.target(pyr2);
 var inh2 = new Inhibitory(pyr2.LLx + pyramidalBase/2, pyr2.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr1); inh2.draw(); //inh2.target(pyr1);
@@ -190,6 +280,9 @@ var inh2 = new Inhibitory(pyr2.LLx + pyramidalBase/2, pyr2.LLy + axonLength - fu
 var ccOrigin = pyr2.LLx + pyramidalBase + 200; // x-coordinate of where the cortico-coritcals originate from
 var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .75, ccOrigin); cc1.draw();
 var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.draw();
+
+var tc1 = new TC(pyr1, 20, "left"); tc1.draw();
+var tc2 = new TC(pyr2, 20, "right"); tc2.draw();
 
 var spkr = new Image();
 //spkr.src = "/home/dan/Documents/animations/speakers.png"
