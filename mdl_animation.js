@@ -1,6 +1,9 @@
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
+var colorBaseStr = 'rgb(';
+var step = new Array(3);
+
 var pyramidalHeight = 50;
 var pyramidalBase = pyramidalHeight / Math.sin(Math.PI/3);
 
@@ -19,10 +22,6 @@ var spineWidth = 5;
 var spineLength = 20;
 var inhibSynLength = 15;
 var inhibSynWidth = 5;
-
-var colorBaseStr = 'rgb(';
-var step = new Array(3);
-
 
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
@@ -100,10 +99,10 @@ class Inhibitory {
 }
 
 class CC {
-	constructor(x, y, length){
+	constructor(x, y, origin){
 		this.x = x;
 		this.y = y;
-		this.length = length;
+		this.origin = origin;
 		this.rgb = [185, 185, 185]; 	
 	}
 
@@ -112,7 +111,7 @@ class CC {
 		ctx.lineTo(this.x, this.y + boutonBase);
 		ctx.lineTo(this.x + boutonHeight, this.y + boutonBase/2);
 		ctx.fill();
-		ctx.fillRect(this.x + boutonHeight - fudge, this.y + boutonBase/2 - axonWidth/2, this.length, axonWidth);
+		ctx.fillRect(this.x + boutonHeight - fudge, this.y + boutonBase/2 - axonWidth/2, Math.abs(this.origin - this.x), axonWidth);
 	}
 }
 
@@ -129,12 +128,12 @@ class imgContainer{
 	}
 }
 
-var pyr1 = new Pyramidal(10, 200);
-var pyr2 = new Pyramidal(10 + pyramidalBase + 20, 200);
-pyramidals = [pyr1, pyr2];
+var pyr1 = new Pyramidal(10, 200); pyr1.draw();
+var pyr2 = new Pyramidal(10 + pyramidalBase + 20, 200); pyr2.draw();
+var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius); inh1.draw(); inh1.target(pyr2);
 
-pyr1.draw();
-pyr2.draw();
+var ccOrigin = pyr2.LLx + pyramidalBase + 200; // x-coordinate of where the cortico-coritcals originate from
+var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - axonLength * .75, ccOrigin); cc1.draw();
 
 var spkr = new Image();
 //spkr.src = "/home/dan/Documents/animations/speakers.png"
@@ -148,16 +147,6 @@ spkr.onload = function(){
 };
 var spkrContainer = new imgContainer(spkr);
 
-console.log(pyr1.constructor.name);
-console.log(spkr.constructor.name);
-
-var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius);
-//var inh1 = new Inhibitory(100, 100);
-inh1.draw();
-inh1.target(pyr2);
-
-var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - axonLength * .75, 100);
-cc1.draw();
 
 function colorTweenMulti(transitions, dur, numTimeSteps){
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
