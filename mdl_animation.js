@@ -59,19 +59,22 @@ class Pyramidal {
 
 
 class Inhibitory {
-	constructor(x, y){
+	constructor(x, y, pyr){
 		// x: x-coordinate of center of soma
 		// y: y-coordinate of center of soma
 		this.ctrX = x;
 		this.ctrY = y;
 		this.r = inhibitoryRadius;
 		this.rgb = [185, 185, 185];
+		this.tgtSpnLength = .85 * Math.sqrt( Math.pow(pyr.LLx + pyramidalBase/2 - this.ctrX, 2) + Math.pow(pyr.LLy - this.ctrY, 2) );; // length of the spine that projects to the target pyramidal
+		this.tgtSpnAngle = Math.atan(  Math.abs(pyr.LLy - this.ctrY)  / Math.abs(pyr.LLx + pyramidalBase/2 - this.ctrX) );
 	}
 
 	draw(){
 		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);
 
 		//draw soma
+		ctx.beginPath();
 		ctx.arc(this.ctrX, this.ctrY, this.r, 0, 2 * Math.PI);
 		ctx.fill();
 
@@ -80,7 +83,7 @@ class Inhibitory {
 		ctx.translate(this.ctrX, this.ctrY);
 		for (var s = 1; s < 3; s++){
 			ctx.rotate(Math.PI / 4 * s);
-			ctx.fillRect(0, 0, this.r + spineLength, spineWidth);
+			ctx.fillRect(0, -spineWidth/2, this.r + spineLength, spineWidth);
 		}
 		ctx.restore();
 	}
@@ -88,11 +91,17 @@ class Inhibitory {
 	target(pyr){
 		ctx.save()
 		ctx.translate(this.ctrX, this.ctrY);
-		ctx.rotate( -1*Math.atan(  Math.abs(pyr.LLy - this.ctrY)  / Math.abs(pyr.LLx - this.ctrX) ) );
+		if ( pyr.LLx < this.ctrX ){
+			ctx.scale(-1,1);
+		}
+		//tgtSpnAngle = ;
+		ctx.rotate(-1 * this.tgtSpnAngle);
 		//ctx.translate(0, -spineWidth/2);
-		length = .85 * Math.sqrt( Math.pow(pyr.LLx - this.ctrX, 2) + Math.pow(pyr.LLy - this.ctrY, 2) );
-		ctx.fillRect(0, 0, length, spineWidth);
-		ctx.fillRect(length-inhibSynWidth/2, axonWidth/2 - inhibSynLength/2, inhibSynWidth, inhibSynLength);
+		//length = .85 * Math.sqrt( Math.pow(pyr.LLx + pyramidalBase/2 - this.ctrX, 2) + Math.pow(pyr.LLy - this.ctrY, 2) );
+		ctx.fillRect(0, 0, this.tgtSpnLength, spineWidth);
+		ctx.fillRect(this.tgtSpnLength-inhibSynWidth/2, axonWidth/2 - inhibSynLength/2, inhibSynWidth, inhibSynLength);
+		ctx.rotate(this.tgtSpnAngle - 0.75 * Math.PI );
+		ctx.fillRect(0, -spineWidth/2, this.r + spineLength, spineWidth);
 		ctx.restore();
 		//console.log(Math.pow(2,2));
 	}
@@ -107,6 +116,7 @@ class CC {
 	}
 
 	draw(){
+		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);
 		ctx.moveTo(this.x, this.y);
 		ctx.lineTo(this.x, this.y + boutonBase);
 		ctx.lineTo(this.x + boutonHeight, this.y + boutonBase/2);
@@ -119,7 +129,7 @@ class imgContainer{
 	constructor(img){
 		this.img = img;
 		this.alpha = 100;
-		this.draw();	
+		//this.draw();	
 	}
 
 	draw(){
@@ -130,19 +140,21 @@ class imgContainer{
 
 var pyr1 = new Pyramidal(10, 200); pyr1.draw();
 var pyr2 = new Pyramidal(10 + pyramidalBase + 20, 200); pyr2.draw();
-var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius); inh1.draw(); inh1.target(pyr2);
+var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr2); inh1.draw(); inh1.target(pyr2);
+var inh2 = new Inhibitory(pyr2.LLx + pyramidalBase/2, pyr2.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr1); inh2.draw(); inh2.target(pyr1);
 
 var ccOrigin = pyr2.LLx + pyramidalBase + 200; // x-coordinate of where the cortico-coritcals originate from
-var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - axonLength * .75, ccOrigin); cc1.draw();
+var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .75, ccOrigin); cc1.draw();
+var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.draw();
 
 var spkr = new Image();
 //spkr.src = "/home/dan/Documents/animations/speakers.png"
 spkr.src = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
 spkr.onload = function(){
 	ctx.save();
-	ctx.translate(200, 100);
-	ctx.scale(-1,1);
-	ctx.drawImage(spkr, 0, 0, 100, 100);
+	ctx.translate(ccOrigin + gap, 100);
+	//ctx.scale(-1,1);
+	ctx.drawImage(spkr, 0, Math.max(cc1.y, cc2.y), 100, 100);
 	ctx.restore()
 };
 var spkrContainer = new imgContainer(spkr);
@@ -177,7 +189,7 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 			// if the object to tween is a vector graphics object, update its rgb triple		
 			if(transitions[n].obj.constructor.name != "imgContainer"){
 				for(var k = 0; k <3; k++){
-					transitions[m].obj.rgbArray[k] = transitions[m].obj.rgbArray[k] + transitions.step[k];
+					transitions[m].obj.rgb[k] = transitions[m].obj.rgb[k] + transitions.step[k];
 				}
 			}			
 
@@ -211,5 +223,5 @@ var transition1 = [
 ];
 
 canvas.addEventListener('click', function respond(e){
-	colorTweenMulti(pyramidals, [0, 255, 0], 5, 100);
+	colorTweenMulti(transition1, 5, 100);
 });
