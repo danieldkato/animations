@@ -330,15 +330,40 @@ class dataPoint {
 
 
 class imgContainer{
-	constructor(img){
-		this.img = img;
-		this.alpha = 100;
-		//this.draw();	
+	// src: image source
+	// x: UL corner x
+	// y: UL corner y
+	// width: image width
+	// height: image height
+	// alpha: image alpha 
+	constructor(src, x, y, width, height, alpha){
+		this.img = new Image();
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.alpha = alpha;
+		//this.draw();
+		var self = this;
+		this.img.onload = function(){self.draw();};	
+		this.img.src = src;
 	}
 
 	draw(){
+		console.log(this.img.src);
+		ctx.save()
 		ctx.globalAlpha = this.alpha;
-		ctx.drawImage(this.img, 0, 0, 100, 100);
+		console.log(ctx.globalAlpha);
+		ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+		ctx.restore();
+	}
+}
+
+class Speaker{
+	constructor(x, y){
+		this.x = x;
+		this.y = y;
+		this.alpha = alpha;
 	}
 }
 
@@ -354,20 +379,28 @@ var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyra
 var tc1 = new TC(pyr1, 90, "left"); tc1.draw();
 var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 
-var spkr = new Image();
 //spkr.src = "/home/dan/Documents/animations/speakers.png"
-spkr.src = spkrSrc;
-spkr.onload = function(){
-	ctx.save();
-	ctx.translate(ccOrigin + gap + spkrSize, (cc1.y + cc2.y)/2 - spkrSize/2);
-	ctx.scale(-1,1);
-	ctx.drawImage(spkr, 0, 0, spkrSize, spkrSize);
-	ctx.restore()
-};
-var spkrContainer = new imgContainer(spkr);
+//var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 1.0); spkrContainer.draw();
+//spkr.onload = function(){spkrContainer.draw()};
+
+/*
+var spkr = new Image();
+spkr.onload = function(){ctx.drawImage(spkr, 100, 100, spkrSize, spkrSize); console.log('image loaded')};
+spkr.src = spkrSrc; 
+*/
+
+var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 1.0); //spkrContainer.draw();
 
 var red = [255, 0, 0];
 var testDataPoint = new dataPoint(500, 500, red, 45); testDataPoint.draw();
+
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, testDataPoint];
+
+function animate(allTheThings){
+	for(i = 0; i < allTheThings.length; i++){
+		allTheThings[i].draw();
+	}
+}
 
 function colorTweenMulti(transitions, dur, numTimeSteps){
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
@@ -384,11 +417,13 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 		}
 		// if the object to be tweened is an image container, compute the appropriate alpha step
 		else if(transitions[n].obj.constructor.name == "imgContainer"){
-			transitions[n].step = (transitions[n].tgt - transitions[n].alpha) / numTimeSteps;
+			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps;
+			console.log('alpha step:');
+			console.log(transitions[n].step);
 		}
 	}
 
-	// start drawing the changes
+	// over the course of tween period, update properties of all objects to be tweened
 	start = new Date().getTime()
 	now = start;
 	intId = setInterval(function(){
@@ -396,21 +431,24 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 		for(var m = 0; m < transitions.length; m++){	
 
 			// if the object to tween is a vector graphics object, update its rgb triple		
-			if(transitions[n].obj.constructor.name != "imgContainer"){
+			if(transitions[m].obj.constructor.name != "imgContainer"){
 				for(var k = 0; k <3; k++){
-					transitions[m].obj.rgb[k] = transitions[m].obj.rgb[k] + transitions.step[k];
+					transitions[m].obj.rgb[k] = transitions[m].obj.rgb[k] + transitions[m].step[k];
 				}
 			}			
 
 			// if the object to tween is an image container, update its alpha and set the global alpha equal to it
-			else if (transitions[n].obj.constructor.name == "imgContainer"){
+			else if (transitions[m].obj.constructor.name == "imgContainer"){
 				transitions[m].obj.alpha = transitions[m].obj.alpha + transitions[m].step;
 				ctx.save();				
 				ctx.globalAlpha = transitions[m].obj.alpha;
 			}			
-			transitions[m].obj.draw();	
-			ctx.restore();
+			//transitions[m].obj.draw();	
+			//ctx.restore();
 		}
+
+		ctx.clearRect(0, 0, width, height);
+		animate(allObjects);
 
 		if(new Date().getTime() > start + dur * 1000){
 			clearInterval(intId);
@@ -428,7 +466,7 @@ function rgb2str(rgb){
 var transition1 = [
 {obj: pyr1, tgt: [0, 255, 0]},
 {obj: pyr2, tgt: [0, 255, 0]},
-{obj: spkrContainer, tgt: [50]}
+{obj: spkrContainer, tgt: 0.5}
 ];
 
 
