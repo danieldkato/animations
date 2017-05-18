@@ -38,6 +38,10 @@ var arrowBodyWidth = arrowWidth / arrowHeadRatio;
 
 var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength + arrowLength;
 
+var spkrSize = 100;
+spkrSrc = "/home/dan/Documents/animations/speakers.png"
+//spkrSrc = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
+
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
 	// y: y-coordinate of lower-left corner of soma
@@ -305,12 +309,12 @@ var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 
 var spkr = new Image();
 //spkr.src = "/home/dan/Documents/animations/speakers.png"
-spkr.src = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
+spkr.src = spkrSrc;
 spkr.onload = function(){
 	ctx.save();
-	ctx.translate(ccOrigin + gap, 100);
-	//ctx.scale(-1,1);
-	ctx.drawImage(spkr, 0, Math.max(cc1.y, cc2.y), 100, 100);
+	ctx.translate(ccOrigin + gap + spkrSize, (cc1.y + cc2.y)/2 - spkrSize/2);
+	ctx.scale(-1,1);
+	ctx.drawImage(spkr, 0, 0, spkrSize, spkrSize);
 	ctx.restore()
 };
 var spkrContainer = new imgContainer(spkr);
