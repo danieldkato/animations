@@ -16,9 +16,9 @@ var axonLength = height/5;
 var axonWidth = apicalWidth;
 var boutonHeight = 25;
 var boutonBase = boutonHeight / Math.sin(Math.PI/3);
-var fudge = boutonHeight * axonWidth/boutonBase; // this is to make sure that the bouton overlaps with the axon properly
+var fudge = boutonHeight * axonWidth/boutonBase; // this is to make sure that the boutons overlap with the axons properly
 
-var gap = 5;
+var gap = 5; // synaptic gap
 var inhibitoryRadius = 40;
 var spineWidth = apicalWidth;
 var spineLength = 20;
@@ -197,9 +197,13 @@ class CC {
 }
 
 class Arrow {
-	constructor(length, width){
-		this.lengthTotal = length;
-		this.widthTotal = width;
+	constructor(length, width, angle){
+		// length: total length of arrow (including arrowhead)
+		// width: total width of arrow (including arrowhead)
+		// angle: angle of arrow clockwise from vertical, in degrees
+		this.lengthTotal = length; 
+		this.widthTotal = width;  
+		this.angle = angle/180 * Math.PI; 
 		this.arrowHeadLength = this.widthTotal / 2 * Math.tan(Math.PI/3);
 		this.arrowBodyLength = this.lengthTotal - this.arrowHeadLength;
 		this.arrowBodyWidth = this.widthTotal / arrowHeadRatio;
@@ -211,6 +215,7 @@ class Arrow {
 		ctx.fillStyle = rgb2str(this.color);
 		ctx.save();
 		ctx.translate(0, this.arrowLengthTotal/2 - this.arrowBodyLength);
+		ctx.rotate(this.angle);
 		ctx.fillRect(-this.arrowBodyWidth/2, this.lengthTotal/2 - this.arrowBodyLength - 1, this.arrowBodyWidth, this.arrowBodyLength);
 		ctx.beginPath();
 		ctx.moveTo(-this.widthTotal/2, this.lengthTotal/2 - this.arrowBodyLength);
@@ -230,7 +235,6 @@ class TC {
 	// lr: whether the axon should target the left side or the right side of the targeted pyramidal cell
 	constructor(pyr, preferredStim, lr){
 		this.pyr = pyr;
-		this.preferredStim = preferredStim;
 		this.rgb = [185, 185, 185];
 		this.yOffset = pyr.LLy - pyramidalHeight - gap; // the y-coordinate of the of the TC bouton horizontal midline
 		this.lr = lr;
@@ -245,7 +249,7 @@ class TC {
 		this.arrowCtrX = tcHorizLength + axonWidth/2;
 		//this.arrowCtrY = tcVertLength/2 + this.arrowLengthTotal/2 - arrowBodyLength;
 		this.arrowCtrY = tcVertLength/2;
-		this.arrow = new Arrow(this.arrowLengthTotal, this.arrowWidthTotal);
+		this.arrow = new Arrow(this.arrowLengthTotal, this.arrowWidthTotal, preferredStim);
 	}
 
 	draw(){
@@ -300,24 +304,26 @@ class TC {
 
 
 class dataPoint {
-	constructor(x, y, color){
+	// x: x-coordinate of center of datapoint
+	// y: y-coordinate of center of datapoint
+	// color: rgb array specifying color of datapoint
+	// angle: clockwise angle of inscribed arrow relative to vertical, in degrees
+	constructor(x, y, color, angle){
 		this.ctrX = x;
 		this.ctrY = y;
 		this.rgb = color;
-		this.arrow = new Arrow(2 * dataPointRadius * 0.6, 2 * dataPointRadius * 0.33);
+		this.arrow = new Arrow(2 * dataPointRadius * 0.6, 2 * dataPointRadius * 0.33, angle);
 	}
 
 	draw(){
 		console.log(this.arrow);
 		ctx.fillStyle = rgb2str(this.rgb);
-		ctx.beginPath();
-		ctx.arc(this.ctrX, this.ctrY, dataPointRadius, 0, 2 * Math.PI);
-		ctx.fill();
 		ctx.save();
 		ctx.translate(this.ctrX, this.ctrY);
-		console.log('drawing datapoint');
+		ctx.beginPath();
+		ctx.arc(0, 0, dataPointRadius, 0, 2 * Math.PI);
+		ctx.fill();
 		this.arrow.draw();
-		console.log('datapoint drawn');
 		ctx.restore();
 	}
 }
@@ -361,7 +367,7 @@ spkr.onload = function(){
 var spkrContainer = new imgContainer(spkr);
 
 var red = [255, 0, 0];
-var testDataPoint = new dataPoint(500, 500, red); testDataPoint.draw();
+var testDataPoint = new dataPoint(500, 500, red, 45); testDataPoint.draw();
 
 function colorTweenMulti(transitions, dur, numTimeSteps){
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
@@ -425,12 +431,14 @@ var transition1 = [
 {obj: spkrContainer, tgt: [50]}
 ];
 
-/*
+
 canvas.addEventListener('click', function respond(e){
 	colorTweenMulti(transition1, 5, 100);
 });
-*/
 
+
+/*
 canvas.addEventListener('click', function respond(e){
 	cc1.potentiate(1.75,1,100);
 });
+*/
