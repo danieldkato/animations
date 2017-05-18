@@ -28,19 +28,21 @@ var inhibSynWidth = spineWidth;
 var tcHorizLength = 150;
 var filterBoxSize = 150;
 
-var arrowWidth = filterBoxSize * 0.33;
-var arrowLength = filterBoxSize * 0.6;
-//var arrowHeadBase = arrowHeadRatio * arrowWidth;
-var arrowHeadLength = arrowWidth / 2 * Math.tan(Math.PI/3);
-var arrowBodyLength = arrowLength - arrowHeadLength;
-var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
-var arrowBodyWidth = arrowWidth / arrowHeadRatio;
+var dataPointRadius = 10; 
 
-var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength + arrowLength;
+//var arrowWidth = filterBoxSize * 0.33;
+//var arrowLength = filterBoxSize * 0.6;
+//var arrowHeadBase = arrowHeadRatio * arrowWidth;
+//var arrowHeadLength = arrowWidth / 2 * Math.tan(Math.PI/3);
+//var arrowBodyLength = arrowLength - arrowHeadLength;
+var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
+//var arrowBodyWidth = arrowWidth / arrowHeadRatio;
+
+var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
 
 var spkrSize = 100;
-spkrSrc = "/home/dan/Documents/animations/speakers.png"
-//spkrSrc = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
+//spkrSrc = "/home/dan/Documents/animations/speakers.png"
+spkrSrc = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
 
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
@@ -52,7 +54,7 @@ class Pyramidal {
 	}
 
 	draw(){
-		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);
+		ctx.fillStyle = rgb2str(this.rgb);
 
 		// draw soma
 		ctx.beginPath();
@@ -101,7 +103,7 @@ class Inhibitory {
 	}
 
 	draw(){
-		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);
+		ctx.fillStyle = rgb2str(this.rgb);
 
 		//draw soma
 		ctx.beginPath();
@@ -151,7 +153,7 @@ class CC {
 
 	draw(){
 		this.boutonBase = this.boutonHeight / Math.sin(Math.PI/3);
-		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);
+		ctx.fillStyle = rgb2str(this.rgb);
 		ctx.beginPath();
 		ctx.moveTo(this.x, this.y - this.boutonBase/2);
 		ctx.lineTo(this.x, this.y + this.boutonBase/2);
@@ -195,18 +197,29 @@ class CC {
 }
 
 class Arrow {
-	constructor(){
+	constructor(length, width){
+		this.lengthTotal = length;
+		this.widthTotal = width;
+		this.arrowHeadLength = this.widthTotal / 2 * Math.tan(Math.PI/3);
+		this.arrowBodyLength = this.lengthTotal - this.arrowHeadLength;
+		this.arrowBodyWidth = this.widthTotal / arrowHeadRatio;
 		this.color = [185, 185, 185];
 	}
 
+	// draws arrow with the origin in the center
 	draw(){
-		ctx.fillStyle = rgb2str(this.color[0], this.color[1], this.color[2]);
-		ctx.fillRect(-arrowBodyWidth/2, arrowLength/2 - arrowBodyLength , arrowBodyWidth, arrowBodyLength);
+		ctx.fillStyle = rgb2str(this.color);
+		ctx.save();
+		ctx.translate(0, this.arrowLengthTotal/2 - this.arrowBodyLength);
+		ctx.fillRect(-this.arrowBodyWidth/2, this.lengthTotal/2 - this.arrowBodyLength - 1, this.arrowBodyWidth, this.arrowBodyLength);
 		ctx.beginPath();
-		ctx.moveTo(-arrowWidth/2, arrowLength/2 - arrowBodyLength);
-		ctx.lineTo(arrowWidth/2, arrowLength/2 - arrowBodyLength);
-		ctx.lineTo(0, -arrowLength/2);
+		ctx.moveTo(-this.widthTotal/2, this.lengthTotal/2 - this.arrowBodyLength);
+		ctx.lineTo(this.widthTotal/2, this.lengthTotal/2 - this.arrowBodyLength);
+		ctx.lineTo(0, -this.lengthTotal/2);
 		ctx.fill();
+		console.log('arrow drawn');
+		ctx.restore();
+
 	}
 }
 
@@ -227,9 +240,12 @@ class TC {
 			this.sign = -1;
 		} 
 		this.xOffset = pyr.LLx + pyramidalBase/2 + this.sign * (axonWidth/2 + gap)
+		this.arrowLengthTotal = filterBoxSize * 0.6;
+		this.arrowWidthTotal = filterBoxSize * 0.33;
 		this.arrowCtrX = tcHorizLength + axonWidth/2;
-		this.arrowCtrY = tcVertLength/2 + arrowLength/2 - arrowBodyLength;
-		this.arrow = new Arrow();
+		//this.arrowCtrY = tcVertLength/2 + this.arrowLengthTotal/2 - arrowBodyLength;
+		this.arrowCtrY = tcVertLength/2;
+		this.arrow = new Arrow(this.arrowLengthTotal, this.arrowWidthTotal);
 	}
 
 	draw(){
@@ -258,7 +274,7 @@ class TC {
 		ctx.beginPath();
 		ctx.strokeStyle = "black";
 		ctx.fillStyle = "white";
-		ctx.rect(tcHorizLength - filterBoxSize/2, tcVertLength/2 - filterBoxSize/2 - axonWidth/2, filterBoxSize, filterBoxSize);
+		ctx.rect(tcHorizLength - filterBoxSize/2 + axonWidth/2, tcVertLength/2 - filterBoxSize/2 - axonWidth/2, filterBoxSize, filterBoxSize);
 		ctx.fill();
 		ctx.stroke();
 		
@@ -270,7 +286,7 @@ class TC {
 		ctx.restore();
 
 		// draw lower horizontal branch
-		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);		
+		ctx.fillStyle = rgb2str(this.rgb);		
 		ctx.fillRect(0, tcVertLength - axonWidth * 1.5, tcHorizLength, axonWidth); 
 		
 		/*
@@ -281,6 +297,31 @@ class TC {
 		ctx.restore();
 	}
 } 
+
+
+class dataPoint {
+	constructor(x, y, color){
+		this.ctrX = x;
+		this.ctrY = y;
+		this.rgb = color;
+		this.arrow = new Arrow(2 * dataPointRadius * 0.6, 2 * dataPointRadius * 0.33);
+	}
+
+	draw(){
+		console.log(this.arrow);
+		ctx.fillStyle = rgb2str(this.rgb);
+		ctx.beginPath();
+		ctx.arc(this.ctrX, this.ctrY, dataPointRadius, 0, 2 * Math.PI);
+		ctx.fill();
+		ctx.save();
+		ctx.translate(this.ctrX, this.ctrY);
+		console.log('drawing datapoint');
+		this.arrow.draw();
+		console.log('datapoint drawn');
+		ctx.restore();
+	}
+}
+
 
 class imgContainer{
 	constructor(img){
@@ -319,6 +360,8 @@ spkr.onload = function(){
 };
 var spkrContainer = new imgContainer(spkr);
 
+var red = [255, 0, 0];
+var testDataPoint = new dataPoint(500, 500, red); testDataPoint.draw();
 
 function colorTweenMulti(transitions, dur, numTimeSteps){
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
@@ -370,8 +413,8 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 	}, delay);
 }
 
-function rgb2str(R, G, B){
-	colorStr = colorBaseStr.concat(String(Math.floor(R)), ',', String(Math.floor(G)), ',', String(Math.floor(B)), ')');
+function rgb2str(rgb){
+	colorStr = colorBaseStr.concat(String(Math.floor(rgb[0])), ',', String(Math.floor(rgb[1])), ',', String(Math.floor(rgb[2])), ')');
 	console.log(colorStr);
 	return colorStr;
 }
