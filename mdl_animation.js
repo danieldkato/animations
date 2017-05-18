@@ -26,14 +26,17 @@ var inhibSynLength = 30;
 var inhibSynWidth = spineWidth;
 
 var tcHorizLength = 150;
-var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
 var filterBoxSize = 150;
 
-var arrowWidth = 20;
-var arrowLength = 60;
+var arrowWidth = filterBoxSize * 0.33;
+var arrowLength = filterBoxSize * 0.6;
+//var arrowHeadBase = arrowHeadRatio * arrowWidth;
+var arrowHeadLength = arrowWidth / 2 * Math.tan(Math.PI/3);
+var arrowBodyLength = arrowLength - arrowHeadLength;
 var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
-var arrowHeadBase = arrowHeadRatio * arrowWidth;
-var arrowHeadHeight = arrowHeadBase / 2 * Math.tan(Math.PI/3);
+var arrowBodyWidth = arrowWidth / arrowHeadRatio;
+
+var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength + arrowLength;
 
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
@@ -79,8 +82,18 @@ class Inhibitory {
 		this.pyr = pyr;
 		this.r = inhibitoryRadius;
 		this.rgb = [185, 185, 185];
-		this.tgtSpnLength = .85 * Math.sqrt( Math.pow(pyr.LLx + pyramidalBase/2 - this.ctrX, 2) + Math.pow(pyr.LLy - this.ctrY, 2) );; // length of the spine that projects to the target pyramidal
-		this.tgtSpnAngle = Math.atan(  Math.abs(pyr.LLy - this.ctrY)  / Math.abs(pyr.LLx + pyramidalBase/2 - this.ctrX) );
+		
+		if( x < pyr.LLx ){
+			this.tgtX = pyr.LLx + pyramidalBase * 0.25;
+			this.tgtY = pyr.LLy;
+		} else if ( x > pyr.LLx ){
+			this.tgtX = pyr.LLx + pyramidalBase * 0.75;
+			this.tgtY = pyr.LLy;
+		}
+		
+		this.tgtSpnLength = .97 * Math.sqrt( Math.pow(this.tgtX - this.ctrX, 2) + Math.pow(this.tgtY - this.ctrY, 2) );; // length of the spine that projects to the target pyramidal
+		this.tgtSpnAngle = Math.atan(  Math.abs(this.tgtY - this.ctrY)  / Math.abs(this.tgtX - this.ctrX) );
+
 	}
 
 	draw(){
@@ -183,12 +196,12 @@ class Arrow {
 	}
 
 	draw(){
-		ctx.fillStyle = this.color;
-		ctx.fillRect(-arrowWidth/2, -arrowLength/2, arrowWidth, arrowLength);
+		ctx.fillStyle = rgb2str(this.color[0], this.color[1], this.color[2]);
+		ctx.fillRect(-arrowBodyWidth/2, arrowLength/2 - arrowBodyLength , arrowBodyWidth, arrowBodyLength);
 		ctx.beginPath();
-		ctx.moveTo(-arrowHeadBase/2, -arrowLength/2);
-		ctx.lineTo(arrowHeadBase/2, -arrowLength/2);
-		ctx.lineTo(0, -arrowLength/2 - arrowHeadHeight);
+		ctx.moveTo(-arrowWidth/2, arrowLength/2 - arrowBodyLength);
+		ctx.lineTo(arrowWidth/2, arrowLength/2 - arrowBodyLength);
+		ctx.lineTo(0, -arrowLength/2);
 		ctx.fill();
 	}
 }
@@ -210,8 +223,8 @@ class TC {
 			this.sign = -1;
 		} 
 		this.xOffset = pyr.LLx + pyramidalBase/2 + this.sign * (axonWidth/2 + gap)
-		this.arrowCtrX = tcHorizLength;
-		this.arrowCtrY = tcVertLength/2;
+		this.arrowCtrX = tcHorizLength + axonWidth/2;
+		this.arrowCtrY = tcVertLength/2 + arrowLength/2 - arrowBodyLength;
 		this.arrow = new Arrow();
 	}
 
@@ -245,11 +258,17 @@ class TC {
 		ctx.fill();
 		ctx.stroke();
 		
-		//draw arrow
-		ctx.translate(this.arrowCtrX, this.arrowCtrY);
-		ctx.rotate(preferredStim/360 * 2 * Math.PI);
+		// draw arrow
+		ctx.save();
+		ctx.translate(this.arrowCtrX , this.arrowCtrY);
+		ctx.rotate(this.preferredStim/360 * 2 * Math.PI);
+		this.arrow.draw();
 		ctx.restore();
 
+		// draw lower horizontal branch
+		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);		
+		ctx.fillRect(0, tcVertLength - axonWidth * 1.5, tcHorizLength, axonWidth); 
+		
 		/*
 		// draw continuation of vertical branch
 		ctx.fillRect(tcHorizLength, tcVertLength - axonWidth/2 + filterBoxSize, axonWidth, tcVertLength);
@@ -281,8 +300,8 @@ var ccOrigin = pyr2.LLx + pyramidalBase + 200; // x-coordinate of where the cort
 var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .75, ccOrigin); cc1.draw();
 var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.draw();
 
-var tc1 = new TC(pyr1, 20, "left"); tc1.draw();
-var tc2 = new TC(pyr2, 20, "right"); tc2.draw();
+var tc1 = new TC(pyr1, 90, "left"); tc1.draw();
+var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 
 var spkr = new Image();
 //spkr.src = "/home/dan/Documents/animations/speakers.png"
