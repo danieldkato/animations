@@ -453,15 +453,15 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 	// dur: total duration of transition in seconds
 	// numTimeSteps: number of discrete time steps into which to divide the animation
 
-	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
+	var delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
 
 	// for each object to be tweened, compute the appropriate color or alpha steps
 	var transitions = computeColorStep(transitions, numTimeSteps);
 
 	// over the course of tween period, update properties of all objects to be tweened
-	start = new Date().getTime()
-	now = start;
-	intId = setInterval(function(){
+	var start = new Date().getTime()
+	var now = start;
+	var intId = setInterval(function(){
 
 		for (var m = 0; m < transitions.length; m++){	
 
@@ -520,18 +520,16 @@ function rgb2str(rgb){
 	return colorStr;
 }
 
+var transition1 = [
+{obj: pyr1, tgt: [0, 255, 0]},
+{obj: pyr2, tgt: [0, 255, 0]},
+{obj: spkrContainer, tgt: 1.0}
+];
 
 canvas.addEventListener('click', function respond(e){
 
-	var transition1 = [
-	{obj: pyr1, tgt: [0, 255, 0]},
-	{obj: pyr2, tgt: [0, 255, 0]},
-	{obj: spkrContainer, tgt: 1.0}
-	];
-
 	console.log('transition1');
 	console.log(transition1);
-
 
 
 	//colorTweenMulti(transition1, 5, 100);
