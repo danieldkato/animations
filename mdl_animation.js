@@ -316,7 +316,6 @@ class dataPoint {
 	}
 
 	draw(){
-		console.log(this.arrow);
 		ctx.fillStyle = rgb2str(this.rgb);
 		ctx.save();
 		ctx.translate(this.ctrX, this.ctrY);
@@ -360,8 +359,6 @@ class imgContainer{
 		console.log('value of oldAlpha after changing ctx.globalAlpha');
 		console.log(oldAlpha);		
 		ctx.globalAlpha = oldAlpha;
-		console.log('globalAlpha after reverting');
-		console.log(ctx.globalAlpha);
 	}
 }
 
@@ -408,37 +405,69 @@ function animate(allTheThings){
 	}
 }
 
+function flash(transitions, numTimes, duration, numTimeSteps){
+	// transitions: color/alpha transformations to make
+	// numTimes: number of times to perform the color/alpha transformations and reverse them
+	// duration: duration of each color/alpha transformation in seconds
+	// numSteps: number of discrete animation steps per transformation
+
+	// create an object array representing the reverse transition:
+	
+	console.log(" flash: transitions:");
+	console.log(transitions);
+	
+	var reverseTransitions = JSON.parse(JSON.stringify(transitions)); 
+	/* Simple assignment ("=") of an array in Javascript does NOT create a copy of that 
+	array - it creates a reference!! I.e., if you set 
+	
+		var reverseTranstion = transitions
+		
+	then any changes you make to reversetransitions will also be made to transitions! 
+	Moreover the common methods for copying arrays - slice() and concat() - do NOT 
+	work when the elements of the array are objects! This JSON.parse(JSON.stringify()) 
+	trick appears to be necessary */ 
+	for (var t = 0; t < transitions.length; t++){
+		if (transitions[t].obj.constructor.name != "imgContainer"){
+			reverseTransitions[t].tgt = transitions[t].obj.rgb;
+			console.log("reverse transition rgb")
+			console.log(reverseTransitions[t].tgt);
+		} else if (transitions[t].obj.constructor.name == "imgContainer"){
+			reverseTransitions[t].tgt = transitions[t].obj.alpha;
+		}
+	}
+
+	console.log(" flash: reverseTransitions:");
+	console.log(reverseTransitions);
+
+	// tween back and forth for the number of specified times
+	/*
+	for(var n = 0; n < numTimes; n++){
+		colorTweenMulti(transitions, duration, numTimeSteps);
+		colorTweenMulti(reverseTransitions, duration, numTimeSteps);
+	}
+	*/
+}
+
 function colorTweenMulti(transitions, dur, numTimeSteps){
+	// transitions: object array describing color/alpha transitions to make
+	// dur: total duration of transition in seconds
+	// numTimeSteps: number of discrete time steps into which to divide the animation
+
 	delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
 
 	// for each object to be tweened, compute the appropriate color or alpha steps
-	for (var n = 0; n < transitions.length; n++){	
-		// if the object to be tweened is a vector graphic object, compute the appropriate color steps 		
-		if(transitions[n].obj.constructor.name != "imgContainer"){			
-			// do this for each color channel			
-			for(var p = 0; p < 3; p++){
-				step[p] = (transitions[n].tgt[p] - transitions[n].obj.rgb[p]) / numTimeSteps;
-			}
-			transitions[n].step = step;
-		}
-		// if the object to be tweened is an image container, compute the appropriate alpha step
-		else if(transitions[n].obj.constructor.name == "imgContainer"){
-			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps;
-			console.log('alpha step:');
-			console.log(transitions[n].step);
-		}
-	}
+	var transitions = computeColorStep(transitions, numTimeSteps);
 
 	// over the course of tween period, update properties of all objects to be tweened
 	start = new Date().getTime()
 	now = start;
 	intId = setInterval(function(){
 
-		for(var m = 0; m < transitions.length; m++){	
+		for (var m = 0; m < transitions.length; m++){	
 
 			// if the object to tween is a vector graphics object, update its rgb triple		
-			if(transitions[m].obj.constructor.name != "imgContainer"){
-				for(var k = 0; k <3; k++){
+			if (transitions[m].obj.constructor.name != "imgContainer"){
+				for (var k = 0; k <3; k++){
 					transitions[m].obj.rgb[k] = transitions[m].obj.rgb[k] + transitions[m].step[k];
 				}
 			}			
@@ -456,11 +485,33 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 		ctx.clearRect(0, 0, width, height);
 		animate(allObjects);
 
-		if(new Date().getTime() > start + dur * 1000){
+		if (new Date().getTime() > start + dur * 1000){
 			clearInterval(intId);
 		}
 
 	}, delay);
+}
+
+function computeColorStep(transitions, numTimeSteps){
+	for (var n = 0; n < transitions.length; n++){	
+		// if the object to be tweened is a vector graphic object, compute the appropriate color steps 		
+		if(transitions[n].obj.constructor.name != "imgContainer"){			
+			// do this for each color channel			
+			for(var p = 0; p < 3; p++){
+				step[p] = (transitions[n].tgt[p] - transitions[n].obj.rgb[p]) / numTimeSteps;
+			}
+			transitions[n].step = step;
+			console.log('color step:');
+			console.log(transitions[n].step);
+		}
+		// if the object to be tweened is an image container, compute the appropriate alpha step
+		else if(transitions[n].obj.constructor.name == "imgContainer"){
+			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps;
+			console.log('alpha step:');
+			console.log(transitions[n].step);
+		}
+	}
+	return transitions;
 }
 
 function rgb2str(rgb){
@@ -469,15 +520,22 @@ function rgb2str(rgb){
 	return colorStr;
 }
 
-var transition1 = [
-{obj: pyr1, tgt: [0, 255, 0]},
-{obj: pyr2, tgt: [0, 255, 0]},
-{obj: spkrContainer, tgt: 1.0}
-];
-
 
 canvas.addEventListener('click', function respond(e){
-	colorTweenMulti(transition1, 5, 100);
+
+	var transition1 = [
+	{obj: pyr1, tgt: [0, 255, 0]},
+	{obj: pyr2, tgt: [0, 255, 0]},
+	{obj: spkrContainer, tgt: 1.0}
+	];
+
+	console.log('transition1');
+	console.log(transition1);
+
+
+
+	//colorTweenMulti(transition1, 5, 100);
+	flash(transition1, 1, 3, 100);
 });
 
 
