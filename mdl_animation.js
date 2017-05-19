@@ -350,12 +350,18 @@ class imgContainer{
 	}
 
 	draw(){
-		console.log(this.img.src);
-		ctx.save()
+		var oldAlpha = ctx.globalAlpha;
+		console.log('oldAlpha');
+		console.log(oldAlpha);
 		ctx.globalAlpha = this.alpha;
+		console.log('globalAlpha before reverting');
 		console.log(ctx.globalAlpha);
 		ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-		ctx.restore();
+		console.log('value of oldAlpha after changing ctx.globalAlpha');
+		console.log(oldAlpha);		
+		ctx.globalAlpha = oldAlpha;
+		console.log('globalAlpha after reverting');
+		console.log(ctx.globalAlpha);
 	}
 }
 
@@ -389,7 +395,7 @@ spkr.onload = function(){ctx.drawImage(spkr, 100, 100, spkrSize, spkrSize); cons
 spkr.src = spkrSrc; 
 */
 
-var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 1.0); //spkrContainer.draw();
+var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
 
 var red = [255, 0, 0];
 var testDataPoint = new dataPoint(500, 500, red, 45); testDataPoint.draw();
@@ -441,7 +447,7 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 			else if (transitions[m].obj.constructor.name == "imgContainer"){
 				transitions[m].obj.alpha = transitions[m].obj.alpha + transitions[m].step;
 				ctx.save();				
-				ctx.globalAlpha = transitions[m].obj.alpha;
+				//ctx.globalAlpha = transitions[m].obj.alpha;
 			}			
 			//transitions[m].obj.draw();	
 			//ctx.restore();
@@ -466,7 +472,7 @@ function rgb2str(rgb){
 var transition1 = [
 {obj: pyr1, tgt: [0, 255, 0]},
 {obj: pyr2, tgt: [0, 255, 0]},
-{obj: spkrContainer, tgt: 0.5}
+{obj: spkrContainer, tgt: 1.0}
 ];
 
 
