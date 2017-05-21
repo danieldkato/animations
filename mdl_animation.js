@@ -17,8 +17,8 @@ var axonWidth = apicalWidth;
 var boutonHeight = 25;
 var boutonBase = boutonHeight / Math.sin(Math.PI/3);
 var fudge = boutonHeight * axonWidth/boutonBase; // this is to make sure that the boutons overlap with the axons properly
-
 var gap = 5; // synaptic gap
+
 var inhibitoryRadius = 40;
 var spineWidth = apicalWidth;
 var spineLength = 20;
@@ -26,23 +26,16 @@ var inhibSynLength = 30;
 var inhibSynWidth = spineWidth;
 
 var tcHorizLength = 150;
-var filterBoxSize = 150;
-
-var dataPointRadius = 10; 
-
-//var arrowWidth = filterBoxSize * 0.33;
-//var arrowLength = filterBoxSize * 0.6;
-//var arrowHeadBase = arrowHeadRatio * arrowWidth;
-//var arrowHeadLength = arrowWidth / 2 * Math.tan(Math.PI/3);
-//var arrowBodyLength = arrowLength - arrowHeadLength;
-var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
-//var arrowBodyWidth = arrowWidth / arrowHeadRatio;
-
 var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
+var filterBoxSize = 150;
 
 var spkrSize = 100;
 spkrSrc = "/home/dan/Documents/animations/speakers.png"
 //spkrSrc = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
+
+var dataPointRadius = 10; 
+var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
+
 
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
