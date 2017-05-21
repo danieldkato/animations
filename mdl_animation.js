@@ -224,7 +224,7 @@ class TC {
 	}
 
 	draw(){
-		ctx.fillStyle = rgb2str(this.rgb[0], this.rgb[1], this.rgb[2]);
+		ctx.fillStyle = rgb2str(this.rgb);
 		ctx.save();
 		ctx.translate(this.xOffset, this.yOffset);
 		
@@ -314,14 +314,8 @@ class imgContainer{
 
 	draw(){
 		var oldAlpha = ctx.globalAlpha;
-		console.log('oldAlpha');
-		console.log(oldAlpha);
 		ctx.globalAlpha = this.alpha;
-		console.log('globalAlpha before reverting');
-		console.log(ctx.globalAlpha);
 		ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-		console.log('value of oldAlpha after changing ctx.globalAlpha');
-		console.log(oldAlpha);		
 		ctx.globalAlpha = oldAlpha;
 	}
 }
@@ -341,7 +335,7 @@ var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
 
 
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, testDataPoint];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer];
 
 function animate(allTheThings){
 	for(i = 0; i < allTheThings.length; i++){
@@ -440,14 +434,10 @@ function computeColorStep(transitions, numTimeSteps){
 				step[p] = (transitions[n].tgt[p] - transitions[n].obj.rgb[p]) / numTimeSteps;
 			}
 			transitions[n].step = step;
-			console.log('color step:');
-			console.log(transitions[n].step);
 		}
 		// if the object to be tweened is an image container, compute the appropriate alpha step
 		else if(transitions[n].obj.constructor.name == "imgContainer"){
-			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps;
-			console.log('alpha step:');
-			console.log(transitions[n].step);
+			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps
 		}
 	}
 	return transitions;
@@ -465,14 +455,14 @@ var transition1 = [
 {obj: spkrContainer, tgt: 1.0}
 ];
 
+var transition2 = [
+{obj: inh1, tgt: [255, 0, 0]},
+];
+
 canvas.addEventListener('click', function respond(e){
-
-	console.log('transition1');
-	console.log(transition1);
-
-
 	colorTweenMulti(transition1, 5, 100);
 	//flash(transition1, 1, 3, 100);
+	colorTweenMulti(transition2, 5, 100);
 });
 
 
