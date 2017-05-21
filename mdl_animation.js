@@ -41,8 +41,8 @@ var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
 var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
 
 var spkrSize = 100;
-//spkrSrc = "/home/dan/Documents/animations/speakers.png"
-spkrSrc = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
+spkrSrc = "/home/dan/Documents/animations/speakers.png"
+//spkrSrc = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
 
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
@@ -127,16 +127,12 @@ class Inhibitory {
 		if ( pyr.LLx < this.ctrX ){
 			ctx.scale(-1,1);
 		}
-		//tgtSpnAngle = ;
 		ctx.rotate(-1 * this.tgtSpnAngle);
-		//ctx.translate(0, -spineWidth/2);
-		//length = .85 * Math.sqrt( Math.pow(pyr.LLx + pyramidalBase/2 - this.ctrX, 2) + Math.pow(pyr.LLy - this.ctrY, 2) );
 		ctx.fillRect(0, 0, this.tgtSpnLength, spineWidth);
 		ctx.fillRect(this.tgtSpnLength-inhibSynWidth/2, axonWidth/2 - inhibSynLength/2, inhibSynWidth, inhibSynLength);
 		ctx.rotate(this.tgtSpnAngle - 0.75 * Math.PI );
 		ctx.fillRect(0, -spineWidth/2, this.r + spineLength, spineWidth);
 		ctx.restore();
-		//console.log(Math.pow(2,2));
 	}
 }
 
@@ -162,33 +158,17 @@ class CC {
 		ctx.fillRect(this.x, this.y - axonWidth/2, Math.abs(this.origin - this.x), axonWidth);
 	}
 
-	wrapper(){
-		this.rgb = [0, 255, 0];
-		this.draw();
-	}
-
 	// duration: duration of the transformation in seconds
 	potentiate(scale, duration, numTimeSteps){
-		
 		var self = this;
 		var delay = duration/numTimeSteps * 1000;
 		var tgtHeight = this.boutonHeight * scale;
 		var step = (tgtHeight - this.boutonHeight) / numTimeSteps;
-
 		var start = new Date().getTime(); // start time in milliseconds (UNIX time)
 		
-		//self.wrapper();
-
-		//this.boutonHeight = this.boutonHeight * scale;
-		//this.draw();
-		
-		
 		var intID = setInterval(function(){
-			
 			self.boutonHeight += step;
-			//self.wrapper();
 			self.draw();
-
 			if(new Date().getTime() > start + duration * 1000){
 				clearInterval(intID);
 			}
@@ -222,9 +202,7 @@ class Arrow {
 		ctx.lineTo(this.widthTotal/2, this.lengthTotal/2 - this.arrowBodyLength);
 		ctx.lineTo(0, -this.lengthTotal/2);
 		ctx.fill();
-		console.log('arrow drawn');
 		ctx.restore();
-
 	}
 }
 
@@ -292,12 +270,6 @@ class TC {
 		// draw lower horizontal branch
 		ctx.fillStyle = rgb2str(this.rgb);		
 		ctx.fillRect(0, tcVertLength - axonWidth * 1.5, tcHorizLength, axonWidth); 
-		
-		/*
-		// draw continuation of vertical branch
-		ctx.fillRect(tcHorizLength, tcVertLength - axonWidth/2 + filterBoxSize, axonWidth, tcVertLength);
-		*/
-
 		ctx.restore();
 	}
 } 
@@ -342,7 +314,6 @@ class imgContainer{
 		this.width = width;
 		this.height = height;
 		this.alpha = alpha;
-		//this.draw();
 		var self = this;
 		this.img.onload = function(){self.draw();};	
 		this.img.src = src;
@@ -362,14 +333,6 @@ class imgContainer{
 	}
 }
 
-class Speaker{
-	constructor(x, y){
-		this.x = x;
-		this.y = y;
-		this.alpha = alpha;
-	}
-}
-
 var pyr1 = new Pyramidal(width/5, height/3 + pyramidalHeight/2); pyr1.draw();
 var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); pyr2.draw();
 var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr2); inh1.draw(); //inh1.target(pyr2);
@@ -382,20 +345,8 @@ var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyra
 var tc1 = new TC(pyr1, 90, "left"); tc1.draw();
 var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 
-//spkr.src = "/home/dan/Documents/animations/speakers.png"
-//var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 1.0); spkrContainer.draw();
-//spkr.onload = function(){spkrContainer.draw()};
-
-/*
-var spkr = new Image();
-spkr.onload = function(){ctx.drawImage(spkr, 100, 100, spkrSize, spkrSize); console.log('image loaded')};
-spkr.src = spkrSrc; 
-*/
-
 var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
 
-var red = [255, 0, 0];
-var testDataPoint = new dataPoint(500, 500, red, 45); testDataPoint.draw();
 
 var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, testDataPoint];
 
@@ -429,15 +380,10 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 	for (var t = 0; t < transitions.length; t++){
 		if (transitions[t].obj.constructor.name != "imgContainer"){
 			reverseTransitions[t].tgt = transitions[t].obj.rgb;
-			console.log("reverse transition rgb")
-			console.log(reverseTransitions[t].tgt);
 		} else if (transitions[t].obj.constructor.name == "imgContainer"){
 			reverseTransitions[t].tgt = transitions[t].obj.alpha;
 		}
 	}
-
-	console.log(" flash: reverseTransitions:");
-	console.log(reverseTransitions);
 
 	// tween back and forth for the number of specified times
 	/*
@@ -532,8 +478,8 @@ canvas.addEventListener('click', function respond(e){
 	console.log(transition1);
 
 
-	//colorTweenMulti(transition1, 5, 100);
-	flash(transition1, 1, 3, 100);
+	colorTweenMulti(transition1, 5, 100);
+	//flash(transition1, 1, 3, 100);
 });
 
 
