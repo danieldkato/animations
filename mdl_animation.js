@@ -348,14 +348,14 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 	// numTimes: number of times to perform the color/alpha transformations and reverse them
 	// duration: duration of each color/alpha transformation in seconds
 	// numSteps: number of discrete animation steps per transformation
-
-	// create an object array representing the reverse transition:
 	
 	console.log(" flash: transitions:");
 	console.log(transitions);
 	
-	var reverseTransitions = JSON.parse(JSON.stringify(transitions)); 
-	/* Simple assignment ("=") of an array in Javascript does NOT create a copy of that 
+	// Initialize an object array representing the reverse transition by creating a 'deep copy' of the original transitions array:
+	var reverseTransitions = JSON.parse(JSON.stringify(transitions));	
+	
+	/* IMPORTANT NOTE: simple assignment ("=") of an array in Javascript does NOT create a copy of that 
 	array - it creates a reference!! I.e., if you set 
 	
 		var reverseTranstion = transitions
@@ -363,22 +363,24 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 	then any changes you make to reversetransitions will also be made to transitions! 
 	Moreover the common methods for copying arrays - slice() and concat() - do NOT 
 	work when the elements of the array are objects! This JSON.parse(JSON.stringify()) 
-	trick appears to be necessary */ 
+	trick appears to be necessary */  
+
 	for (var t = 0; t < transitions.length; t++){
+		reverseTransitions[t].obj = transitions[t].obj;
 		if (transitions[t].obj.constructor.name != "imgContainer"){
-			reverseTransitions[t].tgt = transitions[t].obj.rgb;
+			reverseTransitions[t].tgt = transitions[t].obj.rgb.slice();
 		} else if (transitions[t].obj.constructor.name == "imgContainer"){
 			reverseTransitions[t].tgt = transitions[t].obj.alpha;
 		}
 	}
 
 	// tween back and forth for the number of specified times
-	/*
 	for(var n = 0; n < numTimes; n++){
+		console.log('fwd');
 		colorTweenMulti(transitions, duration, numTimeSteps);
-		colorTweenMulti(reverseTransitions, duration, numTimeSteps);
+		console.log('reverse');
+		var tmr = setTimeout(function(){colorTweenMulti(reverseTransitions, duration, numTimeSteps);}, duration*1000);
 	}
-	*/
 }
 
 function colorTweenMulti(transitions, dur, numTimeSteps){
@@ -439,13 +441,19 @@ function computeColorStep(transitions, numTimeSteps){
 		else if(transitions[n].obj.constructor.name == "imgContainer"){
 			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps
 		}
+	console.log('transition item:');
+	console.log(n);
+	console.log('obj');
+	console.log(transitions[n].obj);	
+	console.log('step');
+	console.log(transitions[n].step);	
 	}
 	return transitions;
 }
 
 function rgb2str(rgb){
 	colorStr = colorBaseStr.concat(String(Math.floor(rgb[0])), ',', String(Math.floor(rgb[1])), ',', String(Math.floor(rgb[2])), ')');
-	console.log(colorStr);
+	//console.log(colorStr);
 	return colorStr;
 }
 
@@ -460,9 +468,9 @@ var transition2 = [
 ];
 
 canvas.addEventListener('click', function respond(e){
-	colorTweenMulti(transition1, 5, 100);
-	//flash(transition1, 1, 3, 100);
-	colorTweenMulti(transition2, 5, 100);
+	//colorTweenMulti(transition1, 5, 100);
+	//var tmr = setTimeout(function(){colorTweenMulti(transition2, 5, 100);}, 5000);
+	flash(transition1, 1, 3, 100);
 });
 
 
