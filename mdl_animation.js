@@ -467,7 +467,7 @@ function computeColorStep(transitions, numTimeSteps){
 			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps
 		}
 	//console.log('obj'.concat(String(n), ':'));
-	console.log(transitions[n].obj);	
+	console.log(transitions[n].obj.rgb);	
 	//console.log('step:');
 	console.log(transitions[n].step);	
 	}
