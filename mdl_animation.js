@@ -354,7 +354,7 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 	console.log(" flash: transitions:");
 	console.log(transitions);
 	
-	// Record the original state of the objects to be tweened:
+	// record the original color/alpha state of the objects to be tweened:
 	var originals = new Array(transitions.length);
 	for (var m = 0; m < transitions.length; m++){
 		if (transitions[m].obj.constructor.name != 'imgContainer'){
@@ -389,7 +389,7 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 	console.log(" flash: reverseTransitions");
 	console.log(reverseTransitions);
 
-	var it = 0;
+	var it = 0; // for debugging messages
 
 	// tween back and forth for the number of specified times
 	for(var n = 0; n < numTimes; n++){
@@ -404,7 +404,18 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 		console.log('delay = '.concat(String( 1000*duration*(2*n+1) )));
 	}
 
-	// ensure that the color of the objects goes back 
+	// after the flashing is complete, ensure that the color of each tweened object goes back EXACTLY to its original color
+	var tmr3 = setTimeout(function(){
+		for(var p = 0; p < transitions.length; p++){
+			if (transitions[p].obj.constructor.name != 'imgContainer'){
+				transitions[p].obj.rgb = originals[p];
+			} else if (transitions[p].obj.constructor.name == "imgContainer"){
+				transitions[p].obj.alpha = originals[p];
+			}
+		}
+		animate(allObjects);
+	}, totalDuration) 
+
 
 }
 
