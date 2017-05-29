@@ -502,14 +502,19 @@ var transition2 = [
 ];
 
 
-function flashWrapper(){
-	canvas.removeEventListener('click', flashWrapper);
+function step1(){
+	canvas.removeEventListener('click', step1);
 	flash(transition1, 2, 3, 100);
-	var tmr3 = setTimeout( function(){ canvas.addEventListener('click', flashWrapper); } , (2*2*3*1000) + 50);
+	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (2*2*3*1000) + 50);
+	var tmr4 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (2*2*3*1000) + 50);
+}
+
+function step2(){
+	step1();
 }
 
 
-canvas.addEventListener('click', flashWrapper);
+canvas.addEventListener('click', step1);
 
 /*
 canvas.addEventListener('click', function respond(e){
