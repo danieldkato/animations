@@ -349,9 +349,21 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 	// duration: duration of each color/alpha transformation in seconds
 	// numSteps: number of discrete animation steps per transformation
 	
+	var totalDuration = 2*duration*1000*numTimes; // each cycle consists of 2 transitions; each transition is `duration` seconds long; multiply by 1000 to get duration of each cycle in milliseconds; there are `numTimes` cycles over the course of the flash   
+	
 	console.log(" flash: transitions:");
 	console.log(transitions);
 	
+	// Record the original state of the objects to be tweened:
+	var originals = new Array(transitions.length);
+	for (var m = 0; m < transitions.length; m++){
+		if (transitions[m].obj.constructor.name != 'imgContainer'){
+			originals[m] = transitions[m].obj.rgb.slice();
+		} else if (transitions[m].obj.constructor.name == "imgContainer"){
+			originals[m] = transitions[m].obj.alpha;
+		}
+	}
+
 	// Initialize an object array representing the reverse transition by creating a 'deep copy' of the original transitions array:
 	var reverseTransitions = JSON.parse(JSON.stringify(transitions));	
 	
@@ -374,19 +386,26 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 		}
 	}
 
+	console.log(" flash: reverseTransitions");
+	console.log(reverseTransitions);
+
+	var it = 0;
+
 	// tween back and forth for the number of specified times
 	for(var n = 0; n < numTimes; n++){
-		console.log('iteration:')
-		console.log(n);
-		console.log('fwd');
+		//console.log('iteration:')
+		//console.log(n);
 		// colorTweenMulti(transitions, duration, numTimeSteps);
-		var tmr1 = setTimeout(function(){colorTweenMulti(transitions, duration, numTimeSteps);}, n*2*duration*1000);
+		var tmr1 = setTimeout(function(){console.log('iteration '.concat(String(it), ' fwd:')); colorTweenMulti(transitions, duration, numTimeSteps);}, (n*2*duration*1000));
 		console.log('delay = '.concat(String(2*n*duration*1000)));	
-		console.log('reverse');
+		//console.log('reverse');
 		// var tmr = setTimeout(function(){colorTweenMulti(reverseTransitions, duration, numTimeSteps);}, duration*1000);
-		var tmr2 = setTimeout(function(){colorTweenMulti(reverseTransitions, duration, numTimeSteps);}, 1000*duration * (2*n + 1));
+		var tmr2 = setTimeout(function(){console.log('iteration '.concat(String(it), ' reverse:'));colorTweenMulti(reverseTransitions, duration, numTimeSteps);it++}, (1000*duration * (2*n + 1)));
 		console.log('delay = '.concat(String( 1000*duration*(2*n+1) )));
 	}
+
+	// ensure that the color of the objects goes back 
+
 }
 
 function colorTweenMulti(transitions, dur, numTimeSteps){
@@ -447,11 +466,9 @@ function computeColorStep(transitions, numTimeSteps){
 		else if(transitions[n].obj.constructor.name == "imgContainer"){
 			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps
 		}
-	console.log('transition item:');
-	console.log(n);
-	console.log('obj');
+	//console.log('obj'.concat(String(n), ':'));
 	console.log(transitions[n].obj);	
-	console.log('step');
+	//console.log('step:');
 	console.log(transitions[n].step);	
 	}
 	return transitions;
@@ -477,7 +494,7 @@ var transition2 = [
 function flashWrapper(){
 	canvas.removeEventListener('click', flashWrapper);
 	flash(transition1, 2, 3, 100);
-	var tmr3 = setTimeout( function(){ canvas.addEventListener('click', flashWrapper); } , (2*2*3*1000) + 20);
+	var tmr3 = setTimeout( function(){ canvas.addEventListener('click', flashWrapper); } , (2*2*3*1000) + 50);
 }
 
 
