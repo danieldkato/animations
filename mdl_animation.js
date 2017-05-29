@@ -473,12 +473,26 @@ var transition2 = [
 {obj: inh1, tgt: [255, 0, 0]},
 ];
 
+
+function flashWrapper(){
+	canvas.removeEventListener('click', flashWrapper);
+	flash(transition1, 2, 3, 100);
+	var tmr3 = setTimeout( function(){ canvas.addEventListener('click', flashWrapper); } , (2*2*3*1000) + 20);
+}
+
+
+canvas.addEventListener('click', flashWrapper);
+
+/*
 canvas.addEventListener('click', function respond(e){
 	//colorTweenMulti(transition1, 5, 100);
 	//var tmr = setTimeout(function(){colorTweenMulti(transition2, 5, 100);}, 5000);
-	flash(transition1, 2, 3, 100);
+	//canvas.addEventListener('click', function respond(e){});	
+	//flash(transition1, 2, 3, 100);
+	//var tmr3 = setTimeout(function(){ canvas.addEventListener('click', function respond(e){flash(transition1, 2, 3, 100)} ); }, 2*2*3*1000);
 });
 
+*/
 
 /*
 canvas.addEventListener('click', function respond(e){
