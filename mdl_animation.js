@@ -338,6 +338,7 @@ var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 
 var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer];
 
 function animate(allTheThings){
+	ctx.clearRect(0, 0, width, height);	
 	for(i = 0; i < allTheThings.length; i++){
 		allTheThings[i].draw();
 	}
@@ -453,7 +454,6 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 			//ctx.restore();
 		}
 
-		ctx.clearRect(0, 0, width, height);
 		animate(allObjects);
 
 		if (new Date().getTime() > start + dur * 1000){
