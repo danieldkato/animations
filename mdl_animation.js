@@ -376,10 +376,16 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 
 	// tween back and forth for the number of specified times
 	for(var n = 0; n < numTimes; n++){
+		console.log('iteration:')
+		console.log(n);
 		console.log('fwd');
-		colorTweenMulti(transitions, duration, numTimeSteps);
+		// colorTweenMulti(transitions, duration, numTimeSteps);
+		var tmr1 = setTimeout(function(){colorTweenMulti(transitions, duration, numTimeSteps);}, n*2*duration*1000);
+		console.log('delay = '.concat(String(2*n*duration*1000)));	
 		console.log('reverse');
-		var tmr = setTimeout(function(){colorTweenMulti(reverseTransitions, duration, numTimeSteps);}, duration*1000);
+		// var tmr = setTimeout(function(){colorTweenMulti(reverseTransitions, duration, numTimeSteps);}, duration*1000);
+		var tmr2 = setTimeout(function(){colorTweenMulti(reverseTransitions, duration, numTimeSteps);}, 1000*duration * (2*n + 1));
+		console.log('delay = '.concat(String( 1000*duration*(2*n+1) )));
 	}
 }
 
@@ -470,7 +476,7 @@ var transition2 = [
 canvas.addEventListener('click', function respond(e){
 	//colorTweenMulti(transition1, 5, 100);
 	//var tmr = setTimeout(function(){colorTweenMulti(transition2, 5, 100);}, 5000);
-	flash(transition1, 1, 3, 100);
+	flash(transition1, 2, 3, 100);
 });
 
 
