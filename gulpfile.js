@@ -7,7 +7,7 @@ gulp.task('default', function(){
 });
 
 gulp.task('build', function(){
-	return gulp.src(['AnimationClasses.js', 'mdl_animation2.js'])
+	return gulp.src(['AnimationClasses.js', 'mdl_animation.js'])
 		.pipe(concat('mdl_animation.js'))
 		.pipe(gulp.dest('build'))
 });
