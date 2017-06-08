@@ -314,6 +314,23 @@ class Axes {
 }
 
 
+class Rectangle {
+	constructor(x, y, width, height){
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height
+		this.rgb = [185, 185, 185, 1.0];
+	}
+
+	draw(){
+		ctx.fillStyle = rgb2str(this.rgb);
+		ctx.fillRect(this.x, this.y, this.width, this.height);
+	}
+}
+
+
+
 class dataPoint {
 	// x: x-coordinate of center of datapoint
 	// y: y-coordinate of center of datapoint
@@ -459,11 +476,21 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 
 	var delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
 
+	// for debugging purposes, get the original color or alpha of every object to be tweened
+	for (var n = 0; n <transitions.length; n++){
+		if (transitions[n].obj.constructor.name != "imgContainer"){
+			transitions[n].original = transitions[n].obj.rgb.slice();
+		}
+		else if (transitions[n].obj.constructor.name == "imgContainer"){
+			transitions[n].original = transitions[m].obj.alpha;
+		}		
+	}
+
 	// for each object to be tweened, compute the appropriate color or alpha steps
-	var transitions = computeColorStep(transitions, numTimeSteps);
-	console.log('Transitions:');
+	console.log('colorTweenMulti::transitions:');
 	console.log(transitions);
-	
+	var transitions = computeColorStep(transitions, numTimeSteps);	
+
 
 	// over the course of tween period, update properties of all objects to be tweened
 	var start = new Date().getTime()
@@ -492,6 +519,15 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 		animate(allObjects);
 
 		if (new Date().getTime() > start + dur * 1000){
+			// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
+			for (var p = 0; p < transitions.length; p++){
+				console.log('transition element #'.concat(String(p), ':'));
+				console.log('	obj: '.concat(transitions[p].obj.constructor.name));
+				console.log('	starting color: '.concat(rgb2str(transitions[p].original.slice())));		
+				console.log('	target color: '.concat(rgb2str(transitions[p].tgt.slice())));
+				console.log('	step:'.concat(rgb2str(transitions[p].step.slice())));
+				console.log('	final color: '.concat(rgb2str(transitions[p].obj.rgb.slice())));
+			}
 			clearInterval(intId);
 		}
 
@@ -512,11 +548,7 @@ function computeColorStep(transitions, numTimeSteps){
 		// if the object to be tweened is an image container, compute the appropriate alpha step
 		else if(transitions[n].obj.constructor.name == "imgContainer"){
 			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps
-		}
-	//console.log('obj'.concat(String(n), ':'));
-	console.log(transitions[n].obj.rgb.slice());	
-	//console.log('step:');
-	console.log(transitions[n].step.slice());	
+		}	
 	}
 	return transitions;
 }
