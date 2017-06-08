@@ -116,7 +116,7 @@ function step1(){
 	// prepare arrow that will be drawn in input box
 	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
 	vertInput.rgb = [185, 185, 185, 0.0]; // initialize alpha to 0 
-	vertInput.draw();	
+	//vertInput.draw();	
 	allObjects.push(vertInput);
 
 	// define the transition structure
