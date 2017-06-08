@@ -29,9 +29,13 @@ var transition2 = [
 
 function step1(){
 	canvas.removeEventListener('click', step1);
-	flash(transition1, 2, 3, 100);
-	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (2*2*3*1000) + 50);
-	var tmr4 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (2*2*3*1000) + 50);
+	numCycles = 2;
+	halfCycleDur = 0.25;
+	numStepsPerCycle = 100;
+	flash(transition1, numCycles, halfCycleDur, numStepsPerCycle);
+	totalDur = numCycles * 2 * halfCycleDur * 1000;
+	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (totalDur) + 50);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (totalDur) + 50);
 }
 
 function step2(){
