@@ -5,7 +5,7 @@ var height = canvas.height;
 var ctx = canvas.getContext('2d');
 
 // define miscellaneous constants that will be useful later
-var colorBaseStr = 'rgb(';
+var colorBaseStr = 'rgba(';
 var step = new Array(3);
 
 // define constants for drawing pyramidals
@@ -58,7 +58,7 @@ class Pyramidal {
 	constructor(x, y){
 		this.LLx = x;
 		this.LLy = y;
-		this.rgb = [185, 185, 185];
+		this.rgb = [185, 185, 185, 1.0];
 	}
 
 	draw(){
@@ -95,7 +95,7 @@ class Inhibitory {
 		this.ctrY = y;
 		this.pyr = pyr;
 		this.r = inhibitoryRadius;
-		this.rgb = [185, 185, 185];
+		this.rgb = [185, 185, 185, 1.0];
 		
 		if( x < pyr.LLx ){
 			this.tgtX = pyr.LLx + pyramidalBase * 0.25;
@@ -153,7 +153,7 @@ class CC {
 		this.y = y;
 		this.boutonHeight = boutonHeight;
 		this.origin = origin;
-		this.rgb = [185, 185, 185]; 	
+		this.rgb = [185, 185, 185, 1.0]; 	
 	}
 
 	draw(){
@@ -197,7 +197,7 @@ class Arrow {
 		this.arrowHeadLength = this.widthTotal / 2 * Math.tan(Math.PI/3);
 		this.arrowBodyLength = this.lengthTotal - this.arrowHeadLength;
 		this.arrowBodyWidth = this.widthTotal / arrowHeadRatio;
-		this.color = [185, 185, 185];
+		this.color = [185, 185, 185, 1.0];
 	}
 
 	// draws arrow with the origin in the center
@@ -223,7 +223,7 @@ class TC {
 	// lr: whether the axon should target the left side or the right side of the targeted pyramidal cell
 	constructor(pyr, preferredStim, lr){
 		this.pyr = pyr;
-		this.rgb = [185, 185, 185];
+		this.rgb = [185, 185, 185, 1.0];
 		this.yOffset = pyr.LLy - pyramidalHeight - gap; // the y-coordinate of the of the TC bouton horizontal midline
 		this.lr = lr;
 		if (lr === "right"){
@@ -463,7 +463,7 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 
 			// if the object to tween is a vector graphics object, update its rgb triple		
 			if (transitions[m].obj.constructor.name != "imgContainer"){
-				for (var k = 0; k <3; k++){
+				for (var k = 0; k <4; k++){
 					transitions[m].obj.rgb[k] = transitions[m].obj.rgb[k] + transitions[m].step[k];
 				}
 			}			
@@ -493,7 +493,7 @@ function computeColorStep(transitions, numTimeSteps){
 		// if the object to be tweened is a vector graphic object, compute the appropriate color steps 		
 		if(transitions[n].obj.constructor.name != "imgContainer"){			
 			// do this for each color channel			
-			for(var p = 0; p < 3; p++){
+			for(var p = 0; p < 4; p++){
 				step[p] = (transitions[n].tgt[p] - transitions[n].obj.rgb[p]) / numTimeSteps;
 			}
 			transitions[n].step = step;
@@ -512,7 +512,7 @@ function computeColorStep(transitions, numTimeSteps){
 
 
 function rgb2str(rgb){
-	colorStr = colorBaseStr.concat(String(Math.floor(rgb[0])), ',', String(Math.floor(rgb[1])), ',', String(Math.floor(rgb[2])), ')');
+	colorStr = colorBaseStr.concat(String(Math.floor(rgb[0])), ',', String(Math.floor(rgb[1])), ',', String(Math.floor(rgb[2])), ',', String(rgb[3]), ')');
 	//console.log(colorStr);
 	return colorStr;
 }
@@ -568,7 +568,7 @@ var inputBox = {
 	size: inputBoxSize,
 	ULx: midpoint - inputBoxSize/2,
 	ULy: pyr1.LLy - pyramidalHeight + tcVertLength - inputBoxSize/2, 
-	rgb: [185, 185, 185],
+	rgb: [185, 185, 185, 1],
 
 	draw: function(){
 		ctx.save();
@@ -594,37 +594,39 @@ var transition2 = [
 ];
 
 
-function step1(){
-	canvas.removeEventListener('click', step1);
+function testStep1(){
+	canvas.removeEventListener('click', testStep1);
 	var numCycles = 2;
 	var halfCycleDur = 0.25;
 	var numStepsPerCycle = 100;
-	var transition1 = [{obj: pyr1, tgt: [0, 255, 0]},
-			   {obj: pyr2, tgt: [0, 255, 0]},
+	var transition1 = [{obj: pyr1, tgt: [0, 255, 0, 1.0]},
+			   {obj: pyr2, tgt: [0, 255, 0, 1.0]},
 			   {obj: spkrContainer, tgt: 1.0}
 			  ];
 	flash(transition1, numCycles, halfCycleDur, numStepsPerCycle);
 	var totalDur = numCycles * 2 * halfCycleDur * 1000;
 	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (totalDur) + 50);
-	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (totalDur) + 50);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep2); } , (totalDur) + 50);
 }
 
-function step2(){
-	canvas.removeEventListener('click', step2);
+function testStep2(){
+	canvas.removeEventListener('click', testStep2);
 	var duration = 2;
-	d1 = new dataPoint(width/2, height/2, [185, 185, 185], 45); // var keyword must be omitted here to make d1 a global variable
-	var transition2 = [{obj:d1, tgt: [0, 255, 0]}];
+	d1 = new dataPoint(width/2, height/2, [185, 185, 185, 1.0], 45); // var keyword must be omitted here to make d1 a global variable
+	var transition2 = [{obj:d1, tgt: [0, 255, 0, 1, 1.0]}];
 	allObjects.push(d1);
 	colorTweenMulti(transition2, duration, 100);
-	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step3); } , (duration) + 50);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep3); } , (duration) + 50);
 }
 
-function step3(){
-	canvas.removeEventListener('click', step3);
+function testStep3(){
+	canvas.removeEventListener('click', testStep3);
 	var duration = 2;
-	var transition3 = [{obj:d1, tgt: [255, 0, 0]}];
+	var transition3 = [{obj:d1, tgt: [255, 0, 0, 1.0]}];
 	colorTweenMulti(transition3, duration, 100);
 }
 
 
-canvas.addEventListener('click', step1);
+
+
+canvas.addEventListener('click', testStep1);

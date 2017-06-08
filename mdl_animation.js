@@ -74,8 +74,8 @@ var transition2 = [
 ];
 
 
-function step1(){
-	canvas.removeEventListener('click', step1);
+function testStep1(){
+	canvas.removeEventListener('click', testStep1);
 	var numCycles = 2;
 	var halfCycleDur = 0.25;
 	var numStepsPerCycle = 100;
@@ -86,25 +86,27 @@ function step1(){
 	flash(transition1, numCycles, halfCycleDur, numStepsPerCycle);
 	var totalDur = numCycles * 2 * halfCycleDur * 1000;
 	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (totalDur) + 50);
-	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (totalDur) + 50);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep2); } , (totalDur) + 50);
 }
 
-function step2(){
-	canvas.removeEventListener('click', step2);
+function testStep2(){
+	canvas.removeEventListener('click', testStep2);
 	var duration = 2;
 	d1 = new dataPoint(width/2, height/2, [185, 185, 185, 1.0], 45); // var keyword must be omitted here to make d1 a global variable
 	var transition2 = [{obj:d1, tgt: [0, 255, 0, 1, 1.0]}];
 	allObjects.push(d1);
 	colorTweenMulti(transition2, duration, 100);
-	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step3); } , (duration) + 50);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep3); } , (duration) + 50);
 }
 
-function step3(){
-	canvas.removeEventListener('click', step3);
+function testStep3(){
+	canvas.removeEventListener('click', testStep3);
 	var duration = 2;
 	var transition3 = [{obj:d1, tgt: [255, 0, 0, 1.0]}];
 	colorTweenMulti(transition3, duration, 100);
 }
 
 
-canvas.addEventListener('click', step1);
+
+
+canvas.addEventListener('click', testStep1);
