@@ -280,6 +280,7 @@ class TC {
 		ctx.save();
 		ctx.translate(this.arrowCtrX , this.arrowCtrY);
 		ctx.rotate(this.preferredStim/360 * 2 * Math.PI);
+		this.arrow.rgb = this.rgb;
 		this.arrow.draw();
 		ctx.restore();
 
