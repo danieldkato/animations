@@ -300,11 +300,13 @@ class Axes {
 		this.yOrig = yOrig;
 		this.xLength = xLength;
 		this.yLength = yLength;
+		this.rgb = [185, 185, 185, 1.0];
 	}
 
 	draw(){
 		ctx.save();
 		ctx.translate(this.xOrig, this.yOrig);
+		ctx.fillStyle = rgb2str(this.rgb);
 		ctx.fillRect(0, 0, this.xLength, axisThickness);
 		ctx.fillRect(0, 0, axisThickness, -this.yLength);	
 		ctx.restore();
