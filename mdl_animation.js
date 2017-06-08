@@ -48,7 +48,7 @@ var inputBox = {
 	size: inputBoxSize,
 	ULx: midpoint - inputBoxSize/2,
 	ULy: pyr1.LLy - pyramidalHeight + tcVertLength - inputBoxSize/2, 
-	rgb: [185, 185, 185],
+	rgb: [185, 185, 185, 1],
 
 	draw: function(){
 		ctx.save();
@@ -79,8 +79,8 @@ function step1(){
 	var numCycles = 2;
 	var halfCycleDur = 0.25;
 	var numStepsPerCycle = 100;
-	var transition1 = [{obj: pyr1, tgt: [0, 255, 0]},
-			   {obj: pyr2, tgt: [0, 255, 0]},
+	var transition1 = [{obj: pyr1, tgt: [0, 255, 0, 1.0]},
+			   {obj: pyr2, tgt: [0, 255, 0, 1.0]},
 			   {obj: spkrContainer, tgt: 1.0}
 			  ];
 	flash(transition1, numCycles, halfCycleDur, numStepsPerCycle);
@@ -92,8 +92,8 @@ function step1(){
 function step2(){
 	canvas.removeEventListener('click', step2);
 	var duration = 2;
-	d1 = new dataPoint(width/2, height/2, [185, 185, 185], 45); // var keyword must be omitted here to make d1 a global variable
-	var transition2 = [{obj:d1, tgt: [0, 255, 0]}];
+	d1 = new dataPoint(width/2, height/2, [185, 185, 185, 1.0], 45); // var keyword must be omitted here to make d1 a global variable
+	var transition2 = [{obj:d1, tgt: [0, 255, 0, 1, 1.0]}];
 	allObjects.push(d1);
 	colorTweenMulti(transition2, duration, 100);
 	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step3); } , (duration) + 50);
@@ -102,7 +102,7 @@ function step2(){
 function step3(){
 	canvas.removeEventListener('click', step3);
 	var duration = 2;
-	var transition3 = [{obj:d1, tgt: [255, 0, 0]}];
+	var transition3 = [{obj:d1, tgt: [255, 0, 0, 1.0]}];
 	colorTweenMulti(transition3, duration, 100);
 }
 
