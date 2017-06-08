@@ -1,17 +1,20 @@
+// get basic canvas variables
 var canvas = document.getElementById('canvas');
 var width = canvas.width;
 var height = canvas.height;
 var ctx = canvas.getContext('2d');
 
+// define miscellaneous constants that will be useful later
 var colorBaseStr = 'rgb(';
 var step = new Array(3);
 
+// define constants for drawing pyramidals
 var pyramidalHeight = 100;
 var pyramidalBase = pyramidalHeight / Math.sin(Math.PI/3);
-
 var apicalHeight = height/5;
 var apicalWidth = 10;
 
+// define constants for drawing axons
 var axonLength = height/5;
 var axonWidth = apicalWidth;
 var boutonHeight = 25;
@@ -19,22 +22,32 @@ var boutonBase = boutonHeight / Math.sin(Math.PI/3);
 var fudge = boutonHeight * axonWidth/boutonBase; // this is to make sure that the boutons overlap with the axons properly
 var gap = 5; // synaptic gap
 
+// define constants for drawing inhibitory neurons
 var inhibitoryRadius = 40;
 var spineWidth = apicalWidth;
 var spineLength = 20;
 var inhibSynLength = 30;
 var inhibSynWidth = spineWidth;
 
+// define constants for drawing thalamocortical axons
 var tcHorizLength = 150;
 var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
 var filterBoxSize = 150;
 
+// define constants for drawing axes
+var ssAxisLength = width/4;
+var axisThickness = 3;
+
+
+// define constants for rendering speaker
 var spkrSize = 100;
 spkrSrc = "/home/dan/Documents/animations/speakers.png"
 //spkrSrc = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
 
+// define constants for drawing datapoints
 var dataPointRadius = 10; 
 var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
+
 
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
@@ -128,6 +141,7 @@ class Inhibitory {
 	}
 }
 
+
 class CC {
 	// x: x-coordinate of distal edge of bouton
 	// y: y-coordinate of midline of axon
@@ -167,6 +181,7 @@ class CC {
 		}, delay)	
 	}
 }
+
 
 class Arrow {
 	constructor(length, width, angle){
@@ -267,6 +282,26 @@ class TC {
 } 
 
 
+class Axes {
+	// xOrig: x-coordinate of origin of axes
+	// yOrig: y-coordinate of origin of axes	
+	constructor(xOrig, yOrig, xLength, yLength){
+		this.xOrig = xOrig;
+		this.yOrig = yOrig;
+		this.xLength = xLength;
+		this.yLength = yLength;
+	}
+
+	draw(){
+		ctx.save();
+		ctx.translate(this.xOrig, this.yOrig);
+		ctx.fillRect(0, 0, this.xLength, axisThickness);
+		ctx.fillRect(0, 0, axisThickness, -this.yLength);	
+		ctx.restore();
+	}
+}
+
+
 class dataPoint {
 	// x: x-coordinate of center of datapoint
 	// y: y-coordinate of center of datapoint
@@ -319,12 +354,14 @@ class imgContainer{
 	}
 }
 
+
 function animate(allTheThings){
 	ctx.clearRect(0, 0, width, height);	
 	for(i = 0; i < allTheThings.length; i++){
 		allTheThings[i].draw();
 	}
 }
+
 
 function flash(transitions, numTimes, duration, numTimeSteps){
 	// transitions: color/alpha transformations to make
@@ -402,6 +439,7 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 
 }
 
+
 function colorTweenMulti(transitions, dur, numTimeSteps){
 	// transitions: object array describing color/alpha transitions to make
 	// dur: total duration of transition in seconds
@@ -445,6 +483,7 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 	}, delay);
 }
 
+
 function computeColorStep(transitions, numTimeSteps){
 	for (var n = 0; n < transitions.length; n++){	
 		// if the object to be tweened is a vector graphic object, compute the appropriate color steps 		
@@ -467,6 +506,7 @@ function computeColorStep(transitions, numTimeSteps){
 	return transitions;
 }
 
+
 function rgb2str(rgb){
 	colorStr = colorBaseStr.concat(String(Math.floor(rgb[0])), ',', String(Math.floor(rgb[1])), ',', String(Math.floor(rgb[2])), ')');
 	//console.log(colorStr);
@@ -475,28 +515,50 @@ function rgb2str(rgb){
 
 
 
-
+// draw pyramidals
 var pyr1 = new Pyramidal(width/5, height/3 + pyramidalHeight/2); pyr1.draw();
 var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); pyr2.draw();
+
+// draw inhibitory neurons
 var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr2); inh1.draw(); //inh1.target(pyr2);
 var inh2 = new Inhibitory(pyr2.LLx + pyramidalBase/2, pyr2.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr1); inh2.draw(); //inh2.target(pyr1);
 
+// draw corticocorticals
 var ccOrigin = pyr2.LLx + pyramidalBase + 200; // x-coordinate of where the cortico-coritcals originate from
 var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .75, ccOrigin); cc1.draw();
 var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.draw();
 
+// draw thalamocorticals
 var tc1 = new TC(pyr1, 90, "left"); tc1.draw();
 var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 
+// render speaker png
 var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
 
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer];
+// define and draw state space axes
+var stateSpaceAxes = new Axes(width/2, height/2 + ssAxisLength/2, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
 
-var transition1 = [
-{obj: pyr1, tgt: [0, 255, 0]},
-{obj: pyr2, tgt: [0, 255, 0]},
-{obj: spkrContainer, tgt: 1.0}
-];
+/*
+var stateSpaceAxes = {
+,
+	axisThickness: 3,
+	originX: width/2,
+	originY: height/2 + this.axisLength/2,
+	
+	draw: function(){
+		ctx.save();
+		ctx.translate(this.originX, this.originY);
+		ctx.fillRect(0, 0, this.axisLength, this.axisThickness);
+		ctx.fillRect(0, 0, this.axisThickness, -this.axisLength);
+		ctx.restore();
+	}
+	
+}
+*/
+
+// assemble objects into array
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes];
+
 
 var transition2 = [
 {obj: inh1, tgt: [255, 0, 0]},
@@ -505,13 +567,27 @@ var transition2 = [
 
 function step1(){
 	canvas.removeEventListener('click', step1);
-	flash(transition1, 2, 3, 100);
-	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (2*2*3*1000) + 50);
-	var tmr4 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (2*2*3*1000) + 50);
+	var numCycles = 2;
+	var halfCycleDur = 0.25;
+	var numStepsPerCycle = 100;
+	var transition1 = [{obj: pyr1, tgt: [0, 255, 0]},
+			   {obj: pyr2, tgt: [0, 255, 0]},
+			   {obj: spkrContainer, tgt: 1.0}
+			  ];
+	flash(transition1, numCycles, halfCycleDur, numStepsPerCycle);
+	var totalDur = numCycles * 2 * halfCycleDur * 1000;
+	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (totalDur) + 50);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (totalDur) + 50);
 }
 
 function step2(){
-	step1();
+	canvas.removeEventListener('click', step1);
+	var duration = 2;
+	var d1 = new dataPoint(x, y, 45);
+	var transition2 = [{obj:d1, tgt: [0, 255, 0]}];
+	allObjects.push(d1);
+	colorTweenMulti(transition2, duration, 100);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (duration) + 50);
 }
 
 canvas.addEventListener('click', step1);

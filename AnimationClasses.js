@@ -1,17 +1,20 @@
+// get basic canvas variables
 var canvas = document.getElementById('canvas');
 var width = canvas.width;
 var height = canvas.height;
 var ctx = canvas.getContext('2d');
 
+// define miscellaneous constants that will be useful later
 var colorBaseStr = 'rgb(';
 var step = new Array(3);
 
+// define constants for drawing pyramidals
 var pyramidalHeight = 100;
 var pyramidalBase = pyramidalHeight / Math.sin(Math.PI/3);
-
 var apicalHeight = height/5;
 var apicalWidth = 10;
 
+// define constants for drawing axons
 var axonLength = height/5;
 var axonWidth = apicalWidth;
 var boutonHeight = 25;
@@ -19,22 +22,32 @@ var boutonBase = boutonHeight / Math.sin(Math.PI/3);
 var fudge = boutonHeight * axonWidth/boutonBase; // this is to make sure that the boutons overlap with the axons properly
 var gap = 5; // synaptic gap
 
+// define constants for drawing inhibitory neurons
 var inhibitoryRadius = 40;
 var spineWidth = apicalWidth;
 var spineLength = 20;
 var inhibSynLength = 30;
 var inhibSynWidth = spineWidth;
 
+// define constants for drawing thalamocortical axons
 var tcHorizLength = 150;
 var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
 var filterBoxSize = 150;
 
+// define constants for drawing axes
+var ssAxisLength = width/4;
+var axisThickness = 3;
+
+
+// define constants for rendering speaker
 var spkrSize = 100;
 spkrSrc = "/home/dan/Documents/animations/speakers.png"
 //spkrSrc = "C:/Users/Dank/Documents/presentations/quals/speakers.png"
 
+// define constants for drawing datapoints
 var dataPointRadius = 10; 
 var arrowHeadRatio = 2; // ratio of width of arrowhead to width of arrow body
+
 
 class Pyramidal {
 	// x: x-coordinate of lower-left corner of soma
@@ -128,6 +141,7 @@ class Inhibitory {
 	}
 }
 
+
 class CC {
 	// x: x-coordinate of distal edge of bouton
 	// y: y-coordinate of midline of axon
@@ -167,6 +181,7 @@ class CC {
 		}, delay)	
 	}
 }
+
 
 class Arrow {
 	constructor(length, width, angle){
@@ -267,6 +282,26 @@ class TC {
 } 
 
 
+class Axes {
+	// xOrig: x-coordinate of origin of axes
+	// yOrig: y-coordinate of origin of axes	
+	constructor(xOrig, yOrig, xLength, yLength){
+		this.xOrig = xOrig;
+		this.yOrig = yOrig;
+		this.xLength = xLength;
+		this.yLength = yLength;
+	}
+
+	draw(){
+		ctx.save();
+		ctx.translate(this.xOrig, this.yOrig);
+		ctx.fillRect(0, 0, this.xLength, axisThickness);
+		ctx.fillRect(0, 0, axisThickness, -this.yLength);	
+		ctx.restore();
+	}
+}
+
+
 class dataPoint {
 	// x: x-coordinate of center of datapoint
 	// y: y-coordinate of center of datapoint
@@ -319,12 +354,14 @@ class imgContainer{
 	}
 }
 
+
 function animate(allTheThings){
 	ctx.clearRect(0, 0, width, height);	
 	for(i = 0; i < allTheThings.length; i++){
 		allTheThings[i].draw();
 	}
 }
+
 
 function flash(transitions, numTimes, duration, numTimeSteps){
 	// transitions: color/alpha transformations to make
@@ -402,6 +439,7 @@ function flash(transitions, numTimes, duration, numTimeSteps){
 
 }
 
+
 function colorTweenMulti(transitions, dur, numTimeSteps){
 	// transitions: object array describing color/alpha transitions to make
 	// dur: total duration of transition in seconds
@@ -445,6 +483,7 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 	}, delay);
 }
 
+
 function computeColorStep(transitions, numTimeSteps){
 	for (var n = 0; n < transitions.length; n++){	
 		// if the object to be tweened is a vector graphic object, compute the appropriate color steps 		
@@ -466,6 +505,7 @@ function computeColorStep(transitions, numTimeSteps){
 	}
 	return transitions;
 }
+
 
 function rgb2str(rgb){
 	colorStr = colorBaseStr.concat(String(Math.floor(rgb[0])), ',', String(Math.floor(rgb[1])), ',', String(Math.floor(rgb[2])), ')');
