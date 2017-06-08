@@ -20,7 +20,9 @@ var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
 
 // define and draw state space axes
-var stateSpaceAxes = new Axes(width/2, height/2 + ssAxisLength/2, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
+var stateSpaceOriginX = width/2;
+var stateSpaceOriginY = height/2 + ssAxisLength/2;
+var stateSpaceAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
 
 /*
 var stateSpaceAxes = {
@@ -110,8 +112,8 @@ function testStep3(){
 
 
 function step1(){
-	canvas.removeEventListener('click', testStep1);
-	var duration = 2;
+	canvas.removeEventListener('click', step1);
+	var duration = 0.25;
 
 	// prepare arrow that will be drawn in input box
 	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
@@ -120,17 +122,50 @@ function step1(){
 	allObjects.push(vertInput);
 
 	// define the transition structure
-	var transition4 = [{obj: pyr1, tgt: [0, 255, 0, 1.0]},
-			   {obj: inh1, tgt: [255, 0, 0, 1.0]},
+	var transition4 = [{obj: pyr2, tgt: [0, 255, 0, 1.0]},
+			   {obj: tc2, tgt: [0, 255, 0, 1.0]},
+			   {obj: inh2, tgt: [255, 0, 0, 1.0]},
 			   {obj: vertInput, tgt: [185, 185, 185, 1.0]}
 			  ];
-	colorTweenMulti(transition4, 2, 100);	
+	colorTweenMulti(transition4, duration, 50);	
 	
 	var tmr1 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (duration) + 50);
 }
 
 
-function step2(){}
+function step2(){
+	canvas.removeEventListener('click', step2);
+
+
+	var drawVertLineDelay = 0; // milliseconds!
+	var drawHorizLineDelay = 10; // milliseconds!
+	var drawPointDelay = 100; // milliseconds!
+
+	var drawVertLineDuration = 1; // seconds!
+	var drawHorizLineDuration = 1; // seconds!
+	var drawPointDuration = 1; // seconds!
+	
+	var vertLine = new Rectangle(stateSpaceOriginX + 50, stateSpaceOriginY, axisThickness, -ssAxisLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
+	var horizLine = new Rectangle(stateSpaceOriginX, stateSpaceOriginY - 50, ssAxisLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
+	
+	var vTransition = [{obj: vertLine, tgt: [0, 255, 0, 1.0]},
+			   //{obj: horizLine, tgt: [0, 255, 0, 1.0]}
+			  ];
+	
+	var hTransition = [//{obj: vertLine, tgt: [0, 255, 0, 1.0]},
+			   {obj: horizLine, tgt: [0, 255, 0, 1.0]}
+			  ];
+
+	//colorTweenMulti(vTransition, drawVertLineDuration, 50);
+
+	var drawVertLineTimeout = setTimeout(function(){
+		colorTweenMulti(vTransition, drawVertLineDuration, 50);}
+	, drawVertLineDelay);
+		
+	var drawVertLineTimeout = setTimeout(function(){
+		colorTweenMulti(hTransition, drawHorizLineDuration, 50);}
+	, drawHorizLineDelay);	
+}
 
 
 canvas.addEventListener('click', step1);
