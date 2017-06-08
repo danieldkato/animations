@@ -187,22 +187,26 @@ class CC {
 
 
 class Arrow {
-	constructor(length, width, angle){
+	constructor(ctrX, ctrY, length, width, angle){
 		// length: total length of arrow (including arrowhead)
 		// width: total width of arrow (including arrowhead)
 		// angle: angle of arrow clockwise from vertical, in degrees
+		this.ctrX = ctrX;
+		this.ctrY = ctrY;		
 		this.lengthTotal = length; 
 		this.widthTotal = width;  
 		this.angle = angle/180 * Math.PI; 
 		this.arrowHeadLength = this.widthTotal / 2 * Math.tan(Math.PI/3);
 		this.arrowBodyLength = this.lengthTotal - this.arrowHeadLength;
 		this.arrowBodyWidth = this.widthTotal / arrowHeadRatio;
-		this.color = [185, 185, 185, 1.0];
+		this.rgb = [185, 185, 185, 1.0];
 	}
 
 	// draws arrow with the origin in the center
 	draw(){
-		ctx.fillStyle = rgb2str(this.color);
+		ctx.fillStyle = rgb2str(this.rgb);
+		ctx.save();
+		ctx.translate(this.ctrX, this.ctrY);		
 		ctx.save();
 		ctx.translate(0, this.arrowLengthTotal/2 - this.arrowBodyLength);
 		ctx.rotate(this.angle);
@@ -212,6 +216,7 @@ class Arrow {
 		ctx.lineTo(this.widthTotal/2, this.lengthTotal/2 - this.arrowBodyLength);
 		ctx.lineTo(0, -this.lengthTotal/2);
 		ctx.fill();
+		ctx.restore();
 		ctx.restore();
 	}
 }
@@ -237,7 +242,7 @@ class TC {
 		this.arrowCtrX = tcHorizLength + axonWidth/2;
 		//this.arrowCtrY = tcVertLength/2 + this.arrowLengthTotal/2 - arrowBodyLength;
 		this.arrowCtrY = tcVertLength/2;
-		this.arrow = new Arrow(this.arrowLengthTotal, this.arrowWidthTotal, preferredStim);
+		this.arrow = new Arrow(0, 0, this.arrowLengthTotal, this.arrowWidthTotal, preferredStim);
 	}
 
 	draw(){
@@ -315,7 +320,7 @@ class dataPoint {
 		this.ctrX = x;
 		this.ctrY = y;
 		this.rgb = color;
-		this.arrow = new Arrow(2 * dataPointRadius * 0.6, 2 * dataPointRadius * 0.33, angle);
+		this.arrow = new Arrow(0, 0, 2 * dataPointRadius * 0.6, 2 * dataPointRadius * 0.33, angle);
 	}
 
 	draw(){
