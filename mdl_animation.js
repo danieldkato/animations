@@ -64,6 +64,8 @@ var inputBox = {
 	}
 }
 inputBox.draw();
+var inputBoxCtrX = inputBox.ULx + inputBoxSize/2;
+var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
 // assemble objects into array
 var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, inputBox];
@@ -96,7 +98,7 @@ function testStep2(){
 	var transition2 = [{obj:d1, tgt: [0, 255, 0, 1, 1.0]}];
 	allObjects.push(d1);
 	colorTweenMulti(transition2, duration, 100);
-	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep3); } , (duration) + 50);
+	var tmr6 = setTimeout( function(){ canvas.addEventListener('click', testStep3); } , (duration) + 50);
 }
 
 function testStep3(){
@@ -107,6 +109,28 @@ function testStep3(){
 }
 
 
+function step1(){
+	canvas.removeEventListener('click', testStep1);
+	var duration = 2;
+
+	// prepare arrow that will be drawn in input box
+	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
+	vertInput.rgb = [185, 185, 185, 0.0]; // initialize alpha to 0 
+	vertInput.draw();	
+	allObjects.push(vertInput);
+
+	// define the transition structure
+	var transition4 = [{obj: pyr1, tgt: [0, 255, 0, 1.0]},
+			   {obj: inh1, tgt: [255, 0, 0, 1.0]},
+			   {obj: vertInput, tgt: [185, 185, 185, 1.0]}
+			  ];
+	colorTweenMulti(transition4, 2, 100);	
+	
+	var tmr1 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (duration) + 50);
+}
 
 
-canvas.addEventListener('click', testStep1);
+function step2(){}
+
+
+canvas.addEventListener('click', step1);
