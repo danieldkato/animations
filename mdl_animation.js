@@ -137,16 +137,20 @@ function step2(){
 	canvas.removeEventListener('click', step2);
 
 
-	var drawVertLineDelay = 0; // milliseconds!
-	var drawHorizLineDelay = 10; // milliseconds!
-	var drawPointDelay = 100; // milliseconds!
+	var drawVertLineDelay = 0; // in milliseconds!
+	var drawHorizLineDelay = 10; // in milliseconds!
+	var drawPointDelay = 100; // in milliseconds!
 
-	var drawVertLineDuration = 1; // seconds!
-	var drawHorizLineDuration = 1; // seconds!
-	var drawPointDuration = 1; // seconds!
+	var drawVertLineDuration = 1; // in seconds!
+	var drawHorizLineDuration = 1; // in seconds!
+	var drawPointDuration = 1; // inseconds!
 	
-	var vertLine = new Rectangle(stateSpaceOriginX + 50, stateSpaceOriginY, axisThickness, -ssAxisLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
-	var horizLine = new Rectangle(stateSpaceOriginX, stateSpaceOriginY - 50, ssAxisLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
+	var dataPointx = ssAxisLength * 0.1;
+	var dataPointy = ssAxisLength * 0.9;
+
+	var vertLine = new Rectangle(stateSpaceOriginX + dataPointx, stateSpaceOriginY, axisThickness, -ssAxisLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
+	var horizLine = new Rectangle(stateSpaceOriginX, stateSpaceOriginY - dataPointy, ssAxisLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
+	var dPoint = new dataPoint(stateSpaceOriginX + dataPointx, stateSpaceOriginY - dataPointy, [0, 255, 0, 0.0], 0); allObjects.push(dPoint); 	
 	
 	var vTransition = [{obj: vertLine, tgt: [0, 255, 0, 1.0]},
 			   //{obj: horizLine, tgt: [0, 255, 0, 1.0]}
@@ -156,15 +160,21 @@ function step2(){
 			   {obj: horizLine, tgt: [0, 255, 0, 1.0]}
 			  ];
 
+	var dTransition = [{obj:dPoint, tgt:[0, 255, 0, 1.0]}];
+
 	//colorTweenMulti(vTransition, drawVertLineDuration, 50);
 
 	var drawVertLineTimeout = setTimeout(function(){
-		colorTweenMulti(vTransition, drawVertLineDuration, 50);}
+		flash(vTransition, 1, drawVertLineDuration, 50);}
 	, drawVertLineDelay);
 		
 	var drawVertLineTimeout = setTimeout(function(){
-		colorTweenMulti(hTransition, drawHorizLineDuration, 50);}
+		flash(hTransition, 1, drawHorizLineDuration, 50);}
 	, drawHorizLineDelay);	
+
+	var drawPointTimeout = setTimeout(function(){
+		colorTweenMulti(dTransition, drawPointDuration, 50);}
+	, drawPointDelay);	
 }
 
 
