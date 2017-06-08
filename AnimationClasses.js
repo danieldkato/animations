@@ -458,6 +458,9 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 
 	// for each object to be tweened, compute the appropriate color or alpha steps
 	var transitions = computeColorStep(transitions, numTimeSteps);
+	console.log('Transitions:');
+	console.log(transitions);
+	
 
 	// over the course of tween period, update properties of all objects to be tweened
 	var start = new Date().getTime()
@@ -501,16 +504,16 @@ function computeColorStep(transitions, numTimeSteps){
 			for(var p = 0; p < 4; p++){
 				step[p] = (transitions[n].tgt[p] - transitions[n].obj.rgb[p]) / numTimeSteps;
 			}
-			transitions[n].step = step;
+			transitions[n].step = step.slice();
 		}
 		// if the object to be tweened is an image container, compute the appropriate alpha step
 		else if(transitions[n].obj.constructor.name == "imgContainer"){
 			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps
 		}
 	//console.log('obj'.concat(String(n), ':'));
-	console.log(transitions[n].obj.rgb);	
+	console.log(transitions[n].obj.rgb.slice());	
 	//console.log('step:');
-	console.log(transitions[n].step);	
+	console.log(transitions[n].step.slice());	
 	}
 	return transitions;
 }
