@@ -29,9 +29,12 @@ var spineLength = 20;
 var inhibSynLength = 30;
 var inhibSynWidth = spineWidth;
 
+// define constants for drawing input box
+var inputBoxSize = 150;
+
 // define constants for drawing thalamocortical axons
 var tcHorizLength = 150;
-var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
+var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength + inputBoxSize/2;
 var filterBoxSize = 150;
 
 // define constants for drawing axes
@@ -261,7 +264,8 @@ class TC {
 
 		// draw box depicting direction filter 
 		ctx.beginPath();
-		ctx.strokeStyle = "black";
+		ctx.strokeStyle = rgb2str(this.rgb);
+		ctx.lineWidth = axonWidth;
 		ctx.fillStyle = "white";
 		ctx.rect(tcHorizLength - filterBoxSize/2 + axonWidth/2, tcVertLength/2 - filterBoxSize/2 - axonWidth/2, filterBoxSize, filterBoxSize);
 		ctx.fill();

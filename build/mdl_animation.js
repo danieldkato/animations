@@ -29,9 +29,12 @@ var spineLength = 20;
 var inhibSynLength = 30;
 var inhibSynWidth = spineWidth;
 
+// define constants for drawing input box
+var inputBoxSize = 150;
+
 // define constants for drawing thalamocortical axons
 var tcHorizLength = 150;
-var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength;
+var tcVertLength = boutonBase/2 + gap + pyramidalHeight + axonLength + boutonHeight + gap + 2*inhibitoryRadius + spineLength + inputBoxSize/2;
 var filterBoxSize = 150;
 
 // define constants for drawing axes
@@ -261,7 +264,8 @@ class TC {
 
 		// draw box depicting direction filter 
 		ctx.beginPath();
-		ctx.strokeStyle = "black";
+		ctx.strokeStyle = rgb2str(this.rgb);
+		ctx.lineWidth = axonWidth;
 		ctx.fillStyle = "white";
 		ctx.rect(tcHorizLength - filterBoxSize/2 + axonWidth/2, tcVertLength/2 - filterBoxSize/2 - axonWidth/2, filterBoxSize, filterBoxSize);
 		ctx.fill();
@@ -556,8 +560,33 @@ var stateSpaceAxes = {
 }
 */
 
+// define and draw input box
+pyr1MidBase = pyr1.LLx + pyramidalBase/2;
+pyr2MidBase = pyr2.LLx + pyramidalBase/2;
+midpoint = (pyr1MidBase + pyr2MidBase)/2;
+var inputBox = {
+	size: inputBoxSize,
+	ULx: midpoint - inputBoxSize/2,
+	ULy: pyr1.LLy - pyramidalHeight + tcVertLength - inputBoxSize/2, 
+	rgb: [185, 185, 185],
+
+	draw: function(){
+		ctx.save();
+		ctx.translate(this.ULx, this.ULy);
+		ctx.strokeStyle = rgb2str(this.rgb);
+		ctx.lineWidth = axonWidth;
+		ctx.fillStyle = "white";
+		ctx.beginPath();		
+		ctx.rect(0, 0, this.size, this.size);
+		ctx.fill();		
+		ctx.stroke();
+		ctx.restore();
+	}
+}
+inputBox.draw();
+
 // assemble objects into array
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, inputBox];
 
 
 var transition2 = [
@@ -581,13 +610,21 @@ function step1(){
 }
 
 function step2(){
-	canvas.removeEventListener('click', step1);
+	canvas.removeEventListener('click', step2);
 	var duration = 2;
-	var d1 = new dataPoint(x, y, 45);
+	d1 = new dataPoint(width/2, height/2, [185, 185, 185], 45); // var keyword must be omitted here to make d1 a global variable
 	var transition2 = [{obj:d1, tgt: [0, 255, 0]}];
 	allObjects.push(d1);
 	colorTweenMulti(transition2, duration, 100);
-	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (duration) + 50);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', step3); } , (duration) + 50);
 }
+
+function step3(){
+	canvas.removeEventListener('click', step3);
+	var duration = 2;
+	var transition3 = [{obj:d1, tgt: [255, 0, 0]}];
+	colorTweenMulti(transition3, duration, 100);
+}
+
 
 canvas.addEventListener('click', step1);
