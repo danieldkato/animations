@@ -518,15 +518,39 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 
 		animate(allObjects);
 
+		// when the designated tweening period is complete:
 		if (new Date().getTime() > start + dur * 1000){
-			// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
+
+			/* Have noticed that color tweening often doesn't complete perfectly; I suppose 
+			this is because `delay` is calculated so that delay * numTimeSteps = duration, but 
+			the amount of time between each time step isn't just `delay`; it's `delay` PLUS the 
+			amount of time it actually takes the animation code to run, which is non-zero. These
+			erros are usually really small, so maybe it wouldn't be noticeable if I just
+			manually set the colors to the target values at the end of the tween period*/ 
+
 			for (var p = 0; p < transitions.length; p++){
+				// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
 				console.log('transition element #'.concat(String(p), ':'));
 				console.log('	obj: '.concat(transitions[p].obj.constructor.name));
-				console.log('	starting color: '.concat(rgb2str(transitions[p].original.slice())));		
-				console.log('	target color: '.concat(rgb2str(transitions[p].tgt.slice())));
-				console.log('	step:'.concat(rgb2str(transitions[p].step.slice())));
-				console.log('	final color: '.concat(rgb2str(transitions[p].obj.rgb.slice())));
+				
+				if(transitions[p].obj.constructor.name != "imgContainer"){
+					console.log('	starting color: '.concat(rgb2str(transitions[p].original.slice())));		
+					console.log('	target color: '.concat(rgb2str(transitions[p].tgt.slice())));
+					console.log('	step:'.concat(rgb2str(transitions[p].step.slice())));
+					console.log('	final color (before manual correction): '.concat(rgb2str(transitions[p].obj.rgb.slice())));
+					for (var k = 0; k <4; k++){
+						transitions[p].obj.rgb[k] = transitions[p].tgt[k];
+					}	
+					console.log('	final color (after manual correction): '.concat(rgb2str(transitions[p].obj.rgb.slice())));
+				}
+				else if (transitions[p].obj.constructor.name == "imgContainer"){
+					console.log('	starting alpha: '.concat(String(transitions[p].original)));		
+					console.log('	target alpha: '.concat(String(transitions[p].tgt)));
+					console.log('	step:'.concat(String(transitions[p].step)));
+					console.log('	final alpha (before manual correction): '.concat(String(transitions[p].obj.alpha)));					
+					transitions[p].obj.alpha = transitions[p].tgt				
+					console.log('	final alpha (after manual correction): '.concat(String(transitions[p].obj.alpha)));
+				}				
 			}
 			clearInterval(intId);
 		}
