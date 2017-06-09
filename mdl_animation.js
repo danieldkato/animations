@@ -146,18 +146,76 @@ function step1(){
 function step2(){
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
-
 	var duration = 0.25;
+	var latency = 250;
 	colorTweenMulti([{obj: tc2, tgt: [0, 255, 0, 1.0]}], duration, 50);	
+	
+	var activatePyr = setTimeout(function(){
+		colorTweenMulti([{obj: pyr2, tgt: [0, 255, 0, 1.0]}], duration, 50);
+	}, latency);
+
 }
 
 function step3(){
 	canvas.removeEventListener('click', step3);
-	//canvas.addEventListener('click', step4);
-
+	canvas.addEventListener('click', step4);
 	var duration = 0.25;
-	colorTweenMulti([{obj: pyr2, tgt: [0, 255, 0, 1.0]}], duration, 50);	
+	colorTweenMulti([{obj: inh2, tgt: [255, 0, 0, 1.0]}], duration, 50);	
 }
+
+var p1x = ssAxisLength * 0.1;
+var p1y = ssAxisLength * 0.9;
+var lin1 = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); lin1.rgb = [0, 255, 0, 0.0]; allObjects.push(lin1);
+var lin2 = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength, axisThickness); lin2.rgb = [0, 255, 0, 0.0]; allObjects.push(lin2);
+var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); allObjects.push(p);
+
+function step4(){
+	canvas.removeEventListener('click', step4);
+	canvas.addEventListener('click', step5);
+	var duration = 0.5;
+	colorTweenMulti([{obj: lin1, tgt: [0, 255, 0, 1.0]}], duration, 50);	
+}
+
+function step5(){
+	canvas.removeEventListener('click', step5);
+	canvas.addEventListener('click', step6);
+	
+	// line variables
+	var duration = 0.5;
+	
+	// datapoint variables
+	var latency1 = 250; // delay between when the horizontal line starts getting drawn and when the point starts getting drawn, in milliseconds	
+	var latency2 = 250; // delay between when the point starts getting drawn and when the grid lines start being erased, in milliseconds	
+
+	// render the line	
+	colorTweenMulti([{obj: lin2, tgt: [0, 255, 0, 1.0]}], duration, 50);
+
+	// after some delay, render the point
+	var drawPoint = setTimeout(function(){
+		console.log('draw point');
+		colorTweenMulti([{obj: p, tgt: [0, 255, 0, 1.0]}], duration, 50);
+	}, latency1);
+
+	// now remove the grid lines
+	var rlTransition = [{obj: lin1, tgt: [0, 255, 0, 0.0]},
+			    {obj: lin2, tgt: [0, 255, 0, 0.0]}];
+	var removeLines = setTimeout(function(){
+		colorTweenMulti(rlTransition, duration, 50);
+	}, latency1 + latency2);
+}
+
+function step6(){
+	// after the point is rendered, remove it from allObjects and make it a child of stateSpaceAxes
+	allObjects.pop();	
+	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
+	p.ctrY = p1y; // make the coordinates relative to the origin of stateSpaceAxes
+	stateSpaceAxes.points.push(p);
+
+	// also pop out those grid lines objects, which we don't need anymore	
+	allObjects.pop(); 
+	allObjects.pop();
+}
+
 
 
 
