@@ -328,8 +328,8 @@ class Axes {
 	
 
 		var drawVertLineDelay = 0; // in milliseconds!
-		var drawHorizLineDelay = 10; // in milliseconds!
-		var drawPointDelay = 100; // in milliseconds!
+		var drawHorizLineDelay = 300; // in milliseconds!
+		var drawPointDelay = 600; // in milliseconds!
 
 		var drawVertLineDuration = 0.5; // in seconds!
 		var drawHorizLineDuration = 0.5; // in seconds!
@@ -355,17 +355,30 @@ class Axes {
 		//colorTweenMulti(vTransition, drawVertLineDuration, 50);
 
 		var drawVertLineTimeout = setTimeout(function(){
-			flash(vTransition, 1, drawVertLineDuration, 50);}
+			colorTweenMulti(vTransition, drawVertLineDuration, 50);}
 		, drawVertLineDelay);
 		
-		var drawVertLineTimeout = setTimeout(function(){
-			flash(hTransition, 1, drawHorizLineDuration, 50);}
+		var drawHorizLineTimeout = setTimeout(function(){
+			colorTweenMulti(hTransition, drawHorizLineDuration, 50);}
 		, drawHorizLineDelay);	
 
 		var drawPointTimeout = setTimeout(function(){
 			colorTweenMulti(dTransition, drawPointDuration, 50);}
 		, drawPointDelay);
+
+
+		var vTransitionRev = [{obj: vertLine, tgt: [0, 255, 0, 0.0]}];
+		var hTransitionRev = [{obj: horizLine, tgt: [0, 255, 0, 0.0]}];
 		
+		var eraseVertLineTimeout = setTimeout(function(){
+			colorTweenMulti(vTransitionRev, drawVertLineDuration, 50);}
+		, drawPointDelay + drawPointDuration + 600);
+		
+		var eraseHorizLineTimeout = setTimeout(function(){
+			colorTweenMulti(hTransitionRev, drawHorizLineDuration, 50);}
+		, drawPointDelay + drawPointDuration + 600);	
+
+
 		/*
 		var drawVertLineTimeout = setTimeout(function(){
 			}
@@ -689,23 +702,28 @@ var stateSpaceOriginX = width/2;
 var stateSpaceOriginY = height/2 + ssAxisLength/2;
 var stateSpaceAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
 
-/*
-var stateSpaceAxes = {
-,
-	axisThickness: 3,
-	originX: width/2,
-	originY: height/2 + this.axisLength/2,
-	
-	draw: function(){
-		ctx.save();
-		ctx.translate(this.originX, this.originY);
-		ctx.fillRect(0, 0, this.axisLength, this.axisThickness);
-		ctx.fillRect(0, 0, this.axisThickness, -this.axisLength);
-		ctx.restore();
-	}
-	
-}
+/* define neurometric curve axis (but don't draw it yet). 
+It will start off in the same position as state space axes, and 
+with no X-axis; it will later "slide" out from over the state space
+axes, and the X axis will extend out of it
 */
+var nmXaxisLength = width/4;
+var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); // initialize x-origin to the same as that for the state space Axes
+var nmAxesFinal = width * 0.6;;  
+var numAngles = 8;
+var arrowsY = nmAxes.yOrig + 10;
+var arrowsXstart = nmAxesFinal + 30;
+var xArrowWidth = 9;
+var xArrowLength = 30;
+var xArrows = [];
+for(var a = 0; a < numAngles; a++){
+	angle = 90 - (a * (90/(numAngles-1)));
+	var arrow = new Arrow(arrowsXstart + a*nmXaxisLength/numAngles, arrowsY, xArrowLength, xArrowWidth, angle);		
+	arrow.rgb = [185, 185, 185, 0.0];		
+	xArrows.push(arrow); 
+}
+console.log('xArrows');
+console.log(xArrows);
 
 // define and draw input box
 pyr1MidBase = pyr1.LLx + pyramidalBase/2;
@@ -735,7 +753,10 @@ var inputBoxCtrX = inputBox.ULx + inputBoxSize/2;
 var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
 // assemble objects into array
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, inputBox];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
+for(var a = 0; a < xArrows.length; a++){
+	allObjects.push(xArrows[a]);
+}
 
 
 var transition2 = [
@@ -854,8 +875,102 @@ function step3(){
 	var y = ssAxisLength / 2;
 	var color = [0, 255, 0, 1.0];
 	stateSpaceAxes.plot(x, y, 45, color, 5);
+	
+	var nextStepTimeOut = setTimeout(function(){canvas.addEventListener('click', step4);}, 2000)
 }
 
 
+function step4(){
+	canvas.removeEventListener('click', step4);
+	nmAxes.draw();
+	var lastFrameTimeMs = 0;	
+	
+	// variables controlling timing of translation:	
+	var distance = nmAxesFinal - nmAxes.xOrig;	
+	var slideDuration = 1;
+	var vel = distance / (slideDuration * 1000);  
+	
+	// variables controlling timing of x-scaling:
+	var scaleDuration = 1;
+	var numScaleSteps = 50;	
+	var scaleTimeStep = (scaleDuration/numScaleSteps) * 1000;
+	var scaleStep = nmXaxisLength/numScaleSteps;
+
+	// variables needed for plotting arrows along x-axis:
+	var timePerArrow = 0.5; // time it takes to draw each individual arrow;
+	var arrowDurTotal = 2; // time between beginning to draw first arrow and beginning to draw last arrow
+	
+	// local functions needed for animation:	
+	function initializeLastFrame(timeStamp){
+		lastFrameTimeMs = timeStamp;
+	};
+
+	function updateXorig(delta){
+		nmAxes.xOrig += vel * delta;		
+		animate(allObjects);
+	};
+
+	function translateNM(timeStamp){
+	
+		var delta = timeStamp - lastFrameTimeMs;
+		lastFrameTimeMs = timeStamp;
+		updateXorig(delta);		
+
+		if(nmAxes.xOrig + vel * delta < nmAxesFinal){
+			window.requestAnimationFrame(translateNM);
+		} else { // Once the translation is done...
+			console.log('finish translation');			
+	
+			// ...clean up any errors in the tweening
+			nmAxes.xOrig = nmAxesFinal;
+			animate(allObjects);
+
+			// ... extend the x-axis...
+			var extendXaxis = setInterval(function(){
+				nmAxes.xLength += scaleStep;
+				animate(allObjects);
+
+				if(nmAxes.xLength + scaleStep > nmXaxisLength){										
+					nmAxisLength = nmXaxisLength;
+					clearInterval(extendXaxis);
+				}
+			}, scaleTimeStep);
+
+			// ... and draw the arrows along the x-axis
+			var arrowIndex = 0;
+			//console.log('arrows inside translateNM:');
+			//console.log(arrows);
+			var drawArrows = setInterval(function(){
+				if(arrowIndex > numAngles){
+					console.log('done drawing arrows');
+					clearInterval(drawArrows);
+				} else{
+					colorTweenMulti([{obj: xArrows[arrowIndex], tgt: [185, 185, 185, 1.0]}], timePerArrow, 50);
+					arrowIndex += 1;
+				}
+				
+			}, arrowDurTotal/numAngles * 1000)
+			
+		}
+	};
+
+	window.requestAnimationFrame(initializeLastFrame);
+	window.requestAnimationFrame(translateNM);
+}
+
+
+function step5(){
+	canvas.removeEventListener('click', step5);	
+
+	var extensionDuration = 1;	
+	var delay = 1 / 60;
+	var numScaleSteps = extensionDuration/delay;	
+	var xScaleStep = nmXaxisLength/numScaleSteps;	
+
+	var extendAxis = setInterval(function(){
+				nmAxes.xLength = nmAxes.xLength + xScaleStep;
+				animate(allObjects);
+	}, delay);
+}
 
 canvas.addEventListener('click', step1);
