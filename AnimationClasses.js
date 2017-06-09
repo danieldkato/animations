@@ -301,6 +301,7 @@ class Axes {
 		this.xLength = xLength;
 		this.yLength = yLength;
 		this.rgb = [185, 185, 185, 1.0];
+		this.points = [];
 	}
 
 	draw(){
@@ -309,7 +310,72 @@ class Axes {
 		ctx.fillStyle = rgb2str(this.rgb);
 		ctx.fillRect(0, 0, this.xLength, axisThickness);
 		ctx.fillRect(0, 0, axisThickness, -this.yLength);	
+		
+		// draw every data point associated with this object		
+		for(var p = 0; p < this.points.length; p++){
+			this.points[p].draw();
+		}		
+
 		ctx.restore();
+	}
+
+	plot(x, y, angle, color, duration){
+		// x: x-coordinate of point relative to axis origins
+		// y: y-coordinate of point relative to axis origins
+		// angle: angle of arrow inscribed in point
+		// color: rgba quadruple specifying final point color
+		// duration: duration of plotting animation, in seconds
+	
+		var drawVertLineDelay = 0; // in seconds; remember this has to be converted to milliseconds in setTimeout()  
+		var drawHorizLineDelay = duration/3;  // in seconds; remember this has to be converted to milliseconds in setTimeout()
+		var drawPointDelay = duration * 2/3; // in seconds; remember this has to be converted to milliseconds in setTimeout()
+		var eraseLinesDelay = duration; 
+
+		var drawVertLineDuration = duration/3; 
+		var drawHorizLineDuration = duration/3; 
+		var drawPointDuration = duration/3; // the point, the last thing to be drawn, will start being drawn 2/3*duration and will take duration/3 to complete, so as long as nothing else takes longer to draw than the point, then the whole animation will elapse within the time specified by duration 
+		var eraseLinesDur = 1;
+
+		var point = new dataPoint(x, -y, color, angle); this.points.push(point);
+		var vertLine = new Rectangle(this.xOrig + x, this.yOrig , axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine);
+		var horizLine = new Rectangle(this.xOrig, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); // add lines last so they can be popped later 	
+		console.log('Axes::plot() color = '.concat(rgb2str(color.slice())));
+		var pTransition = [{obj: point, tgt: color.slice()}]; // tgt here must be a deep copy of the color array passed in as an argument, not a reference to it; not sure why this is, but it is
+		var vTransitionFwd = [{obj: vertLine, tgt: [0, 255, 0, 1.0].slice()}];
+		var hTransitionFwd = [{obj: horizLine, tgt: [0, 255, 0, 1.0].slice()}];
+		var revTransition = [{obj: vertLine, tgt: [0, 255, 0, 0].slice()},
+				     {obj: horizLine, tgt: [0, 255, 0, 0].slice()}
+				    ];
+
+		point.rgb[3] = 0; // we want the point's alpha to be 0 before it starts to be drawn	
+
+		var drawPointTimeout = setTimeout(function(){
+			colorTweenMulti(pTransition, drawPointDuration, 50);}
+		, drawPointDelay * 1000);	
+
+		
+		var drawVertLineTimeout = setTimeout(function(){
+			colorTweenMulti(vTransitionFwd, 1, drawVertLineDuration, 50);}
+		, drawVertLineDelay * 1000);				
+
+		var drawHorizLineTimeout = setTimeout(function(){
+			colorTweenMulti(hTransitionFwd, 1, drawHorizLineDuration, 50);}
+		, drawHorizLineDelay * 1000);	
+
+		/*
+		var eraseLinesTimeout = setTimeout(function(){
+			colorTweenMulti(revTransition, eraseLinesDur, 50);}
+		, duration * 1000);
+		*/
+
+
+		// after the animation is complete, pop the lines from allObjects, as we won't need them again
+		/*		
+		var popTimeout = setTimeout(function(){
+			allObjects.pop();
+			allObjects.pop();}
+		, duration * 1000 +10);
+		*/
 	}
 }
 
@@ -552,6 +618,7 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 					console.log('	final alpha (after manual correction): '.concat(String(transitions[p].obj.alpha)));
 				}				
 			}
+			animate(allObjects); // make sure to re-draw everything after manually correcting colors
 			clearInterval(intId);
 		}
 
