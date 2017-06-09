@@ -328,8 +328,8 @@ class Axes {
 	
 
 		var drawVertLineDelay = 0; // in milliseconds!
-		var drawHorizLineDelay = 10; // in milliseconds!
-		var drawPointDelay = 100; // in milliseconds!
+		var drawHorizLineDelay = 300; // in milliseconds!
+		var drawPointDelay = 600; // in milliseconds!
 
 		var drawVertLineDuration = 0.5; // in seconds!
 		var drawHorizLineDuration = 0.5; // in seconds!
@@ -355,17 +355,30 @@ class Axes {
 		//colorTweenMulti(vTransition, drawVertLineDuration, 50);
 
 		var drawVertLineTimeout = setTimeout(function(){
-			flash(vTransition, 1, drawVertLineDuration, 50);}
+			colorTweenMulti(vTransition, drawVertLineDuration, 50);}
 		, drawVertLineDelay);
 		
-		var drawVertLineTimeout = setTimeout(function(){
-			flash(hTransition, 1, drawHorizLineDuration, 50);}
+		var drawHorizLineTimeout = setTimeout(function(){
+			colorTweenMulti(hTransition, drawHorizLineDuration, 50);}
 		, drawHorizLineDelay);	
 
 		var drawPointTimeout = setTimeout(function(){
 			colorTweenMulti(dTransition, drawPointDuration, 50);}
 		, drawPointDelay);
+
+
+		var vTransitionRev = [{obj: vertLine, tgt: [0, 255, 0, 0.0]}];
+		var hTransitionRev = [{obj: horizLine, tgt: [0, 255, 0, 0.0]}];
 		
+		var eraseVertLineTimeout = setTimeout(function(){
+			colorTweenMulti(vTransitionRev, drawVertLineDuration, 50);}
+		, drawPointDelay + drawPointDuration + 600);
+		
+		var eraseHorizLineTimeout = setTimeout(function(){
+			colorTweenMulti(hTransitionRev, drawHorizLineDuration, 50);}
+		, drawPointDelay + drawPointDuration + 600);	
+
+
 		/*
 		var drawVertLineTimeout = setTimeout(function(){
 			}
