@@ -201,102 +201,38 @@ function step3(){
 }
 
 
+// define some ancillary variables and functions that will be used in step 4 (maybe these should go in AnimationClasses.js)	
+function initializeLastFrame(timeStamp){lastFrameTimeMs = timeStamp;};
+
+function update(delta){
+	nmAxes.xOrig =  nmAxes.xOrig + vel * delta;		
+	animate(allObjects);
+}
+
+function step(timeStamp){
+	
+	var delta = timeStamp - lastFrameTimeMs;
+	lastFrameTimeMs = timeStamp;
+	update(delta);		
+
+	if(nmAxes.xOrig + vel < tgtX){
+		window.requestAnimationFrame(step);
+	};
+};
+
+
 function step4(){
-	console.log('step 4');
 	canvas.removeEventListener('click', step4);
 	nmAxes.draw();
 
+	var lastFrameTimeMs = 0;
 	var tgtX = width * 0.8;
 	var distance = tgtX - nmAxes.xOrig;	
 	var slideDuration = 2;
 	var vel = distance / (slideDuration * 1000);  
-	console.log(String(distance));
-	console.log(String(slideDuration * 1000));
-	console.log(String(vel));
-	/*
-	while(nmAxes.xOrig + vel < tgtX){
-		nmAxes.xOrig = nmAxes.xOrig + vel;
-		animate(allObjects);
-	}
-	*/
-
-	var lastFrameTimeMs = 0;
-
-	function initializeLastFrame(timeStamp){lastFrameTimeMs = timeStamp;};
-
-	function update(delta){
-		nmAxes.xOrig =  nmAxes.xOrig + vel * delta;		
-		animate(allObjects);
-	}
-
-	// initialize lastFrameTimeMs
+	
 	window.requestAnimationFrame(initializeLastFrame);
-
-	function step(timeStamp){
-		//console.log('step');
-		//console.log(timeStamp);
-		//console.log(new Date().getTime());
-		//console.log('tgtX = '.concat(String(tgtX)));
-		//console.log('nmAes.xOrig + vel = '.concat(String(nmAxes.xOrig + vel)));
-		
-		delta = timeStamp - lastFrameTimeMs;
-		lastFrameTimeMs = timeStamp;
-		update(delta);		
-
-		if(nmAxes.xOrig + vel < tgtX){
-			window.requestAnimationFrame(step);
-		};
-	};
-
 	window.requestAnimationFrame(step);	
-
-	/*
-	raf = window.requestAnimationFrame(function(){
-		console.log('request animation frame');
-		nmAxes.xOrig = nmAxes.xOrig + vel;	
-		animate(allObjects);
-
-		if(nmAxes.xOrig + vel > tgtX){window.cancelAnimationFrame(raf);}
-	});
-	*/
-
-	/*
-	var delay = 1 / 120;
-	var numStepsSlide = slideDuration/delay;
-	
-	var tgtX = width * 0.8;
-	var xTranslateStep = (tgtX - nmAxes.xOrig)/numStepsSlide;
-	
-
-	var moveNmAxes = setInterval(function(){
-		nmAxes.xOrig = nmAxes.xOrig + xTranslateStep;
-		animate(allObjects);
-
-		// After y-translation is complete...			
-		if(nmAxes.xOrig + xTranslateStep > tgtX){
-			nmAxes.xOrig = tgtX; animate(allObjects);
-
-			// ... extend the x-axis...
-			var extensionDuration = 1;	
-			var numScaleSteps = extensionDuration/delay;	
-			var xScaleStep = nmXaxisLength/numScaleSteps;				
-			var extendAxis = setInterval(function(){
-				nmAxes.xLength = nmAxes.xLength + xScaleStep;
-				animate(allObjects);
-			}, delay);
-
-			// ... and draw the arrows....
-			var numAngles = 8;
-			var angleStep = 90/numAngles;
-
-			clearInterval(moveNmAxes);
-		}		
-
-	}, delay);	
-	*/
-
-	//var nextStepTimeOut = setTimeout(function(){canvas.addEventListener('click', step5);}, slideDuration * 1000)
-
 }
 
 
