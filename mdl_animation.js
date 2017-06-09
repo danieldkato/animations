@@ -30,7 +30,20 @@ with no X-axis; it will later "slide" out from over the state space
 axes, and the X axis will extend out of it
 */
 var nmXaxisLength = width/4;
-var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); //  
+var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); // initialize x-origin to the same as that for the state space Axes
+var nmAxesFinal = width * 0.8;;  
+var numAngles = 8;
+var arrowsY = nmAxes.yOrig + 10;
+var arrowsXstart = nmAxesFinal + 10;
+var xArrowWidth = 3;
+var xArrowLength = 10;
+var xArrows = [];
+for(var a = 0; a <= numAngles; a++){
+	angle = a * (90/numAngles);
+	var arrow = new Arrow(arrowsXstart + a*nmXaxisLength/numAngles, arrowsY, xArrowLength, xArrowWidth, angle);		
+	arrow.rgb = [185, 185, 185, 0.0];		
+	xArrows.push(arrow); 
+}
 
 
 // define and draw input box
@@ -62,6 +75,9 @@ var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
 // assemble objects into array
 var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
+for(var a = 0; a < xArrows.length; a++){
+	allObjects.push(xArrows[a]);
+}
 
 
 var transition2 = [
@@ -190,21 +206,21 @@ function step4(){
 	nmAxes.draw();
 	var lastFrameTimeMs = 0;	
 	
-	// variables controlling timing of translation
-	var tgtX = width * 0.8;
-	var distance = tgtX - nmAxes.xOrig;	
+	// variables controlling timing of translation:	
+	var distance = nmAxesFinal - nmAxes.xOrig;	
 	var slideDuration = 1;
 	var vel = distance / (slideDuration * 1000);  
 	
-	// variables controlling timing of x-scaling
+	// variables controlling timing of x-scaling:
 	var scaleDuration = 1;
 	var numScaleSteps = 50;	
 	var scaleTimeStep = (scaleDuration/numScaleSteps) * 1000;
 	var scaleStep = nmXaxisLength/numScaleSteps;
 
-	window.requestAnimationFrame(initializeLastFrame);
-	window.requestAnimationFrame(translateNM);	
+	// variables needed for plotting arrows along x-axis:
+	var arrowDrawDur = 0.5;
 
+	// local functions needed for animation:	
 	function initializeLastFrame(timeStamp){
 		lastFrameTimeMs = timeStamp;
 	};
@@ -220,13 +236,13 @@ function step4(){
 		lastFrameTimeMs = timeStamp;
 		updateXorig(delta);		
 
-		if(nmAxes.xOrig + vel * delta < tgtX){
+		if(nmAxes.xOrig + vel * delta < nmAxesFinal){
 			window.requestAnimationFrame(translateNM);
 		} else { // Once the translation is done...
 			console.log('finish translation');			
 	
 			// ...clean up any errors in the tweening
-			nmAxes.xOrig = tgtX;
+			nmAxes.xOrig = nmAxesFinal;
 			animate(allObjects);
 
 			// ... extend the x-axis...
@@ -239,10 +255,27 @@ function step4(){
 					clearInterval(extendXaxis);
 				}
 			}, scaleTimeStep);
+
+			// ... and draw the arrows along the x-axis
+			var arrowIndex = 0;
+			//console.log('arrows inside translateNM:');
+			//console.log(arrows);
+			var drawArrows = setInterval(function(){
+				colorTweenMulti([{obj: xArrows[arrowIndex], tgt: [185, 185, 185, 1.0]}], arrowDrawDur, 50);
+				arrowIndex += 1;
+				
+				if(arrowIndex >= numAngles){
+					console.log('done drawing arrows');
+					clearInterval(drawArrows);
+				}
+				
+			}, scaleDuration/numAngles * 1000)
 			
 		}
 	};
 
+	window.requestAnimationFrame(initializeLastFrame);
+	window.requestAnimationFrame(translateNM);
 }
 
 
