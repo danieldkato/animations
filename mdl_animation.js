@@ -201,26 +201,6 @@ function step3(){
 }
 
 
-// define some ancillary variables and functions that will be used in step 4 (maybe these should go in AnimationClasses.js)	
-function initializeLastFrame(timeStamp){lastFrameTimeMs = timeStamp;};
-
-function update(delta){
-	nmAxes.xOrig =  nmAxes.xOrig + vel * delta;		
-	animate(allObjects);
-}
-
-function step(timeStamp){
-	
-	var delta = timeStamp - lastFrameTimeMs;
-	lastFrameTimeMs = timeStamp;
-	update(delta);		
-
-	if(nmAxes.xOrig + vel < tgtX){
-		window.requestAnimationFrame(step);
-	};
-};
-
-
 function step4(){
 	canvas.removeEventListener('click', step4);
 	nmAxes.draw();
@@ -232,7 +212,28 @@ function step4(){
 	var vel = distance / (slideDuration * 1000);  
 	
 	window.requestAnimationFrame(initializeLastFrame);
-	window.requestAnimationFrame(step);	
+	window.requestAnimationFrame(translateNM);	
+
+	function initializeLastFrame(timeStamp){
+		lastFrameTimeMs = timeStamp;
+	};
+
+	function update(delta){
+		nmAxes.xOrig =  nmAxes.xOrig + vel * delta;		
+		animate(allObjects);
+	};
+
+	function translateNM(timeStamp){
+	
+		var delta = timeStamp - lastFrameTimeMs;
+		lastFrameTimeMs = timeStamp;
+		update(delta);		
+
+		if(nmAxes.xOrig + vel < tgtX){
+			window.requestAnimationFrame(translateNM);
+		};
+	};
+
 }
 
 
