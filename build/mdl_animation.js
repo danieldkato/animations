@@ -280,6 +280,7 @@ class TC {
 		ctx.save();
 		ctx.translate(this.arrowCtrX , this.arrowCtrY);
 		ctx.rotate(this.preferredStim/360 * 2 * Math.PI);
+		this.arrow.rgb = this.rgb;
 		this.arrow.draw();
 		ctx.restore();
 
@@ -299,16 +300,112 @@ class Axes {
 		this.yOrig = yOrig;
 		this.xLength = xLength;
 		this.yLength = yLength;
+		this.rgb = [185, 185, 185, 1.0];
+		this.points = [];
 	}
 
 	draw(){
 		ctx.save();
 		ctx.translate(this.xOrig, this.yOrig);
+		ctx.fillStyle = rgb2str(this.rgb);
 		ctx.fillRect(0, 0, this.xLength, axisThickness);
 		ctx.fillRect(0, 0, axisThickness, -this.yLength);	
+		
+		// draw every data point associated with this object		
+		for(var p = 0; p < this.points.length; p++){
+			this.points[p].draw();
+		}		
+
 		ctx.restore();
 	}
+
+	plot(x, y, angle, color, duration){
+		// x: x-coordinate of point relative to axis origins
+		// y: y-coordinate of point relative to axis origins
+		// angle: angle of arrow inscribed in point
+		// color: rgba quadruple specifying final point color
+		// duration: duration of plotting animation, in seconds
+	
+
+		var drawVertLineDelay = 0; // in milliseconds!
+		var drawHorizLineDelay = 10; // in milliseconds!
+		var drawPointDelay = 100; // in milliseconds!
+
+		var drawVertLineDuration = 0.5; // in seconds!
+		var drawHorizLineDuration = 0.5; // in seconds!
+		var drawPointDuration = 0.5; // inseconds!
+	
+		var dataPointx = ssAxisLength * 0.1;
+		var dataPointy = ssAxisLength * 0.9;
+
+		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
+		var horizLine = new Rectangle(this.xOrig, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
+		var dPoint = new dataPoint(x, -y, [0, 255, 0, 0.0], angle); this.points.push(dPoint); 	
+	
+		var vTransition = [{obj: vertLine, tgt: [0, 255, 0, 1.0]},
+				   //{obj: horizLine, tgt: [0, 255, 0, 1.0]}
+				  ];
+	
+		var hTransition = [//{obj: vertLine, tgt: [0, 255, 0, 1.0]},
+				   {obj: horizLine, tgt: [0, 255, 0, 1.0]}
+				  ];
+
+		var dTransition = [{obj:dPoint, tgt:[0, 255, 0, 1.0]}];
+
+		//colorTweenMulti(vTransition, drawVertLineDuration, 50);
+
+		var drawVertLineTimeout = setTimeout(function(){
+			flash(vTransition, 1, drawVertLineDuration, 50);}
+		, drawVertLineDelay);
+		
+		var drawVertLineTimeout = setTimeout(function(){
+			flash(hTransition, 1, drawHorizLineDuration, 50);}
+		, drawHorizLineDelay);	
+
+		var drawPointTimeout = setTimeout(function(){
+			colorTweenMulti(dTransition, drawPointDuration, 50);}
+		, drawPointDelay);
+		
+		/*
+		var drawVertLineTimeout = setTimeout(function(){
+			}
+		, drawVertLineDelay * 1000);				
+		*/
+	
+
+		/*
+		var eraseLinesTimeout = setTimeout(function(){
+			colorTweenMulti(revTransition, eraseLinesDur, 50);}
+		, duration * 1000);
+		*/
+
+
+		// after the animation is complete, pop the lines from allObjects, as we won't need them again
+		/*		
+		var popTimeout = setTimeout(function(){
+			allObjects.pop();
+			allObjects.pop();}
+		, duration * 1000 +10);
+		*/
+	}
 }
+
+
+class Rectangle {
+	constructor(x, y, width, height){
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height
+		this.rgb = [185, 185, 185, 1.0];
+	}
+
+	draw(){
+		ctx.fillStyle = rgb2str(this.rgb);
+		ctx.fillRect(this.x, this.y, this.width, this.height);
+	}
+}
+
 
 
 class dataPoint {
@@ -456,11 +553,21 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 
 	var delay = dur/numTimeSteps * 1000; // delay between re-paints, in milliseconds 
 
+	// for debugging purposes, get the original color or alpha of every object to be tweened
+	for (var n = 0; n <transitions.length; n++){
+		if (transitions[n].obj.constructor.name != "imgContainer"){
+			transitions[n].original = transitions[n].obj.rgb.slice();
+		}
+		else if (transitions[n].obj.constructor.name == "imgContainer"){
+			transitions[n].original = transitions[m].obj.alpha;
+		}		
+	}
+
 	// for each object to be tweened, compute the appropriate color or alpha steps
-	var transitions = computeColorStep(transitions, numTimeSteps);
-	console.log('Transitions:');
+	console.log('colorTweenMulti::transitions:');
 	console.log(transitions);
-	
+	var transitions = computeColorStep(transitions, numTimeSteps);	
+
 
 	// over the course of tween period, update properties of all objects to be tweened
 	var start = new Date().getTime()
@@ -488,7 +595,41 @@ function colorTweenMulti(transitions, dur, numTimeSteps){
 
 		animate(allObjects);
 
+		// when the designated tweening period is complete:
 		if (new Date().getTime() > start + dur * 1000){
+
+			/* Have noticed that color tweening often doesn't complete perfectly; I suppose 
+			this is because `delay` is calculated so that delay * numTimeSteps = duration, but 
+			the amount of time between each time step isn't just `delay`; it's `delay` PLUS the 
+			amount of time it actually takes the animation code to run, which is non-zero. These
+			erros are usually really small, so maybe it wouldn't be noticeable if I just
+			manually set the colors to the target values at the end of the tween period*/ 
+
+			for (var p = 0; p < transitions.length; p++){
+				// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
+				console.log('transition element #'.concat(String(p), ':'));
+				console.log('	obj: '.concat(transitions[p].obj.constructor.name));
+				
+				if(transitions[p].obj.constructor.name != "imgContainer"){
+					console.log('	starting color: '.concat(rgb2str(transitions[p].original.slice())));		
+					console.log('	target color: '.concat(rgb2str(transitions[p].tgt.slice())));
+					console.log('	step:'.concat(rgb2str(transitions[p].step.slice())));
+					console.log('	final color (before manual correction): '.concat(rgb2str(transitions[p].obj.rgb.slice())));
+					for (var k = 0; k <4; k++){
+						transitions[p].obj.rgb[k] = transitions[p].tgt[k];
+					}	
+					console.log('	final color (after manual correction): '.concat(rgb2str(transitions[p].obj.rgb.slice())));
+				}
+				else if (transitions[p].obj.constructor.name == "imgContainer"){
+					console.log('	starting alpha: '.concat(String(transitions[p].original)));		
+					console.log('	target alpha: '.concat(String(transitions[p].tgt)));
+					console.log('	step:'.concat(String(transitions[p].step)));
+					console.log('	final alpha (before manual correction): '.concat(String(transitions[p].obj.alpha)));					
+					transitions[p].obj.alpha = transitions[p].tgt				
+					console.log('	final alpha (after manual correction): '.concat(String(transitions[p].obj.alpha)));
+				}				
+			}
+			animate(allObjects); // make sure to re-draw everything after manually correcting colors
 			clearInterval(intId);
 		}
 
@@ -509,11 +650,7 @@ function computeColorStep(transitions, numTimeSteps){
 		// if the object to be tweened is an image container, compute the appropriate alpha step
 		else if(transitions[n].obj.constructor.name == "imgContainer"){
 			transitions[n].step = (transitions[n].tgt - transitions[n].obj.alpha) / numTimeSteps
-		}
-	//console.log('obj'.concat(String(n), ':'));
-	console.log(transitions[n].obj.rgb.slice());	
-	//console.log('step:');
-	console.log(transitions[n].step.slice());	
+		}	
 	}
 	return transitions;
 }
@@ -548,7 +685,9 @@ var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
 
 // define and draw state space axes
-var stateSpaceAxes = new Axes(width/2, height/2 + ssAxisLength/2, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
+var stateSpaceOriginX = width/2;
+var stateSpaceOriginY = height/2 + ssAxisLength/2;
+var stateSpaceAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
 
 /*
 var stateSpaceAxes = {
@@ -638,8 +777,8 @@ function testStep3(){
 
 
 function step1(){
-	canvas.removeEventListener('click', testStep1);
-	var duration = 2;
+	canvas.removeEventListener('click', step1);
+	var duration = 0.25;
 
 	// prepare arrow that will be drawn in input box
 	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
@@ -648,17 +787,75 @@ function step1(){
 	allObjects.push(vertInput);
 
 	// define the transition structure
-	var transition4 = [{obj: pyr1, tgt: [0, 255, 0, 1.0]},
-			   {obj: inh1, tgt: [255, 0, 0, 1.0]},
-			   //{obj: vertInput, tgt: [185, 185, 185, 1.0]}
+	var transition4 = [{obj: pyr2, tgt: [0, 255, 0, 1.0]},
+			   {obj: tc2, tgt: [0, 255, 0, 1.0]},
+			   {obj: inh2, tgt: [255, 0, 0, 1.0]},
+			   {obj: vertInput, tgt: [185, 185, 185, 1.0]}
 			  ];
-	colorTweenMulti(transition4, 2, 100);	
+	colorTweenMulti(transition4, duration, 50);	
 	
 	var tmr1 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (duration) + 50);
 }
 
 
-function step2(){}
+function step2(){
+	canvas.removeEventListener('click', step2);
+
+
+	var drawVertLineDelay = 0; // in milliseconds!
+	var drawHorizLineDelay = 10; // in milliseconds!
+	var drawPointDelay = 100; // in milliseconds!
+
+	var drawVertLineDuration = 0.5; // in seconds!
+	var drawHorizLineDuration = 0.5; // in seconds!
+	var drawPointDuration = 0.5; // inseconds!
+	
+	var dataPointx = ssAxisLength * 0.1;
+	var dataPointy = ssAxisLength * 0.9;
+
+	var vertLine = new Rectangle(stateSpaceOriginX + dataPointx, stateSpaceOriginY, axisThickness, -ssAxisLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
+	var horizLine = new Rectangle(stateSpaceOriginX, stateSpaceOriginY - dataPointy, ssAxisLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
+	var dPoint = new dataPoint(stateSpaceOriginX + dataPointx, stateSpaceOriginY - dataPointy, [0, 255, 0, 0.0], 0); allObjects.push(dPoint); 	
+	
+	var vTransition = [{obj: vertLine, tgt: [0, 255, 0, 1.0]},
+			   //{obj: horizLine, tgt: [0, 255, 0, 1.0]}
+			  ];
+	
+	var hTransition = [//{obj: vertLine, tgt: [0, 255, 0, 1.0]},
+			   {obj: horizLine, tgt: [0, 255, 0, 1.0]}
+			  ];
+
+	var dTransition = [{obj:dPoint, tgt:[0, 255, 0, 1.0]}];
+
+	//colorTweenMulti(vTransition, drawVertLineDuration, 50);
+
+	var drawVertLineTimeout = setTimeout(function(){
+		flash(vTransition, 1, drawVertLineDuration, 50);}
+	, drawVertLineDelay);
+		
+	var drawVertLineTimeout = setTimeout(function(){
+		flash(hTransition, 1, drawHorizLineDuration, 50);}
+	, drawHorizLineDelay);	
+
+	var drawPointTimeout = setTimeout(function(){
+		colorTweenMulti(dTransition, drawPointDuration, 50);}
+	, drawPointDelay);	
+
+	var nextStepTimeOut = setTimeout(function(){
+		canvas.addEventListener('click', step3);}
+	, drawPointDelay + drawPointDuration);
+}
+
+
+
+function step3(){
+	canvas.removeEventListener('click', step3);
+	var x = ssAxisLength / 2;
+	var y = ssAxisLength / 2;
+	var color = [0, 255, 0, 1.0];
+	stateSpaceAxes.plot(x, y, 45, color, 5);
+}
+
 
 
 canvas.addEventListener('click', step1);
