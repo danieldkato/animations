@@ -326,41 +326,52 @@ class Axes {
 		// color: rgba quadruple specifying final point color
 		// duration: duration of plotting animation, in seconds
 	
-		var drawVertLineDelay = 0; // in seconds; remember this has to be converted to milliseconds in setTimeout()  
-		var drawHorizLineDelay = duration/3;  // in seconds; remember this has to be converted to milliseconds in setTimeout()
-		var drawPointDelay = duration * 2/3; // in seconds; remember this has to be converted to milliseconds in setTimeout()
-		var eraseLinesDelay = duration; 
 
-		var drawVertLineDuration = duration/3; 
-		var drawHorizLineDuration = duration/3; 
-		var drawPointDuration = duration/3; // the point, the last thing to be drawn, will start being drawn 2/3*duration and will take duration/3 to complete, so as long as nothing else takes longer to draw than the point, then the whole animation will elapse within the time specified by duration 
-		var eraseLinesDur = 1;
+		var drawVertLineDelay = 0; // in milliseconds!
+		var drawHorizLineDelay = 10; // in milliseconds!
+		var drawPointDelay = 100; // in milliseconds!
 
-		var point = new dataPoint(x, -y, color, angle); this.points.push(point);
-		var vertLine = new Rectangle(this.xOrig + x, this.yOrig , axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine);
-		var horizLine = new Rectangle(this.xOrig, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); // add lines last so they can be popped later 	
-		console.log('Axes::plot() color = '.concat(rgb2str(color.slice())));
-		var pTransition = [{obj: point, tgt: color.slice()}]; // tgt here must be a deep copy of the color array passed in as an argument, not a reference to it; not sure why this is, but it is
-		var vTransitionFwd = [{obj: vertLine, tgt: [0, 255, 0, 1.0].slice()}];
-		var hTransitionFwd = [{obj: horizLine, tgt: [0, 255, 0, 1.0].slice()}];
-		var revTransition = [{obj: vertLine, tgt: [0, 255, 0, 0].slice()},
-				     {obj: horizLine, tgt: [0, 255, 0, 0].slice()}
-				    ];
+		var drawVertLineDuration = 0.5; // in seconds!
+		var drawHorizLineDuration = 0.5; // in seconds!
+		var drawPointDuration = 0.5; // inseconds!
+	
+		var dataPointx = ssAxisLength * 0.1;
+		var dataPointy = ssAxisLength * 0.9;
 
-		point.rgb[3] = 0; // we want the point's alpha to be 0 before it starts to be drawn	
+		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
+		var horizLine = new Rectangle(this.xOrig, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
+		var dPoint = new dataPoint(x, -y, [0, 255, 0, 0.0], angle); this.points.push(dPoint); 	
+	
+		var vTransition = [{obj: vertLine, tgt: [0, 255, 0, 1.0]},
+				   //{obj: horizLine, tgt: [0, 255, 0, 1.0]}
+				  ];
+	
+		var hTransition = [//{obj: vertLine, tgt: [0, 255, 0, 1.0]},
+				   {obj: horizLine, tgt: [0, 255, 0, 1.0]}
+				  ];
 
-		var drawPointTimeout = setTimeout(function(){
-			colorTweenMulti(pTransition, drawPointDuration, 50);}
-		, drawPointDelay * 1000);	
+		var dTransition = [{obj:dPoint, tgt:[0, 255, 0, 1.0]}];
 
+		//colorTweenMulti(vTransition, drawVertLineDuration, 50);
+
+		var drawVertLineTimeout = setTimeout(function(){
+			flash(vTransition, 1, drawVertLineDuration, 50);}
+		, drawVertLineDelay);
 		
 		var drawVertLineTimeout = setTimeout(function(){
-			colorTweenMulti(vTransitionFwd, 1, drawVertLineDuration, 50);}
-		, drawVertLineDelay * 1000);				
+			flash(hTransition, 1, drawHorizLineDuration, 50);}
+		, drawHorizLineDelay);	
 
-		var drawHorizLineTimeout = setTimeout(function(){
-			colorTweenMulti(hTransitionFwd, 1, drawHorizLineDuration, 50);}
-		, drawHorizLineDelay * 1000);	
+		var drawPointTimeout = setTimeout(function(){
+			colorTweenMulti(dTransition, drawPointDuration, 50);}
+		, drawPointDelay);
+		
+		/*
+		var drawVertLineTimeout = setTimeout(function(){
+			}
+		, drawVertLineDelay * 1000);				
+		*/
+	
 
 		/*
 		var eraseLinesTimeout = setTimeout(function(){
