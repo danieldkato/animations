@@ -29,25 +29,9 @@ It will start off in the same position as state space axes, and
 with no X-axis; it will later "slide" out from over the state space
 axes, and the X axis will extend out of it
 */
+var nmXaxisLength = width/4;
 var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); //  
 
-/*
-var stateSpaceAxes = {
-,
-	axisThickness: 3,
-	originX: width/2,
-	originY: height/2 + this.axisLength/2,
-	
-	draw: function(){
-		ctx.save();
-		ctx.translate(this.originX, this.originY);
-		ctx.fillRect(0, 0, this.axisLength, this.axisThickness);
-		ctx.fillRect(0, 0, this.axisThickness, -this.axisLength);
-		ctx.restore();
-	}
-	
-}
-*/
 
 // define and draw input box
 pyr1MidBase = pyr1.LLx + pyramidalBase/2;
@@ -204,13 +188,20 @@ function step3(){
 function step4(){
 	canvas.removeEventListener('click', step4);
 	nmAxes.draw();
-
-	var lastFrameTimeMs = 0;
+	var lastFrameTimeMs = 0;	
+	
+	// variables controlling timing of translation
 	var tgtX = width * 0.8;
 	var distance = tgtX - nmAxes.xOrig;	
-	var slideDuration = 2;
+	var slideDuration = 1;
 	var vel = distance / (slideDuration * 1000);  
 	
+	// variables controlling timing of x-scaling
+	var scaleDuration = 1;
+	var numScaleSteps = 50;	
+	var scaleTimeStep = (scaleDuration/numScaleSteps) * 1000;
+	var scaleStep = nmXaxisLength/numScaleSteps;
+
 	window.requestAnimationFrame(initializeLastFrame);
 	window.requestAnimationFrame(translateNM);	
 
@@ -218,8 +209,8 @@ function step4(){
 		lastFrameTimeMs = timeStamp;
 	};
 
-	function update(delta){
-		nmAxes.xOrig =  nmAxes.xOrig + vel * delta;		
+	function updateXorig(delta){
+		nmAxes.xOrig += vel * delta;		
 		animate(allObjects);
 	};
 
@@ -227,11 +218,29 @@ function step4(){
 	
 		var delta = timeStamp - lastFrameTimeMs;
 		lastFrameTimeMs = timeStamp;
-		update(delta);		
+		updateXorig(delta);		
 
-		if(nmAxes.xOrig + vel < tgtX){
+		if(nmAxes.xOrig + vel * delta < tgtX){
 			window.requestAnimationFrame(translateNM);
-		};
+		} else { // Once the translation is done...
+			console.log('finish translation');			
+	
+			// ...clean up any errors in the tweening
+			nmAxes.xOrig = tgtX;
+			animate(allObjects);
+
+			// ... extend the x-axis...
+			var extendXaxis = setInterval(function(){
+				nmAxes.xLength += scaleStep;
+				animate(allObjects);
+
+				if(nmAxes.xLength + scaleStep > nmXaxisLength){										
+					nmAxisLength = nmXaxisLength;
+					clearInterval(extendXaxis);
+				}
+			}, scaleTimeStep);
+			
+		}
 	};
 
 }
