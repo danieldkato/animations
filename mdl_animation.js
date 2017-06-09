@@ -24,6 +24,13 @@ var stateSpaceOriginX = width/2;
 var stateSpaceOriginY = height/2 + ssAxisLength/2;
 var stateSpaceAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
 
+/* define neurometric curve axis (but don't draw it yet). 
+It will start off in the same position as state space axes, and 
+with no X-axis; it will later "slide" out from over the state space
+axes, and the X axis will extend out of it
+*/
+var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); //  
+
 /*
 var stateSpaceAxes = {
 ,
@@ -70,7 +77,7 @@ var inputBoxCtrX = inputBox.ULx + inputBoxSize/2;
 var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
 // assemble objects into array
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, inputBox];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
 
 
 var transition2 = [
@@ -141,9 +148,9 @@ function step2(){
 	var drawHorizLineDelay = 10; // in milliseconds!
 	var drawPointDelay = 100; // in milliseconds!
 
-	var drawVertLineDuration = 1; // in seconds!
-	var drawHorizLineDuration = 1; // in seconds!
-	var drawPointDuration = 1; // inseconds!
+	var drawVertLineDuration = 0.5; // in seconds!
+	var drawHorizLineDuration = 0.5; // in seconds!
+	var drawPointDuration = 0.5; // inseconds!
 	
 	var dataPointx = ssAxisLength * 0.1;
 	var dataPointy = ssAxisLength * 0.9;
@@ -175,7 +182,80 @@ function step2(){
 	var drawPointTimeout = setTimeout(function(){
 		colorTweenMulti(dTransition, drawPointDuration, 50);}
 	, drawPointDelay);	
+
+	var nextStepTimeOut = setTimeout(function(){
+		canvas.addEventListener('click', step3);}
+	, drawPointDelay + drawPointDuration);
 }
 
+
+
+function step3(){
+	canvas.removeEventListener('click', step3);
+	var x = ssAxisLength / 2;
+	var y = ssAxisLength / 2;
+	var color = [0, 255, 0, 1.0];
+	stateSpaceAxes.plot(x, y, 45, color, 5);
+	
+	var nextStepTimeOut = setTimeout(function(){canvas.addEventListener('click', step4);}, 2000)
+}
+
+
+function step4(){
+	canvas.removeEventListener('click', step4);
+	nmAxes.draw();
+	
+	var slideDuration = 2;
+	var delay = 1 / 60;
+	var numStepsSlide = slideDuration/delay;
+	
+	var tgtX = width * 0.7;
+	var xTranslateStep = (tgtX - nmAxes.xOrig)/numStepsSlide;
+	
+	var moveNmAxes = setInterval(function(){
+		nmAxes.xOrig = nmAxes.xOrig + xTranslateStep;
+		animate(allObjects);
+	
+		if(nmAxes.xOrig + xTranslateStep > tgtX){
+			nmAxes.xOrig = tgtX; animate(allObjects);
+			clearInterval(moveNmAxes);
+		}		
+
+	}, delay);	
+	
+	/*
+	// in case the tweening doesn't complete perfectly
+	var completeMove = setTimeout(function(){
+		 
+	}, slideDuration * 1000);	
+	*/	
+	
+	/*
+	// animate the extension of the x-axis for the neurometric plot
+	var delayAxisExtension = setTimeout(function(){
+		
+	}, slideDuration * 1000);
+	*/
+
+	//var nextStepTimeOut = setTimeout(function(){});
+
+}
+
+
+function step5(){
+	canvas.removeEventListener('click', step5);	
+
+	var extensionDuration = 1;	
+	var delay = 1 / 60;
+	var numScaleSteps = extensionDuration/delay;	
+	var xScaleStep = nmXaxisLength/numScaleSteps;	
+
+	var extendAxis = setInterval(function(){
+				nmAxes.xLength = nmAxes.xLength + xScaleStep;
+				animate(allObjects);
+	}, delay);
+
+
+}
 
 canvas.addEventListener('click', step1);
