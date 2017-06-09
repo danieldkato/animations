@@ -31,20 +31,21 @@ axes, and the X axis will extend out of it
 */
 var nmXaxisLength = width/4;
 var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); // initialize x-origin to the same as that for the state space Axes
-var nmAxesFinal = width * 0.8;;  
+var nmAxesFinal = width * 0.6;;  
 var numAngles = 8;
 var arrowsY = nmAxes.yOrig + 10;
-var arrowsXstart = nmAxesFinal + 10;
-var xArrowWidth = 3;
-var xArrowLength = 10;
+var arrowsXstart = nmAxesFinal + 30;
+var xArrowWidth = 9;
+var xArrowLength = 30;
 var xArrows = [];
-for(var a = 0; a <= numAngles; a++){
-	angle = a * (90/numAngles);
+for(var a = 0; a < numAngles; a++){
+	angle = 90 - (a * (90/(numAngles-1)));
 	var arrow = new Arrow(arrowsXstart + a*nmXaxisLength/numAngles, arrowsY, xArrowLength, xArrowWidth, angle);		
 	arrow.rgb = [185, 185, 185, 0.0];		
 	xArrows.push(arrow); 
 }
-
+console.log('xArrows');
+console.log(xArrows);
 
 // define and draw input box
 pyr1MidBase = pyr1.LLx + pyramidalBase/2;
@@ -218,8 +219,9 @@ function step4(){
 	var scaleStep = nmXaxisLength/numScaleSteps;
 
 	// variables needed for plotting arrows along x-axis:
-	var arrowDrawDur = 0.5;
-
+	var timePerArrow = 0.5; // time it takes to draw each individual arrow;
+	var arrowDurTotal = 2; // time between beginning to draw first arrow and beginning to draw last arrow
+	
 	// local functions needed for animation:	
 	function initializeLastFrame(timeStamp){
 		lastFrameTimeMs = timeStamp;
@@ -261,15 +263,15 @@ function step4(){
 			//console.log('arrows inside translateNM:');
 			//console.log(arrows);
 			var drawArrows = setInterval(function(){
-				colorTweenMulti([{obj: xArrows[arrowIndex], tgt: [185, 185, 185, 1.0]}], arrowDrawDur, 50);
-				arrowIndex += 1;
-				
-				if(arrowIndex >= numAngles){
+				if(arrowIndex > numAngles){
 					console.log('done drawing arrows');
 					clearInterval(drawArrows);
+				} else{
+					colorTweenMulti([{obj: xArrows[arrowIndex], tgt: [185, 185, 185, 1.0]}], timePerArrow, 50);
+					arrowIndex += 1;
 				}
 				
-			}, scaleDuration/numAngles * 1000)
+			}, arrowDurTotal/numAngles * 1000)
 			
 		}
 	};
