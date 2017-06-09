@@ -1,7 +1,7 @@
 // get basic canvas variables
 var canvas = document.getElementById('canvas');
-var width = canvas.width;
-var height = canvas.height;
+var width = screen.width;
+var height = screen.height;
 var ctx = canvas.getContext('2d');
 
 // define miscellaneous constants that will be useful later
