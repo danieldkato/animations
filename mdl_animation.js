@@ -121,6 +121,8 @@ function testStep3(){
 
 function step1(){
 	canvas.removeEventListener('click', step1);
+	canvas.addEventListener('click', step2); 
+
 	var duration = 0.25;
 
 	// prepare arrow that will be drawn in input box
@@ -130,17 +132,36 @@ function step1(){
 	allObjects.push(vertInput);
 
 	// define the transition structure
+	/*	
 	var transition4 = [{obj: pyr2, tgt: [0, 255, 0, 1.0]},
 			   {obj: tc2, tgt: [0, 255, 0, 1.0]},
 			   {obj: inh2, tgt: [255, 0, 0, 1.0]},
-			   {obj: vertInput, tgt: [185, 185, 185, 1.0]}
+			   {obj: vertInput, tgt: [0, 0, 0, 1.0]}
 			  ];
-	colorTweenMulti(transition4, duration, 50);	
-	
-	var tmr1 = setTimeout( function(){ canvas.addEventListener('click', step2); } , (duration) + 50);
+	*/
+
+	colorTweenMulti([{obj: vertInput, tgt: [0, 0, 0, 1.0]}], duration, 50);	
+}
+
+function step2(){
+	canvas.removeEventListener('click', step2);
+	canvas.addEventListener('click', step3);	
+
+	var duration = 0.25;
+	colorTweenMulti([{obj: tc2, tgt: [0, 255, 0, 1.0]}], duration, 50);	
+}
+
+function step3(){
+	canvas.removeEventListener('click', step3);
+	//canvas.addEventListener('click', step4);
+
+	var duration = 0.25;
+	colorTweenMulti([{obj: pyr2, tgt: [0, 255, 0, 1.0]}], duration, 50);	
 }
 
 
+
+/*
 function step2(){
 	canvas.removeEventListener('click', step2);
 
@@ -294,5 +315,6 @@ function step5(){
 				animate(allObjects);
 	}, delay);
 }
-
+*/
 canvas.addEventListener('click', step1);
+
