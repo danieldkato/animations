@@ -222,22 +222,6 @@ function step4(){
 		}		
 
 	}, delay);	
-	
-	/*
-	// in case the tweening doesn't complete perfectly
-	var completeMove = setTimeout(function(){
-		 
-	}, slideDuration * 1000);	
-	*/	
-	
-	/*
-	// animate the extension of the x-axis for the neurometric plot
-	var delayAxisExtension = setTimeout(function(){
-		
-	}, slideDuration * 1000);
-	*/
-
-	//var nextStepTimeOut = setTimeout(function(){});
 
 }
 
