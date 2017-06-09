@@ -209,19 +209,32 @@ function step4(){
 	var delay = 1 / 60;
 	var numStepsSlide = slideDuration/delay;
 	
-	var tgtX = width * 0.7;
+	var tgtX = width * 0.8;
 	var xTranslateStep = (tgtX - nmAxes.xOrig)/numStepsSlide;
 	
 	var moveNmAxes = setInterval(function(){
 		nmAxes.xOrig = nmAxes.xOrig + xTranslateStep;
 		animate(allObjects);
-	
+			
 		if(nmAxes.xOrig + xTranslateStep > tgtX){
 			nmAxes.xOrig = tgtX; animate(allObjects);
+
+			var extensionDuration = 1;	
+			var numScaleSteps = extensionDuration/delay;	
+			var xScaleStep = nmXaxisLength/numScaleSteps;				
+			var extendAxis = setInterval(function(){
+				nmAxes.xLength = nmAxes.xLength + xScaleStep;
+				animate(allObjects);
+			}, delay);
+
+			
+
 			clearInterval(moveNmAxes);
 		}		
 
 	}, delay);	
+
+	//var nextStepTimeOut = setTimeout(function(){canvas.addEventListener('click', step5);}, slideDuration * 1000)
 
 }
 
@@ -238,8 +251,6 @@ function step5(){
 				nmAxes.xLength = nmAxes.xLength + xScaleStep;
 				animate(allObjects);
 	}, delay);
-
-
 }
 
 canvas.addEventListener('click', step1);
