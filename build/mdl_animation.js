@@ -678,7 +678,7 @@ function rgb2str(rgb){
 
 
 // draw pyramidals
-var pyr1 = new Pyramidal(width/5, height/3 + pyramidalHeight/2); pyr1.draw();
+var pyr1 = new Pyramidal(width*0.125, height*0.4 + pyramidalHeight/2); pyr1.draw();
 var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); pyr2.draw();
 
 // draw inhibitory neurons
@@ -698,8 +698,8 @@ var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
 var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
 
 // define and draw state space axes
-var stateSpaceOriginX = width/2;
-var stateSpaceOriginY = height/2 + ssAxisLength/2;
+var stateSpaceOriginX = width*0.45;
+var stateSpaceOriginY = height*0.55 + ssAxisLength/2;
 var stateSpaceAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
 
 /* define neurometric curve axis (but don't draw it yet). 
@@ -709,10 +709,10 @@ axes, and the X axis will extend out of it
 */
 var nmXaxisLength = width/4;
 var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); // initialize x-origin to the same as that for the state space Axes
-var nmAxesFinal = width * 0.6;;  
+var nmAxesFinal = width * 0.8;  
 var numAngles = 8;
-var arrowsY = nmAxes.yOrig + 10;
-var arrowsXstart = nmAxesFinal + 30;
+var arrowsY = nmAxes.yOrig + 20;
+var arrowsXstart = nmAxesFinal + 25;
 var xArrowWidth = 9;
 var xArrowLength = 30;
 var xArrows = [];
