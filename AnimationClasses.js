@@ -1,7 +1,7 @@
 // get basic canvas variables
 var canvas = document.getElementById('canvas');
-var width = canvas.width;
-var height = canvas.height;
+var width = screen.width;
+var height = screen.height;
 var ctx = canvas.getContext('2d');
 
 // define miscellaneous constants that will be useful later
@@ -208,8 +208,8 @@ class Arrow {
 		ctx.save();
 		ctx.translate(this.ctrX, this.ctrY);		
 		ctx.save();
-		ctx.translate(0, this.arrowLengthTotal/2 - this.arrowBodyLength);
 		ctx.rotate(this.angle);
+		ctx.translate(0, this.arrowLengthTotal/2 - this.arrowBodyLength);
 		ctx.fillRect(-this.arrowBodyWidth/2, this.lengthTotal/2 - this.arrowBodyLength - 1, this.arrowBodyWidth, this.arrowBodyLength);
 		ctx.beginPath();
 		ctx.moveTo(-this.widthTotal/2, this.lengthTotal/2 - this.arrowBodyLength);
@@ -440,6 +440,7 @@ class dataPoint {
 		ctx.beginPath();
 		ctx.arc(0, 0, dataPointRadius, 0, 2 * Math.PI);
 		ctx.fill();
+		this.arrow.rgb[3] = this.rgb[3];
 		this.arrow.draw();
 		ctx.restore();
 	}
