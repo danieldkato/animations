@@ -123,35 +123,24 @@ function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
 
-	var duration = 0.25;
+	var duration = 250;
 
 	// prepare arrow that will be drawn in input box
 	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
-	vertInput.rgb = [185, 185, 185, 0.0]; // initialize alpha to 0 
-	//vertInput.draw();	
+	vertInput.rgb[3] = 0.0; // initialize alpha to 0 
 	allObjects.push(vertInput);
-
-	// define the transition structure
-	/*	
-	var transition4 = [{obj: pyr2, tgt: [0, 255, 0, 1.0]},
-			   {obj: tc2, tgt: [0, 255, 0, 1.0]},
-			   {obj: inh2, tgt: [255, 0, 0, 1.0]},
-			   {obj: vertInput, tgt: [0, 0, 0, 1.0]}
-			  ];
-	*/
-
-	colorTweenMulti([{obj: vertInput, tgt: [0, 0, 0, 1.0]}], duration, 50);	
+	colorTween(vertInput, [0, 0, 0, 1.0], duration);
 }
 
 function step2(){
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
-	var duration = 0.25;
+	var duration = 250;
 	var latency = 100;
-	colorTweenMulti([{obj: tc2, tgt: [0, 255, 0, 1.0]}], duration, 50);	
+	colorTween(tc2, [0, 255, 0, 1.0], duration);	
 	
 	var activatePyr = setTimeout(function(){
-		colorTweenMulti([{obj: pyr2, tgt: [0, 255, 0, 1.0]}], duration, 50);
+		colorTween(pyr2, [0, 255, 0, 1.0], duration);
 	}, latency);
 
 }
@@ -159,14 +148,15 @@ function step2(){
 function step3(){
 	canvas.removeEventListener('click', step3);
 	canvas.addEventListener('click', step4);
-	var duration = 0.25;
-	colorTweenMulti([{obj: inh2, tgt: [255, 0, 0, 1.0]}], duration, 50);	
+	var duration = 250;
+	console.log('step 3');
+	colorTween	(inh2, [255, 0, 0, 1.0], duration);	
 }
 
 var p1x = ssAxisLength * 0.1;
 var p1y = ssAxisLength * 0.9;
 var lin1 = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); lin1.rgb = [0, 255, 0, 0.0]; 
-var lin2 = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength, axisThickness); lin2.rgb = [0, 255, 0, 0.0]; 
+var lin2 = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); lin2.rgb = [0, 255, 0, 0.0]; 
 var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
 function step4(){
@@ -178,8 +168,8 @@ function step4(){
 	allObjects.push(lin2);
 	allObjects.push(p);
 
-	var duration = 0.5;
-	colorTweenMulti([{obj: lin1, tgt: [0, 255, 0, 1.0]}], duration, 50);	
+	var duration = 500;
+	colorTween(lin1, [0, 255, 0, 1.0], duration);	
 }
 
 function step5(){
@@ -187,26 +177,26 @@ function step5(){
 	canvas.addEventListener('click', step6);
 	
 	// line variables
-	var duration = 0.5;
+	var duration = 500;
 	
 	// datapoint variables
 	var latency1 = 250; // delay between when the horizontal line starts getting drawn and when the point starts getting drawn, in milliseconds	
 	var latency2 = 250; // delay between when the point starts getting drawn and when the grid lines start being erased, in milliseconds	
 
 	// render the line	
-	colorTweenMulti([{obj: lin2, tgt: [0, 255, 0, 1.0]}], duration, 50);
+	colorTween(lin2, [0, 255, 0, 1.0], duration);
 
 	// after some delay, render the point
 	var drawPoint = setTimeout(function(){
 		console.log('draw point');
-		colorTweenMulti([{obj: p, tgt: [0, 255, 0, 1.0]}], duration, 50);
+		colorTween(p, [0, 255, 0, 1.0], duration);
 	}, latency1);
 
 	// now remove the grid lines
 	var rlTransition = [{obj: lin1, tgt: [0, 255, 0, 0.0]},
 			    {obj: lin2, tgt: [0, 255, 0, 0.0]}];
 	var removeLines = setTimeout(function(){
-		colorTweenMulti(rlTransition, duration, 50);
+		colorTweenMulti(rlTransition, duration/1000, 50);
 	}, latency1 + latency2);
 }
 
@@ -416,5 +406,5 @@ function testColorTween(){
 	colorTween(pyr1, [0, 255, 0, 1.0], 500);
 }
 
-canvas.addEventListener('click', testColorTween);
+canvas.addEventListener('click', step1);
 
