@@ -147,7 +147,7 @@ function step2(){
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
 	var duration = 0.25;
-	var latency = 250;
+	var latency = 100;
 	colorTweenMulti([{obj: tc2, tgt: [0, 255, 0, 1.0]}], duration, 50);	
 	
 	var activatePyr = setTimeout(function(){
@@ -205,18 +205,104 @@ function step5(){
 }
 
 function step6(){
+	canvas.removeEventListener('click', step6);
+	canvas.addEventListener('click', step7);	
+	
+	console.log('allObjects');
+	console.log(allObjects);
+
+	console.log('xArrows');
+	console.log(xArrows);
+
 	// after the point is rendered, remove it from allObjects and make it a child of stateSpaceAxes
-	allObjects.pop();	
+	//allObjects.pop();	
 	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
-	p.ctrY = p1y; // make the coordinates relative to the origin of stateSpaceAxes
+	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes
 	stateSpaceAxes.points.push(p);
 
 	// also pop out those grid lines objects, which we don't need anymore	
-	allObjects.pop(); 
-	allObjects.pop();
+	//allObjects.pop(); 
+	//allObjects.pop();
 }
 
+function step7(){
+	canvas.removeEventListener('click', step7);
+	nmAxes.draw();
+	var lastFrameTimeMs = 0;	
+	
+	// variables controlling timing of translation:	
+	var distance = nmAxesFinal - nmAxes.xOrig;	
+	var slideDuration = 0.25;
+	var vel = distance / (slideDuration * 1000);  
+	
+	// variables controlling timing of x-scaling:
+	var scaleDuration = 0.25;
+	var numScaleSteps = 50;	
+	var scaleTimeStep = (scaleDuration/numScaleSteps) * 1000;
+	var scaleStep = nmXaxisLength/numScaleSteps;
 
+	// variables needed for plotting arrows along x-axis:
+	var timePerArrow = 0.5; // time it takes to draw each individual arrow;
+	var arrowDurTotal = 1; // time between beginning to draw first arrow and beginning to draw last arrow
+	
+	// local functions needed for animation:	
+	function initializeLastFrame(timeStamp){
+		lastFrameTimeMs = timeStamp;
+	};
+
+	function updateXorig(delta){
+		nmAxes.xOrig += vel * delta;		
+		animate(allObjects);
+	};
+
+	function translateNM(timeStamp){
+	
+		var delta = timeStamp - lastFrameTimeMs;
+		lastFrameTimeMs = timeStamp;
+		updateXorig(delta);		
+
+		if(nmAxes.xOrig + vel * delta < nmAxesFinal){
+			window.requestAnimationFrame(translateNM);
+		} else { // Once the translation is done...
+			console.log('finish translation');			
+	
+			// ...clean up any errors in the tweening
+			nmAxes.xOrig = nmAxesFinal;
+			animate(allObjects);
+
+			// ... extend the x-axis...
+			var extendXaxis = setInterval(function(){
+				nmAxes.xLength += scaleStep;
+				animate(allObjects);
+
+				if(nmAxes.xLength + scaleStep > nmXaxisLength){										
+					nmAxisLength = nmXaxisLength;
+					clearInterval(extendXaxis);
+				}
+			}, scaleTimeStep);
+
+			// ... and draw the arrows along the x-axis
+			var arrowIndex = 0;
+			//console.log('arrows inside translateNM:');
+			//console.log(arrows);
+			var drawArrows = setInterval(function(){
+				if(arrowIndex > numAngles - 1){
+					console.log('done drawing arrows');
+					clearInterval(drawArrows);
+				} else{
+					console.log('arrowIndex = '.concat(String(arrowIndex)));
+					colorTweenMulti([{obj: xArrows[arrowIndex], tgt: [185, 185, 185, 1.0]}], timePerArrow, 50);
+					arrowIndex += 1;
+				}
+				
+			}, arrowDurTotal/numAngles * 1000)
+			
+		}
+	};
+
+	window.requestAnimationFrame(initializeLastFrame);
+	window.requestAnimationFrame(translateNM);
+}
 
 
 /*
@@ -281,83 +367,7 @@ function step3(){
 }
 
 
-function step4(){
-	canvas.removeEventListener('click', step4);
-	nmAxes.draw();
-	var lastFrameTimeMs = 0;	
-	
-	// variables controlling timing of translation:	
-	var distance = nmAxesFinal - nmAxes.xOrig;	
-	var slideDuration = 1;
-	var vel = distance / (slideDuration * 1000);  
-	
-	// variables controlling timing of x-scaling:
-	var scaleDuration = 1;
-	var numScaleSteps = 50;	
-	var scaleTimeStep = (scaleDuration/numScaleSteps) * 1000;
-	var scaleStep = nmXaxisLength/numScaleSteps;
 
-	// variables needed for plotting arrows along x-axis:
-	var timePerArrow = 0.5; // time it takes to draw each individual arrow;
-	var arrowDurTotal = 2; // time between beginning to draw first arrow and beginning to draw last arrow
-	
-	// local functions needed for animation:	
-	function initializeLastFrame(timeStamp){
-		lastFrameTimeMs = timeStamp;
-	};
-
-	function updateXorig(delta){
-		nmAxes.xOrig += vel * delta;		
-		animate(allObjects);
-	};
-
-	function translateNM(timeStamp){
-	
-		var delta = timeStamp - lastFrameTimeMs;
-		lastFrameTimeMs = timeStamp;
-		updateXorig(delta);		
-
-		if(nmAxes.xOrig + vel * delta < nmAxesFinal){
-			window.requestAnimationFrame(translateNM);
-		} else { // Once the translation is done...
-			console.log('finish translation');			
-	
-			// ...clean up any errors in the tweening
-			nmAxes.xOrig = nmAxesFinal;
-			animate(allObjects);
-
-			// ... extend the x-axis...
-			var extendXaxis = setInterval(function(){
-				nmAxes.xLength += scaleStep;
-				animate(allObjects);
-
-				if(nmAxes.xLength + scaleStep > nmXaxisLength){										
-					nmAxisLength = nmXaxisLength;
-					clearInterval(extendXaxis);
-				}
-			}, scaleTimeStep);
-
-			// ... and draw the arrows along the x-axis
-			var arrowIndex = 0;
-			//console.log('arrows inside translateNM:');
-			//console.log(arrows);
-			var drawArrows = setInterval(function(){
-				if(arrowIndex > numAngles){
-					console.log('done drawing arrows');
-					clearInterval(drawArrows);
-				} else{
-					colorTweenMulti([{obj: xArrows[arrowIndex], tgt: [185, 185, 185, 1.0]}], timePerArrow, 50);
-					arrowIndex += 1;
-				}
-				
-			}, arrowDurTotal/numAngles * 1000)
-			
-		}
-	};
-
-	window.requestAnimationFrame(initializeLastFrame);
-	window.requestAnimationFrame(translateNM);
-}
 
 
 function step5(){
