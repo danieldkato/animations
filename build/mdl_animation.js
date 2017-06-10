@@ -4,6 +4,10 @@ var width = screen.width;
 var height = screen.height;
 var ctx = canvas.getContext('2d');
 
+// define some timing variables
+var frameRate = 60; // frames per second
+var framePeriod = 1000/frameRate; // milliseconds
+
 // define miscellaneous constants that will be useful later
 var colorBaseStr = 'rgba(';
 var step = new Array(3);
@@ -440,6 +444,7 @@ class dataPoint {
 		ctx.beginPath();
 		ctx.arc(0, 0, dataPointRadius, 0, 2 * Math.PI);
 		ctx.fill();
+		this.arrow.rgb[3] = this.rgb[3];
 		this.arrow.draw();
 		ctx.restore();
 	}
@@ -676,6 +681,127 @@ function rgb2str(rgb){
 }
 
 
+class Timer{
+	constructor(){
+		this.lastTime = 0;
+		this.delta = 0;
+	}
+
+	initialize(){
+		self = this;
+		window.requestAnimationFrame(function(timeStamp){
+			self.lastTime = timeStamp;
+			console.log('initialize::timer');
+			console.log(tmr);
+		});
+	}	
+}
+
+
+function colorTween(obj, tgt, duration){
+
+	// compute color steps and stuff
+	var speed = new Array(4);
+	var initColor = obj.rgb.slice();
+
+	for (var c = 0; c < 4; c++){
+		speed[c] = (tgt[c] - initColor[c])/duration;
+	}	
+
+	console.log('speed');
+	console.log(speed);
+
+	// initialize timer
+	tmr = new Timer;
+	tmr.initialize();
+	console.log('colorTween::timer');
+	console.log(tmr);
+
+	// make initial request upon next frame
+	window.requestAnimationFrame(function(timeStamp){tmr.initialize(); console.log('raf::timer'); console.log(tmr); colorTweenStep(timeStamp, obj, tgt, speed, tmr)});
+}
+
+
+function colorTweenStep(timeStamp, obj, tgt, speed, timer){
+	
+	//console.log('colorTweenStep::timer');
+	//console.log(timer);
+
+	// If the elapsed time is less than the min frame period, then do nothing:
+	if( timeStamp - timer.lastTime < framePeriod ){
+		window.requestAnimationFrame(function(timeStamp2){colorTweenStep(timeStamp2, obj, tgt, speed, timer);});
+		return;
+	}
+	
+	timer.delta += timeStamp - timer.lastTime;
+	timer.lastTime = timeStamp;
+	timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;
+
+	console.log('current object color');
+	console.log(obj.rgb);
+	console.log('current step');
+	console.log(String(timeToRender * speed[0]).concat());
+	
+
+	// Evaluate if the tween is complete; if even one color will not be at its target wirh one more step, then it's not complete
+	var cont = 0;
+	for (var c = 0; c < 4; c++){
+		if( chDoneTweening(obj.rgb[c], speed[c], tgt[c], timer) == 0 ){
+			cont = 1;
+		};
+	};
+
+	// If the tween is not complete...	
+	if(cont == 1){
+
+		for(var d = 0; d < 4; d++){
+		// ...only update colors that need updating; recall that the tween is incomplete if AT LEAST one color will not reach it's target with one more step, meaning that the tween could be incomplete 			even if some of the colors are already going to reach their targets
+			if( chDoneTweening(obj.rgb[d], speed[d], tgt[d], timer) == 0 ){  
+				obj.rgb[d] += speed[d] * timeToRender;
+				console.log('adding color');
+			};
+		};
+
+		animate(allObjects);
+		timer.delta -= Math.floor(timer.delta/framePeriod) * framePeriod;		
+		window.requestAnimationFrame(function(timeStamp3){colorTweenStep(timeStamp3, obj, tgt, speed, timer);});	
+	// If the tween is complete, manually fix any errors	
+	} else {
+		for(var e = 0; e < 4; e++){
+			obj.rgb[e] = tgt[e];
+			console.log('tween complete');
+		}
+	}
+};
+
+
+function objDoneTweening(obj, speed, tgt, delta){
+	var timeToRender = Math.floor(delta/framePeriod) * framePeriod;	
+	var done = 0;
+	if(obj.constructor.name != 'imageContainer'){
+		for(var k = 0; k < 4; k++){
+			if (chDoneTweening(obj.rgb[k], speed[k], tgt[k], delta)){
+				done = 1;
+			}
+		}
+	} else if(obj.constructor.name == 'imageContainer'){
+		if ( ( speed[k]>0 && obj.alpha[k]+speed[k]*timeToRender>tgt[k] ) || 
+		     ( speed[k]<0 && obj.alpha[k]+speed[k]*timeToRender<tgt[k] ) ||
+		       speed == 0){done = 1;}
+	}
+	return done;
+}
+
+
+function chDoneTweening(val, speed, tgt, timer){
+	var timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;
+	var done = 0;
+	if( ( speed>0 && val+speed*timeToRender>=tgt ) ||
+	    ( speed<0 && val+speed*timeToRender<=tgt ) ||
+	      speed == 0){done = 1;}
+	return done;
+} 
+
 
 // draw pyramidals
 var pyr1 = new Pyramidal(width*0.125, height*0.4 + pyramidalHeight/2); pyr1.draw();
@@ -801,43 +927,203 @@ function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
 
-	var duration = 0.25;
+	var duration = 500;
 
 	// prepare arrow that will be drawn in input box
 	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
-	vertInput.rgb = [185, 185, 185, 0.0]; // initialize alpha to 0 
-	//vertInput.draw();	
+	vertInput.rgb[3] = 0.0; // initialize alpha to 0 
 	allObjects.push(vertInput);
-
-	// define the transition structure
-	/*	
-	var transition4 = [{obj: pyr2, tgt: [0, 255, 0, 1.0]},
-			   {obj: tc2, tgt: [0, 255, 0, 1.0]},
-			   {obj: inh2, tgt: [255, 0, 0, 1.0]},
-			   {obj: vertInput, tgt: [0, 0, 0, 1.0]}
-			  ];
-	*/
-
-	colorTweenMulti([{obj: vertInput, tgt: [0, 0, 0, 1.0]}], duration, 50);	
+	colorTween(vertInput, [0, 0, 0, 1.0], duration);
 }
 
 function step2(){
 	canvas.removeEventListener('click', step2);
-	canvas.addEventListener('click', step3);	
+	//canvas.addEventListener('click', step3);	
+	var duration = 250;
+	var latency = 100;
+	colorTween(tc2, [0, 255, 0, 1.0], duration);	
+	
+	var activatePyr = setTimeout(function(){
+		colorTween(pyr2, [0, 255, 0, 1.0], duration);
+	}, latency);
 
-	var duration = 0.25;
-	colorTweenMulti([{obj: tc2, tgt: [0, 255, 0, 1.0]}], duration, 50);	
 }
 
 function step3(){
 	canvas.removeEventListener('click', step3);
-	//canvas.addEventListener('click', step4);
-
-	var duration = 0.25;
-	colorTweenMulti([{obj: pyr2, tgt: [0, 255, 0, 1.0]}], duration, 50);	
+	canvas.addEventListener('click', step4);
+	var duration = 250;
+	console.log('step 3');
+	colorTween	(inh2, [255, 0, 0, 1.0], duration);	
 }
 
+var p1x = ssAxisLength * 0.1;
+var p1y = ssAxisLength * 0.9;
+var lin1 = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); lin1.rgb = [0, 255, 0, 0.0]; 
+var lin2 = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); lin2.rgb = [0, 255, 0, 0.0]; 
+var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
+function step4(){
+	canvas.removeEventListener('click', step4);
+	canvas.addEventListener('click', step5);
+
+	// add these objects to allObjects
+	allObjects.push(lin1);
+	allObjects.push(lin2);
+	allObjects.push(p);
+
+	var duration = 500;
+	colorTween(lin1, [0, 255, 0, 1.0], duration);	
+}
+
+function step5(){
+	canvas.removeEventListener('click', step5);
+	canvas.addEventListener('click', step6);
+	
+	// line variables
+	var duration = 500;
+	
+	// datapoint variables
+	var latency1 = 250; // delay between when the horizontal line starts getting drawn and when the point starts getting drawn, in milliseconds	
+	var latency2 = 250; // delay between when the point starts getting drawn and when the grid lines start being erased, in milliseconds	
+
+	// render the line	
+	colorTween(lin2, [0, 255, 0, 1.0], duration);
+
+	// after some delay, render the point
+	var drawPoint = setTimeout(function(){
+		console.log('draw point');
+		colorTween(p, [0, 255, 0, 1.0], duration);
+	}, latency1);
+
+	// now remove the grid lines
+	var rlTransition = [{obj: lin1, tgt: [0, 255, 0, 0.0]},
+			    {obj: lin2, tgt: [0, 255, 0, 0.0]}];
+	var removeLines = setTimeout(function(){
+		colorTweenMulti(rlTransition, duration/1000, 50);
+	}, latency1 + latency2);
+}
+
+/*
+function step6(){
+	canvas.removeEventListener('click', step6);
+	canvas.addEventListener('click', step7);	
+	
+	console.log('allObjects');
+	console.log(allObjects);
+
+	console.log('xArrows');
+	console.log(xArrows);
+
+	// after the point is rendered, remove it from allObjects and make it a child of stateSpaceAxes
+	//allObjects.pop();	
+	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
+	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes
+	stateSpaceAxes.points.push(p);
+
+	// also pop out those grid lines objects, which we don't need anymore	
+	//allObjects.pop(); 
+	//allObjects.pop();
+}
+*/
+
+function step6(){
+	canvas.removeEventListener('click', step6);
+	canvas.addEventListener('click', step7);
+
+	// do some cleanup from the previous step; transfer the datapoint from allObjects to be a chile of stateSpaceAxes	
+	allObjects.pop();	
+	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
+	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes	
+	stateSpaceAxes.points.push(p);
+
+	// also pop out those grid lines objects, which we don't need anymore	
+	allObjects.pop(); 
+	allObjects.pop();
+
+	nmAxes.draw();
+	var lastFrameTimeMs = 0;	
+	
+	// variables controlling timing of translation:	
+	var distance = nmAxesFinal - nmAxes.xOrig;	
+	var slideDuration = 1;
+	var vel = distance / (slideDuration * 1000);  
+	
+	// variables controlling timing of x-scaling:
+	var scaleDuration = 0.25;
+	var numScaleSteps = 50;	
+	var scaleTimeStep = (scaleDuration/numScaleSteps) * 1000;
+	var scaleStep = nmXaxisLength/numScaleSteps;
+
+	// variables needed for plotting arrows along x-axis:
+	var timePerArrow = 0.5; // time it takes to draw each individual arrow;
+	var arrowDurTotal = 1; // time between beginning to draw first arrow and beginning to draw last arrow
+	
+	// local functions needed for animation:	
+	function initializeLastFrame(timeStamp){
+		lastFrameTimeMs = timeStamp;
+	};
+
+	function updateXorig(delta){
+		nmAxes.xOrig += vel * delta;		
+		animate(allObjects);
+	};
+
+	function translateNM(timeStamp){
+	
+		var delta = timeStamp - lastFrameTimeMs;
+		lastFrameTimeMs = timeStamp;
+		updateXorig(delta);		
+
+		if(nmAxes.xOrig + vel * delta < nmAxesFinal){
+			window.requestAnimationFrame(translateNM);
+		} else { // Once the translation is done...
+			console.log('finish translation');			
+	
+			// ...clean up any errors in the tweening
+			nmAxes.xOrig = nmAxesFinal;
+			animate(allObjects);
+
+			// ... extend the x-axis...
+			var extendXaxis = setInterval(function(){
+				nmAxes.xLength += scaleStep;
+				animate(allObjects);
+
+				if(nmAxes.xLength + scaleStep > nmXaxisLength){										
+					nmAxisLength = nmXaxisLength;
+					clearInterval(extendXaxis);
+				}
+			}, scaleTimeStep);
+
+			// ... and draw the arrows along the x-axis
+			var arrowIndex = 0;
+			//console.log('arrows inside translateNM:');
+			//console.log(arrows);
+			var drawArrows = setInterval(function(){
+				if(arrowIndex > numAngles - 1){
+					console.log('done drawing arrows');
+					clearInterval(drawArrows);
+				} else{
+					console.log('arrowIndex = '.concat(String(arrowIndex)));
+					colorTweenMulti([{obj: xArrows[arrowIndex], tgt: [185, 185, 185, 1.0]}], timePerArrow, 50);
+					arrowIndex += 1;
+				}
+				
+			}, arrowDurTotal/numAngles * 1000)
+			
+		}
+	};
+
+	window.requestAnimationFrame(initializeLastFrame);
+	window.requestAnimationFrame(translateNM);
+}
+
+function step7(){
+	canvas.removeEventListener('click', step7);
+	console.log('stateSpaceAxes.points:');
+	console.log(stateSpaceAxes.points);
+	nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 2);	
+}
 
 /*
 function step2(){
@@ -901,83 +1187,7 @@ function step3(){
 }
 
 
-function step4(){
-	canvas.removeEventListener('click', step4);
-	nmAxes.draw();
-	var lastFrameTimeMs = 0;	
-	
-	// variables controlling timing of translation:	
-	var distance = nmAxesFinal - nmAxes.xOrig;	
-	var slideDuration = 1;
-	var vel = distance / (slideDuration * 1000);  
-	
-	// variables controlling timing of x-scaling:
-	var scaleDuration = 1;
-	var numScaleSteps = 50;	
-	var scaleTimeStep = (scaleDuration/numScaleSteps) * 1000;
-	var scaleStep = nmXaxisLength/numScaleSteps;
 
-	// variables needed for plotting arrows along x-axis:
-	var timePerArrow = 0.5; // time it takes to draw each individual arrow;
-	var arrowDurTotal = 2; // time between beginning to draw first arrow and beginning to draw last arrow
-	
-	// local functions needed for animation:	
-	function initializeLastFrame(timeStamp){
-		lastFrameTimeMs = timeStamp;
-	};
-
-	function updateXorig(delta){
-		nmAxes.xOrig += vel * delta;		
-		animate(allObjects);
-	};
-
-	function translateNM(timeStamp){
-	
-		var delta = timeStamp - lastFrameTimeMs;
-		lastFrameTimeMs = timeStamp;
-		updateXorig(delta);		
-
-		if(nmAxes.xOrig + vel * delta < nmAxesFinal){
-			window.requestAnimationFrame(translateNM);
-		} else { // Once the translation is done...
-			console.log('finish translation');			
-	
-			// ...clean up any errors in the tweening
-			nmAxes.xOrig = nmAxesFinal;
-			animate(allObjects);
-
-			// ... extend the x-axis...
-			var extendXaxis = setInterval(function(){
-				nmAxes.xLength += scaleStep;
-				animate(allObjects);
-
-				if(nmAxes.xLength + scaleStep > nmXaxisLength){										
-					nmAxisLength = nmXaxisLength;
-					clearInterval(extendXaxis);
-				}
-			}, scaleTimeStep);
-
-			// ... and draw the arrows along the x-axis
-			var arrowIndex = 0;
-			//console.log('arrows inside translateNM:');
-			//console.log(arrows);
-			var drawArrows = setInterval(function(){
-				if(arrowIndex > numAngles){
-					console.log('done drawing arrows');
-					clearInterval(drawArrows);
-				} else{
-					colorTweenMulti([{obj: xArrows[arrowIndex], tgt: [185, 185, 185, 1.0]}], timePerArrow, 50);
-					arrowIndex += 1;
-				}
-				
-			}, arrowDurTotal/numAngles * 1000)
-			
-		}
-	};
-
-	window.requestAnimationFrame(initializeLastFrame);
-	window.requestAnimationFrame(translateNM);
-}
 
 
 function step5(){
@@ -994,5 +1204,11 @@ function step5(){
 	}, delay);
 }
 */
+
+function testColorTween(){
+	canvas.removeEventListener('click', step1);
+	colorTween(pyr1, [0, 255, 0, 1.0], 500);
+}
+
 canvas.addEventListener('click', step1);
 

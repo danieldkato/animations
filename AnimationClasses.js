@@ -697,6 +697,7 @@ class Timer{
 	}	
 }
 
+
 function colorTween(obj, tgt, duration){
 
 	// compute color steps and stuff
@@ -736,10 +737,16 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 	timer.lastTime = timeStamp;
 	timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;
 
+	console.log('current object color');
+	console.log(obj.rgb);
+	console.log('current step');
+	console.log(String(timeToRender * speed[0]).concat());
+	
+
 	// Evaluate if the tween is complete; if even one color will not be at its target wirh one more step, then it's not complete
 	var cont = 0;
 	for (var c = 0; c < 4; c++){
-		if( (speed[c]>0&&obj.rgb[c]+speed[c]*timeToRender*framePeriod<tgt[c]) || (speed[c]<0&&obj.rgb[c]+speed[c]*timeToRender*framePeriod>tgt[c]) ){
+		if( chDoneTweening(obj.rgb[c], speed[c], tgt[c], timer) == 0 ){
 			cont = 1;
 		};
 	};
@@ -749,15 +756,12 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 
 		for(var d = 0; d < 4; d++){
 		// ...only update colors that need updating; recall that the tween is incomplete if AT LEAST one color will not reach it's target with one more step, meaning that the tween could be incomplete 			even if some of the colors are already going to reach their targets
-			if( (speed[d]>0&&obj.rgb[d]+speed[d]*timeToRender<=tgt[d]) || 
-			    (speed[d]<0&&obj.rgb[d]+speed[d]*timeToRender>=tgt[d])){  
+			if( chDoneTweening(obj.rgb[d], speed[d], tgt[d], timer) == 0 ){  
 				obj.rgb[d] += speed[d] * timeToRender;
 				console.log('adding color');
 			};
 		};
 
-		console.log('current object color');
-		console.log(obj.rgb);
 		animate(allObjects);
 		timer.delta -= Math.floor(timer.delta/framePeriod) * framePeriod;		
 		window.requestAnimationFrame(function(timeStamp3){colorTweenStep(timeStamp3, obj, tgt, speed, timer);});	
@@ -771,3 +775,29 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 };
 
 
+function objDoneTweening(obj, speed, tgt, delta){
+	var timeToRender = Math.floor(delta/framePeriod) * framePeriod;	
+	var done = 0;
+	if(obj.constructor.name != 'imageContainer'){
+		for(var k = 0; k < 4; k++){
+			if (chDoneTweening(obj.rgb[k], speed[k], tgt[k], delta)){
+				done = 1;
+			}
+		}
+	} else if(obj.constructor.name == 'imageContainer'){
+		if ( ( speed[k]>0 && obj.alpha[k]+speed[k]*timeToRender>tgt[k] ) || 
+		     ( speed[k]<0 && obj.alpha[k]+speed[k]*timeToRender<tgt[k] ) ||
+		       speed == 0){done = 1;}
+	}
+	return done;
+}
+
+
+function chDoneTweening(val, speed, tgt, timer){
+	var timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;
+	var done = 0;
+	if( ( speed>0 && val+speed*timeToRender>=tgt ) ||
+	    ( speed<0 && val+speed*timeToRender<=tgt ) ||
+	      speed == 0){done = 1;}
+	return done;
+} 
