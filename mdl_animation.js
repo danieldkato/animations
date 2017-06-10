@@ -172,6 +172,12 @@ var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0
 function step4(){
 	canvas.removeEventListener('click', step4);
 	canvas.addEventListener('click', step5);
+
+	// add these objects to allObjects
+	allObjects.push(lin1);
+	allObjects.push(lin2);
+	allObjects.push(p);
+
 	var duration = 0.5;
 	colorTweenMulti([{obj: lin1, tgt: [0, 255, 0, 1.0]}], duration, 50);	
 }
@@ -186,11 +192,6 @@ function step5(){
 	// datapoint variables
 	var latency1 = 250; // delay between when the horizontal line starts getting drawn and when the point starts getting drawn, in milliseconds	
 	var latency2 = 250; // delay between when the point starts getting drawn and when the grid lines start being erased, in milliseconds	
-
-	// add these objects to allObjects
-	allObjects.push(lin1);
-	allObjects.push(lin2);
-	allObjects.push(p);
 
 	// render the line	
 	colorTweenMulti([{obj: lin2, tgt: [0, 255, 0, 1.0]}], duration, 50);
@@ -209,6 +210,7 @@ function step5(){
 	}, latency1 + latency2);
 }
 
+/*
 function step6(){
 	canvas.removeEventListener('click', step6);
 	canvas.addEventListener('click', step7);	
@@ -229,9 +231,21 @@ function step6(){
 	//allObjects.pop(); 
 	//allObjects.pop();
 }
+*/
 
-function step7(){
-	canvas.removeEventListener('click', step7);
+function step6(){
+	canvas.removeEventListener('click', step6);
+	
+	// do some cleanup from the previous step; transfer the datapoint from allObjects to be a chile of stateSpaceAxes	
+	allObjects.pop();	
+	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
+	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes	
+	stateSpaceAxes.points.push(p);
+
+	// also pop out those grid lines objects, which we don't need anymore	
+	allObjects.pop(); 
+	allObjects.pop();
+
 	nmAxes.draw();
 	var lastFrameTimeMs = 0;	
 	
