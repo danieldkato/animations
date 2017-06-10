@@ -165,9 +165,9 @@ function step3(){
 
 var p1x = ssAxisLength * 0.1;
 var p1y = ssAxisLength * 0.9;
-var lin1 = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); lin1.rgb = [0, 255, 0, 0.0]; allObjects.push(lin1);
-var lin2 = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength, axisThickness); lin2.rgb = [0, 255, 0, 0.0]; allObjects.push(lin2);
-var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); allObjects.push(p);
+var lin1 = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); lin1.rgb = [0, 255, 0, 0.0]; 
+var lin2 = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength, axisThickness); lin2.rgb = [0, 255, 0, 0.0]; 
+var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
 function step4(){
 	canvas.removeEventListener('click', step4);
@@ -186,6 +186,11 @@ function step5(){
 	// datapoint variables
 	var latency1 = 250; // delay between when the horizontal line starts getting drawn and when the point starts getting drawn, in milliseconds	
 	var latency2 = 250; // delay between when the point starts getting drawn and when the grid lines start being erased, in milliseconds	
+
+	// add these objects to allObjects
+	allObjects.push(lin1);
+	allObjects.push(lin2);
+	allObjects.push(p);
 
 	// render the line	
 	colorTweenMulti([{obj: lin2, tgt: [0, 255, 0, 1.0]}], duration, 50);
@@ -232,7 +237,7 @@ function step7(){
 	
 	// variables controlling timing of translation:	
 	var distance = nmAxesFinal - nmAxes.xOrig;	
-	var slideDuration = 0.25;
+	var slideDuration = 1;
 	var vel = distance / (slideDuration * 1000);  
 	
 	// variables controlling timing of x-scaling:
@@ -304,6 +309,10 @@ function step7(){
 	window.requestAnimationFrame(translateNM);
 }
 
+function step8(){
+	canvas.removeEventListener('click', step8);
+	//nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, );	
+}
 
 /*
 function step2(){
