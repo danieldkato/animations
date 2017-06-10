@@ -732,30 +732,34 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 		return;
 	}
 	
+	timer.delta += timeStamp - timer.lastTime;
+	timer.lastTime = timeStamp;
+
 	// Evaluate if the tween is complete; if even one color will not be at its target wirh one more step, then it's not complete
 	var cont = 0;
 	for (var c = 0; c < 4; c++){
-		if( (speed[c]>0&&obj.rgb[c]+speed[c]<tgt[c]) || (speed[c]<0&&obj.rgb[c]+speed[c]>tgt[c]) ){
+		if( (speed[c]>0&&obj.rgb[c]+speed[c]*Math.floor(timer.delta/framePeriod)*framePeriod<tgt[c]) || (speed[c]<0&&obj.rgb[c]+speed[c]*Math.floor(timer.delta/framePeriod)*framePeriod>tgt[c]) ){
 			cont = 1;
 		};
 	};
 
 	// If the tween is not complete...	
 	if(cont == 1){
-		timer.delta += timeStamp - timer.lastTime;
-		timer.lastTime = timeStamp;
-		while(timer.delta > framePeriod){
-			for(var d = 0; d < 4; d++){
-				if( (speed[d]>0&&obj.rgb[d]+speed[d]<=tgt[d]) || (speed[d]<0&&obj.rgb[d]+speed[d]>=tgt[d])){ // ...only update colors that need updating; recall that the tween is incomplete if AT LEAST one color will not reach it's target with one more step, meaning that the tween could be incomplete even if some of the colors are already going to reach their targets 
-					obj.rgb[d] += speed[d] * tmr.delta;
-					console.log('adding color');
-				};
+
+		for(var d = 0; d < 4; d++){
+		// ...only update colors that need updating; recall that the tween is incomplete if AT LEAST one color will not reach it's target with one more step, meaning that the tween could be incomplete 			even if some of the colors are already going to reach their targets
+			if( (speed[d]>0&&obj.rgb[d]+speed[d]*Math.floor(timer.delta/framePeriod)<=tgt[d]) || 
+			    (speed[d]<0&&obj.rgb[d]+speed[d]*Math.floor(timer.delta/framePeriod)>=tgt[d])){  
+				obj.rgb[d] += speed[d] * Math.floor(timer.delta/framePeriod) * framePeriod;
+				console.log('adding color');
 			};
-			timer.delta -= framePeriod;
 		};
+
 		console.log('current object color');
 		console.log(obj.rgb);
 		animate(allObjects);
+		console.log('residual time = '.concat(String(timer.delta - Math.floor(timer.delta/framePeriod) * framePeriod)));
+		timer.delta -= Math.floor(timer.delta/framePeriod) * framePeriod;		
 		window.requestAnimationFrame(function(timeStamp3){colorTweenStep(timeStamp3, obj, tgt, speed, timer);});	
 	// If the tween is complete, manually fix any errors	
 	} else {
