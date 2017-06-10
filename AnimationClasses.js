@@ -4,6 +4,10 @@ var width = screen.width;
 var height = screen.height;
 var ctx = canvas.getContext('2d');
 
+// define some timing variables
+var frameRate = 60; // frames per second
+var framePeriod = 1000/frameRate; // milliseconds
+
 // define miscellaneous constants that will be useful later
 var colorBaseStr = 'rgba(';
 var step = new Array(3);
@@ -676,3 +680,88 @@ function rgb2str(rgb){
 	return colorStr;
 }
 
+
+class Timer{
+	constructor(){
+		this.lastTime = 0;
+		this.delta = 0;
+	}
+
+	initialize(){
+		self = this;
+		window.requestAnimationFrame(function(timeStamp){
+			self.lastTime = timeStamp;
+			console.log('initialize::timer');
+			console.log(tmr);
+		});
+	}	
+}
+
+function colorTween(obj, tgt, duration){
+
+	// compute color steps and stuff
+	var speed = new Array(4);
+	var initColor = obj.rgb.slice();
+
+	for (var c = 0; c < 4; c++){
+		speed[c] = (tgt[c] - initColor[c])/duration;
+	}	
+
+	console.log('speed');
+	console.log(speed);
+
+	// initialize timer
+	tmr = new Timer;
+	tmr.initialize();
+	console.log('colorTween::timer');
+	console.log(tmr);
+
+	// make initial request upon next frame
+	window.requestAnimationFrame(function(timeStamp){tmr.initialize(); console.log('raf::timer'); console.log(tmr); colorTweenStep(timeStamp, obj, tgt, speed, tmr)});
+}
+
+
+function colorTweenStep(timeStamp, obj, tgt, speed, timer){
+	
+	//console.log('colorTweenStep::timer');
+	//console.log(timer);
+
+	// If the elapsed time is less than the min frame period, then do nothing:
+	if( timeStamp - timer.lastTime < framePeriod ){
+		window.requestAnimationFrame(function(timeStamp2){colorTweenStep(timeStamp2, obj, tgt, speed, timer);});
+		return;
+	}
+	
+	// Evaluate if the tween is complete; if even one color will not be at its target wirh one more step, then it's not complete
+	var cont = 0;
+	for (var c = 0; c < 4; c++){
+		if( (speed[c]>0&&obj.rgb[c]+speed[c]<tgt[c]) || (speed[c]<0&&obj.rgb[c]+speed[c]>tgt[c]) ){
+			cont = 1;
+		};
+	};
+
+	// If the tween is not complete...	
+	if(cont == 1){
+		timer.delta += timeStamp - timer.lastTime;
+		timer.lastTime = timeStamp;
+		while(timer.delta > framePeriod){
+			for(var d = 0; d < 4; d++){
+				if( (speed[d]>0&&obj.rgb[d]+speed[d]<=tgt[d]) || (speed[d]<0&&obj.rgb[d]+speed[d]>=tgt[d])){ // ...only update colors that need updating; recall that the tween is incomplete if AT LEAST one color will not reach it's target with one more step, meaning that the tween could be incomplete even if some of the colors are already going to reach their targets 
+					obj.rgb[d] += speed[d] * tmr.delta;
+					console.log('adding color');
+				};
+			};
+			timer.delta -= framePeriod;
+		};
+		console.log('current object color');
+		console.log(obj.rgb);
+		animate(allObjects);
+		window.requestAnimationFrame(function(timeStamp3){colorTweenStep(timeStamp3, obj, tgt, speed, timer);});	
+	// If the tween is complete, manually fix any errors	
+	} else {
+		for(var e = 0; e < 4; e++){
+			obj.rgb[e] = tgt[e];
+			console.log('tween complete');
+		}
+	}
+};

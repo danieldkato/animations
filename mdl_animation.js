@@ -235,7 +235,8 @@ function step6(){
 
 function step6(){
 	canvas.removeEventListener('click', step6);
-	
+	canvas.addEventListener('click', step7);
+
 	// do some cleanup from the previous step; transfer the datapoint from allObjects to be a chile of stateSpaceAxes	
 	allObjects.pop();	
 	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
@@ -323,9 +324,11 @@ function step6(){
 	window.requestAnimationFrame(translateNM);
 }
 
-function step8(){
-	canvas.removeEventListener('click', step8);
-	//nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, );	
+function step7(){
+	canvas.removeEventListener('click', step7);
+	console.log('stateSpaceAxes.points:');
+	console.log(stateSpaceAxes.points);
+	nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 2);	
 }
 
 /*
@@ -407,5 +410,11 @@ function step5(){
 	}, delay);
 }
 */
-canvas.addEventListener('click', step1);
+
+function testColorTween(){
+	canvas.removeEventListener('click', step1);
+	colorTween(pyr1, [0, 255, 0, 1.0], 500);
+}
+
+canvas.addEventListener('click', testColorTween);
 
