@@ -36,6 +36,36 @@ stateSpaceAxes.yLabel = "n1";
 stateSpaceAxes.xLabel = "n2";
 stateSpaceAxes.draw();
 
+var gradThickness = 15;
+var vertGradX = stateSpaceOriginX - gradThickness - 2;
+var vertGradY = stateSpaceOriginY;
+var vertGradHeight = ssAxisLength;
+var vertGrad = ctx.createLinearGradient(vertGradX+gradThickness/2, vertGradY, vertGradX+gradThickness/2, vertGradY - vertGradHeight);
+vertGrad.addColorStop(0, "rgba(185, 185, 185, 1.0)");
+vertGrad.addColorStop(1, "rgba(0, 255, 0, 1.0)");
+var vertGradScale = {
+	draw: function(){
+		ctx.fillStyle = vertGrad;
+		ctx.fillRect(vertGradX, vertGradY, gradThickness, -vertGradHeight);
+	}
+};
+vertGradScale.draw(); 
+
+var horizGradX = stateSpaceOriginX ;
+var horizGradY = stateSpaceOriginY + 5;
+var horizGradLength = ssAxisLength;
+var horizGrad = ctx.createLinearGradient(horizGradX, horizGradY + gradThickness/2, horizGradX + horizGradLength, vertGradY + gradThickness/2);
+horizGrad.addColorStop(0, "rgba(185, 185, 185, 1.0)");
+horizGrad.addColorStop(1, "rgba(0, 255, 0, 1.0)");
+var horizGradScale = {
+	draw: function(){
+		ctx.fillStyle = horizGrad;
+		ctx.fillRect(horizGradX, horizGradY, horizGradLength, gradThickness);
+	}
+};
+horizGradScale.draw(); 
+
+
 /* define neurometric curve axis (but don't draw it yet). 
 It will start off in the same position as state space axes, and 
 with no X-axis; it will later "slide" out from over the state space
@@ -100,7 +130,7 @@ var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
 
 // assemble objects into array
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, stateSpaceAxes, vertGradScale, nmAxes, inputBox];
 for(var a = 0; a < xArrows.length; a++){
 	allObjects.push(xArrows[a]);
 }
