@@ -734,7 +734,7 @@ function colorTweenMulti(transitions, dur){
 				transitions[n].original = transitions[n].obj.rgb.slice();
 			}
 			else if (transitions[n].obj.constructor.name == "imgContainer"){
-				transitions[n].original = transitions[m].obj.alpha;
+				transitions[n].original = transitions[n].obj.alpha;
 			}		
 		}
 
@@ -743,8 +743,8 @@ function colorTweenMulti(transitions, dur){
 		tmr2.lastTime = timestamp;
 		transitions = computeColorStep(transitions, dur);
 
-		//console.log('colorTweenMulti::transitions:');
-		//console.log(transitions);
+		console.log('colorTweenMulti::transitions:');
+		console.log(transitions);
 	
 		for (var p = 0; p < transitions.length; p++){
 			// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
@@ -778,7 +778,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 	}
 
 
-	//console.log('colorTweenMultiStep:');
+	console.log('colorTweenMultiStep:');
 	//console.log('	timestamp = '.concat(timestamp));		
 	//console.log('	timer.lastTime = '.concat(timer.lastTime));	
 	timer.delta += timestamp - timer.lastTime;
@@ -792,13 +792,16 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 	// Evaluate if the tween is complete; if even one color of one object will not be at its target with one more step, then it's not complete
 	var cont = 0;
 	for(var oInd = 0; oInd < transitions.length; oInd++){
-		/*
+		
 		console.log('	item #'.concat(String(oInd)));
 		console.log('		obj:'.concat(transitions[oInd].obj.constructor.name));
-		console.log('		rgb:'.concat(rgb2str(transitions[oInd].obj.rgb)));		
-		console.log('		speed:'.concat(rgb2str(transitions[oInd].speed)));
-		console.log('		tgt:'.concat(rgb2str(transitions[oInd].tgt)));
-		*/
+		//console.log('		rgb:'.concat(rgb2str(transitions[oInd].obj.rgb)));
+		console.log('		alpha:'.concat(transitions[oInd].obj.alpha));		
+		//console.log('		speed:'.concat(rgb2str(transitions[oInd].speed)));
+		console.log('		speed:'.concat(transitions[oInd].speed));		
+		//console.log('		tgt:'.concat(rgb2str(transitions[oInd].tgt)));
+		console.log('		tgt:'.concat(transitions[oInd].tgt));
+		
 		if(objDoneTweening(transitions[oInd].obj, transitions[oInd].speed, transitions[oInd].tgt, timer) == 0){
 			cont = 1;
 		}
@@ -817,7 +820,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 			if(objDoneTweening(currTransition.obj, currTransition.speed, currTransition.tgt, timer) == 0){
 								
 				// ... then if the object is a vector graphics object... 				
-				if(currTransition.obj.constructor.name != 'imageContainer'){
+				if(currTransition.obj.constructor.name != 'imgContainer'){
 					// ... then go through every color/alpha channel and update any that are not done tweening 					
 					for(var k =0; k<4; k++){
 						if(chDoneTweening(currTransition.obj.rgb[k], currTransition.speed[k], currTransition.tgt[k], timer) == 0){
@@ -826,7 +829,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 					}
 				
 				// ... on the other hand, if the object is raster image object that only has an alpha property, then update the alpha.
-				} else if (currTransition.constructor.name == 'imageContainer'){
+				} else if (currTransition.constructor.name == 'imgContainer'){
 					currTransition.obj.alpha += currTransition.speed * timeToRender;
 				}
 			}
@@ -843,14 +846,14 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 		for(var oInd = 0; oInd < transitions.length; oInd++){
 			var currTransition = transitions[oInd];			
 			//console.log('	transition element #'.concat(String(oInd), ':'));
-			if(currTransition.obj.constructor.name != 'imageContainer'){
+			if(currTransition.obj.constructor.name != 'imgContainer'){
 				//console.log('		target color: '.concat(rgb2str(currTransition.tgt.slice())));
 				//console.log('		final color (before manual correction): '.concat(rgb2str(currTransition.obj.rgb.slice())));
 				for(var k = 0; k < 4; k++){
 					currTransition.obj.rgb[k] = currTransition.tgt[k];
 				}
 				//console.log('		final color (after manual correction): '.concat(rgb2str(currTransition.obj.rgb.slice())));
-			} else if(currTransition.obj.constructor.name == 'imageContainer'){
+			} else if(currTransition.obj.constructor.name == 'imgContainer'){
 				currTransition.obj.alpha = currTransition.tgt;
 			}
 		}
@@ -977,14 +980,16 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 function objDoneTweening(obj, speed, tgt, timer){
 	var timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;	
 	var done = 0;
-	if(obj.constructor.name != 'imageContainer'){
+	console.log('constructor.name = '.concat(obj.constructor.name));
+	if(obj.constructor.name != 'imgContainer'){
+		console.log('this should not display');
 		done = 1;		
 		for(var k = 0; k < 4; k++){
 			if (chDoneTweening(obj.rgb[k], speed[k], tgt[k], timer) == 0){				
 				done = 0;
 			}
 		}
-	} else if(obj.constructor.name == 'imageContainer'){
+	} else if(obj.constructor.name == 'imgContainer'){
 		if ( ( speed>0 && obj.alpha+speed*timeToRender>=tgt ) || 
 		     ( speed<0 && obj.alpha+speed*timeToRender<=tgt ) ||
 		       speed == 0){done = 1;}
