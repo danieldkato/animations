@@ -697,13 +697,16 @@ function colorTweenMulti(transitions, dur){
 		//console.log(transitions);	
 		for (var p = 0; p < transitions.length; p++){
 			// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
+			console.log('starting colorTweenMulti:');
 			console.log('transition element #'.concat(String(p), ':'));
 			console.log('	obj: '.concat(transitions[p].obj.constructor.name));
 			
 			if(transitions[p].obj.constructor.name != "imgContainer"){
 				console.log('	starting color: '.concat(rgb2str(transitions[p].original.slice())));		
 				console.log('	target color: '.concat(rgb2str(transitions[p].tgt.slice())));
-				console.log('	speed:'.concat(rgb2str(transitions[p].speed.slice())));
+				//console.log('	speed:'.concat(rgb2str(transitions[p].speed.slice())));
+				console.log('	speed:');
+				console.log(transitions[p].speed);
 			}
 			else if (transitions[p].obj.constructor.name == "imgContainer"){
 				console.log('	starting alpha: '.concat(String(transitions[p].original)));		
@@ -712,15 +715,14 @@ function colorTweenMulti(transitions, dur){
 			}				
 		}
 
-
-		colorTweenMultiStep(timestamp, transitions, dur, tmr);});
+		colorTweenMultiStep(timestamp, transitions, tmr);});
 }
 
 
 function colorTweenMultiStep(timestamp, transitions, timer){
 	// If the elapsed time is less than the frame period, do nothing:
 	if( timestamp - timer.lastTime < framePeriod ){
-		window.requestAnimationFrame(function(timeStamp2){colorTweenStep(timeStamp2, obj, tgt, speed, timer);});
+		window.requestAnimationFrame(function(timeStamp2){colorTweenMultiStep(timeStamp2, transitions, timer);});
 		return;
 	}
 
@@ -739,16 +741,17 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 
 	// If the tween is not yet complete...
 	if(cont == 1){
-		console.log('multi-tween in progress');
+
 		// ... check which objects in particular are not done tweening...
 		for(var oInd = 0; oInd < transitions.length; oInd++){
 			var currTransition = transitions[oInd];
-
+			
+			console.log('obj #'.concat(String(oInd), ' complete = ', String(objDoneTweening(currTransition.obj, currTransition.speed, currTransition.tgt, timer)) ));			
+				
 			// ... and for any objects that are not done tweening...			
 			if(objDoneTweening(currTransition.obj, currTransition.speed, currTransition.tgt, timer) == 0){
 				
-				console.log('speed:');
-				console.log(currTransition.speed);
+				console.log('multi-tween in progress');				
 				// ... then if the object is a vector graphics object... 				
 				if(currTransition.obj.constructor.name != 'imageContainer'){
 					// ... then go through every color/alpha channel and update any that are not done tweening 					
@@ -799,7 +802,7 @@ function computeColorStep(transitions, duration){
 			var speed = new Array(4);			
 			for(var p = 0; p < 4; p++){
 				speed[p] = (transitions[n].tgt[p] - transitions[n].obj.rgb[p]) / duration;
-			}
+			}	
 			transitions[n].speed = speed.slice();
 		}
 		// if the object to be tweened is an image container, compute the appropriate alpha step
@@ -879,18 +882,19 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 };
 
 
-function objDoneTweening(obj, speed, tgt, delta){
-	var timeToRender = Math.floor(delta/framePeriod) * framePeriod;	
+function objDoneTweening(obj, speed, tgt, timer){
+	var timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;	
 	var done = 0;
 	if(obj.constructor.name != 'imageContainer'){
+		done = 1;		
 		for(var k = 0; k < 4; k++){
-			if (chDoneTweening(obj.rgb[k], speed[k], tgt[k], delta)){
-				done = 1;
+			if (chDoneTweening(obj.rgb[k], speed[k], tgt[k], timer) == 0){
+				done = 0;
 			}
 		}
 	} else if(obj.constructor.name == 'imageContainer'){
-		if ( ( speed>0 && obj.alpha+speed*timeToRender>tgt ) || 
-		     ( speed<0 && obj.alpha+speed*timeToRender<tgt ) ||
+		if ( ( speed>0 && obj.alpha+speed*timeToRender>=tgt ) || 
+		     ( speed<0 && obj.alpha+speed*timeToRender<=tgt ) ||
 		       speed == 0){done = 1;}
 	}
 	return done;
@@ -900,6 +904,11 @@ function objDoneTweening(obj, speed, tgt, delta){
 function chDoneTweening(val, speed, tgt, timer){
 	var timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;
 	var done = 0;
+	//console.log('timeToRender = '.concat(String(timeToRender)));	
+	//console.log('val = '.concat(String(val)));
+	//console.log('speed = '.concat(String(speed)));
+	//console.log('tgt = '.concat(String(tgt)));
+	//console.log('val + speed*timeToRender = '.concat(String(val + speed*timeToRender)));
 	if( ( speed>0 && val+speed*timeToRender>=tgt ) ||
 	    ( speed<0 && val+speed*timeToRender<=tgt ) ||
 	      speed == 0){done = 1;}
