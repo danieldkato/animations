@@ -1,32 +1,35 @@
 
 // draw pyramidals
 var pyr1 = new Pyramidal(width*0.125, height*0.4 + pyramidalHeight/2); 
-pyr1.label = "n1";
+pyr1.label =	 "n1";
 pyr1.draw();
-
 var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); 
 pyr2.label = "n2";
 pyr2.labelPos = "right";
 pyr2.draw();
 
+
 // draw inhibitory neurons
 var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr2); inh1.draw(); //inh1.target(pyr2);
 var inh2 = new Inhibitory(pyr2.LLx + pyramidalBase/2, pyr2.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr1); inh2.draw(); //inh2.target(pyr1);
+
 
 // draw corticocorticals
 var ccOrigin = pyr2.LLx + pyramidalBase + 200; // x-coordinate of where the cortico-coritcals originate from
 var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .75, ccOrigin); cc1.rgb[3] = 0.0; 
 var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.rgb[3] = 0.0;
-
 var cc3 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .3, ccOrigin); cc3.rgb[3] = 0.0; 
 var cc4 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .45, ccOrigin); cc4.rgb[3] = 0.0; 
+
 
 // draw thalamocorticals
 var tc1 = new TC(pyr1, 0, "left"); tc1.draw();
 var tc2 = new TC(pyr2, 90, "right"); tc2.draw();
 
+
 // render speaker png
 var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.0); 
+
 
 // define and draw state space axes
 var stateSpaceOriginX = width*0.45;
@@ -106,6 +109,7 @@ for(var a = 0; a < numAngles; a++){
 	xArrows.push(arrow); 
 }
 
+
 // define and draw input box
 var pyr1MidBase = pyr1.LLx + pyramidalBase/2;
 var pyr2MidBase = pyr2.LLx + pyramidalBase/2;
@@ -143,6 +147,12 @@ var inputBox = {
 inputBox.draw();
 var inputBoxCtrX = inputBox.ULx + inputBoxSize/2;
 var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
+
+
+// define stimulus arrow that will be drawn in input box
+var inptArrow = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
+inptArrow.rgb[3] = 0.0; // initialize alpha to 0 
+allObjects.push(vertInput);
 
 
 // assemble objects into array
@@ -212,12 +222,9 @@ function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
 
-	var duration = 500;
 
-	// prepare arrow that will be drawn in input box
-	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
-	vertInput.rgb[3] = 0.0; // initialize alpha to 0 
-	allObjects.push(vertInput);
+
+
 	colorTween(vertInput, inputColor, duration);
 }
 
