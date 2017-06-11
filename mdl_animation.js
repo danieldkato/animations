@@ -40,6 +40,7 @@ axes, and the X axis will extend out of it
 */
 var nmXaxisLength = width/4;
 var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); // initialize x-origin to the same as that for the state space Axes
+nmAxes.yLabel = "n1";
 var nmAxesFinal = width * 0.8;  
 var numAngles = 8;
 var arrowsY = nmAxes.yOrig + 20;
