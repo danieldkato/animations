@@ -48,6 +48,7 @@ var ssAxisLength = width/4;
 var axisThickness = 3;
 var text2axis = 50;
 var axesLabelSize = 25; 
+var axesLabelColor = [185, 185, 185, 1.0];
 
 // define constants for rendering speaker
 var spkrSize = 100;
@@ -339,6 +340,7 @@ class Axes {
 		}		
 
 		// draw labels
+		ctx.fillStyle = rgb2str(axesLabelColor);
 		ctx.font = 'italic'.concat(String(axesLabelSize),"px Georgia");
 		ctx.fillText(this.xLabel, this.xLength/2,  text2axis + axesLabelSize) // x-axis label
 		ctx.fillText(this.yLabel, -(axesLabelSize + text2axis),  -this.yLength/2) // y-axis label
