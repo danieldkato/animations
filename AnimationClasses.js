@@ -17,7 +17,7 @@ var pyramidalHeight = 100;
 var pyramidalBase = pyramidalHeight / Math.sin(Math.PI/3);
 var apicalHeight = height/5;
 var apicalWidth = 10;
-var labelSize = 50;
+var pyrLabelSize = 50;
 
 // define constants for drawing axons
 var axonLength = height/5;
@@ -45,7 +45,8 @@ var filterBoxSize = 150;
 // define constants for drawing axes
 var ssAxisLength = width/4;
 var axisThickness = 3;
-
+var text2axis = 50;
+var axesLabelSize = 50; 
 
 // define constants for rendering speaker
 var spkrSize = 100;
@@ -93,11 +94,11 @@ class Pyramidal {
 
 		//draw label
 		var textY = this.LLy - pyramidalHeight * 0.4;
-		var textX = this.LLx - labelSize * 0.8;
+		var textX = this.LLx - pyrLabelSize * 0.8;
 		if(this.labelPos === "right"){
 			textX = this.LLx + pyramidalBase;
 		} 
-		ctx.font = 'italic '.concat(String(labelSize), "px Georgia");
+		ctx.font = 'italic '.concat(String(pyrLabelSize), "px Georgia");
 		ctx.fillText(this.label, textX, textY);
 		
 	}
@@ -319,6 +320,8 @@ class Axes {
 		this.yLength = yLength;
 		this.rgb = [185, 185, 185, 1.0];
 		this.points = [];
+		this.xLabel = "x";
+		this.yLabel = "y";
 	}
 
 	draw(){
@@ -332,6 +335,9 @@ class Axes {
 		for(var p = 0; p < this.points.length; p++){
 			this.points[p].draw();
 		}		
+
+		// draw labels
+		ctx.fillTex(this.xLabel, this.yLength/2, - )
 
 		ctx.restore();
 	}
