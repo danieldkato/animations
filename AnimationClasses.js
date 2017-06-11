@@ -845,12 +845,14 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 		animate(allObjects);
 		timer.delta -= Math.floor(timer.delta/framePeriod) * framePeriod;		
 		window.requestAnimationFrame(function(timeStamp3){colorTweenStep(timeStamp3, obj, tgt, speed, timer);});	
+	
 	// If the tween is complete, manually fix any errors	
 	} else {
 		for(var e = 0; e < 4; e++){
 			obj.rgb[e] = tgt[e];
 			//console.log('tween complete');
 		}
+		animate(allObjects);
 	}
 };
 
