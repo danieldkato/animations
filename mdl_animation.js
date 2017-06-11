@@ -80,9 +80,6 @@ inputBox.draw();
 var inputBoxCtrX = inputBox.ULx + inputBoxSize/2;
 var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
-ctx.font = "20px Georgia";
-ctx.fillText('n1', width/2, height/2);
-
 // assemble objects into array
 var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
 for(var a = 0; a < xArrows.length; a++){
