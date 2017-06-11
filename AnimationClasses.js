@@ -779,7 +779,7 @@ function computeColorStep(transitions, duration){
 			// do this for each color channel			
 			var speed = new Array(4);			
 			for(var p = 0; p < 4; p++){
-				step[p] = (transitions[n].tgt[p] - transitions[n].obj.rgb[p]) / duration;
+				speed[p] = (transitions[n].tgt[p] - transitions[n].obj.rgb[p]) / duration;
 			}
 			transitions[n].speed = speed.slice();
 		}
