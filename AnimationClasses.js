@@ -718,13 +718,11 @@ function colorTweenMulti(transitions, dur){
 			}				
 		}
 
-		console.log('	timestamp( into colorTweenMultiStep):'.concat(String(timestamp)));
 		colorTweenMultiStep(timestamp, transitions, tmr2);});
 }
 
 
 function colorTweenMultiStep(timestamp, transitions, timer){
-	console.log('colorTweenMultiStep:');
 
 	// If the elapsed time is less than the frame period, do nothing:
 	if( timestamp - timer.lastTime < framePeriod ){
@@ -732,6 +730,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 		return;
 	}
 
+	console.log('colorTweenMultiStep:');
 	console.log('	timestamp = '.concat(timestamp));		
 	console.log('	timer.lastTime = '.concat(timer.lastTime));	
 	timer.delta += timestamp - timer.lastTime;
@@ -794,6 +793,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 			var currTransition = transitions[oInd];			
 			console.log('	transition element #'.concat(String(oInd), ':'));
 			if(currTransition.obj.constructor.name != 'imageContainer'){
+				console.log('		target color: '.concat(rgb2str(currTransition.tgt.slice())));
 				console.log('		final color (before manual correction): '.concat(rgb2str(currTransition.obj.rgb.slice())));
 				for(var k = 0; k < 4; k++){
 					currTransition.obj.rgb[k] = currTransition.tgt[k];
@@ -804,8 +804,6 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 			}
 		}
 		animate(allObjects);
-
-		// display debugging messages
 
 	}
 }
@@ -843,10 +841,11 @@ function colorTween(obj, tgt, duration){
 
 	// initialize timer
 	tmr = new Timer;
-	tmr.initialize();
 
 	// make initial request upon next frame
-	window.requestAnimationFrame(function(timeStamp){tmr.initialize(); colorTweenStep(timeStamp, obj, tgt, speed, tmr)});
+	window.requestAnimationFrame(function(timeStamp){
+		tmr.lastTime = timeStamp; 
+		colorTweenStep(timeStamp, obj, tgt, speed, tmr)});
 }
 
 
