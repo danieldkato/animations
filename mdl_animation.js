@@ -15,18 +15,18 @@ var inh2 = new Inhibitory(pyr2.LLx + pyramidalBase/2, pyr2.LLy + axonLength - fu
 
 // draw corticocorticals
 var ccOrigin = pyr2.LLx + pyramidalBase + 200; // x-coordinate of where the cortico-coritcals originate from
-var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .75, ccOrigin); cc1.draw();
-var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.draw();
+var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .75, ccOrigin); cc1.rgb[3] = 0.0; 
+var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.rgb[3] = 0.0;
 
-var cc3 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .3, ccOrigin); cc3.rgb[3] = 0.0; cc3.draw();
-var cc4 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .45, ccOrigin); cc4.rgb[3] = 0.0; cc4.draw();
+var cc3 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .3, ccOrigin); cc3.rgb[3] = 0.0; 
+var cc4 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .45, ccOrigin); cc4.rgb[3] = 0.0; 
 
 // draw thalamocorticals
 var tc1 = new TC(pyr1, 0, "left"); tc1.draw();
 var tc2 = new TC(pyr2, 90, "right"); tc2.draw();
 
 // render speaker png
-var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
+var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.0); 
 
 // define and draw state space axes
 var stateSpaceOriginX = width*0.45;
@@ -34,7 +34,7 @@ var stateSpaceOriginY = height*0.55 + ssAxisLength/2;
 var stateSpaceAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, ssAxisLength, ssAxisLength); 
 stateSpaceAxes.yLabel = "n1";
 stateSpaceAxes.xLabel = "n2";
-stateSpaceAxes.draw();
+
 
 // draw vertical gradient for state space axes
 var gradThickness = 15;
@@ -54,7 +54,7 @@ var vertGradScale = {
 		ctx.fillRect(this.x, this.y, this.thickness, -this.length);
 	}
 };
-vertGradScale.draw(); 
+ 
 
 // draw horizontal gradient for state space axes
 var horizGradX = stateSpaceOriginX ;
@@ -69,7 +69,7 @@ var horizGradScale = {
 		ctx.fillRect(horizGradX, horizGradY, horizGradLength, gradThickness);
 	}
 };
-horizGradScale.draw(); 
+
 
 // make another vertical gradient (will be associated with psychometric axes)
 var vertGradScale2 = {
@@ -82,7 +82,7 @@ var vertGradScale2 = {
 		ctx.fillRect(this.x, this.y, this.thickness, -this.length);
 	}
 };
-vertGradScale2.draw();
+
 
 /* define neurometric curve axis (but don't draw it yet). 
 It will start off in the same position as state space axes, and 
@@ -146,7 +146,7 @@ var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
 
 // assemble objects into array
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, stateSpaceAxes, vertGradScale, horizGradScale, vertGradScale2, nmAxes, inputBox];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, inputBox];
 for(var a = 0; a < xArrows.length; a++){
 	allObjects.push(xArrows[a]);
 }
@@ -389,7 +389,7 @@ function step6(){
 			console.log('finish translation');			
 	
 			// ...clean up any errors in the tweening
-			nmAxes.xOrig = nmAxesFinal - 20; // no idea why I hae to do this fudge but I do
+			nmAxes.xOrig = nmAxesFinal - 20; // no idea why I have to do this fudge but I do
 			vertGradScale2 = nmAxesFinal;
 			animate(allObjects);
 
@@ -431,8 +431,14 @@ function step7(){
 	canvas.removeEventListener('click', step7);
 	//console.log('stateSpaceAxes.points:');
 	//console.log(stateSpaceAxes.points);
-	//nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 1000);
-	nmAxes.plot(nmAxes.xLength * 0.5, nmAxes.yLength * 0.5, 0, [0, 255, 0, 1.0], 1000);	
+	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, nmAxes.yOrig + stateSpaceAxes.points[0].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	tempGridLine.rgb = [0, 255, 0, 0.0];	
+	//tempGridLine.draw();	
+	allObjects.push(tempGridLine);	
+	colorTween(tempGridLine, [0, 255, 0, 1.0], 500);	
+	var plotPoint = setTimeout(function(){nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 1000)}, 500);
+	
+	//nmAxes.plot(nmAxes.xLength * 0.5, nmAxes.yLength * 0.5, 0, [0, 255, 0, 1.0], 1000);	
 	//animate(allObjects);
 }
 
