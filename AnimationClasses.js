@@ -332,7 +332,7 @@ class Axes {
 	
 		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
 		var horizLine = new Rectangle(this.xOrig + axisThickness, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
-		var dPoint = new dataPoint(x, -y, [0, 255, 0, 0.0], angle); this.points.push(dPoint); 	
+		var dPoint = new dataPoint(this.xOrig + x, this.yOrig - y, [0, 255, 0, 0.0], angle); allObjects.push(dPoint); 	
 		
 		var d1 = duration * 0.25;
 		var d2 = duration * 0.25;
@@ -366,8 +366,16 @@ class Axes {
 			colorTweenMulti(eraseGridLinesTransition, d4);}
 		, l3);
 		
+		self = this;
 
-		
+		var cleanup = setTimeout(function(){
+			dPoint.ctrX = x;
+			dPoint.ctrY = -y;
+			self.points.push(dPoint);
+			allObjects.pop();
+			allObjects.pop();
+			allObjects.pop();
+		}, duration + 10)
 	
 		/*
 		var drawVertLineTimeout = setTimeout(function(){
