@@ -160,7 +160,7 @@ function step1(){
 	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
 	vertInput.rgb[3] = 0.0; // initialize alpha to 0 
 	allObjects.push(vertInput);
-	colorTween(vertInput, [0, 0, 0, 1.0], duration);
+	colorTween(vertInput, inputColor, duration);
 }
 
 
@@ -385,9 +385,12 @@ function step1alt(){
 	//colorTween(pyr2, [0, 255, 0, 1.0], 1000);
 	
 	transitions = [{obj:cc1, tgt:[0, 255, 0, 1.0]},
-		       {obj:spkrContainer, tgt: 1.0}
+		       {obj:tc2, tgt:[0, 255, 0, 1.0]},
+		       {obj:pyr2, tgt:[0, 255, 0, 1.0]},
+		       //{obj:spkrContainer, tgt: 1.0},
+	
 		      ];
-	colorTweenMulti(transitions, 1000);
+	flash(transitions, 3, 1000);
 }
 
 
@@ -482,5 +485,5 @@ function testColorTween(){
 	colorTween(pyr1, [0, 255, 0, 1.0], 500);
 }
 
-canvas.addEventListener('click', step1alt);
+canvas.addEventListener('click', step1);
 
