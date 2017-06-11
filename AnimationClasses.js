@@ -793,14 +793,14 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 	var cont = 0;
 	for(var oInd = 0; oInd < transitions.length; oInd++){
 		
-		console.log('	item #'.concat(String(oInd)));
-		console.log('		obj:'.concat(transitions[oInd].obj.constructor.name));
+		//console.log('	item #'.concat(String(oInd)));
+		//console.log('		obj:'.concat(transitions[oInd].obj.constructor.name));
 		//console.log('		rgb:'.concat(rgb2str(transitions[oInd].obj.rgb)));
-		console.log('		alpha:'.concat(transitions[oInd].obj.alpha));		
+		//console.log('		alpha:'.concat(transitions[oInd].obj.alpha));		
 		//console.log('		speed:'.concat(rgb2str(transitions[oInd].speed)));
-		console.log('		speed:'.concat(transitions[oInd].speed));		
+		//console.log('		speed:'.concat(transitions[oInd].speed));		
 		//console.log('		tgt:'.concat(rgb2str(transitions[oInd].tgt)));
-		console.log('		tgt:'.concat(transitions[oInd].tgt));
+		//console.log('		tgt:'.concat(transitions[oInd].tgt));
 		
 		if(objDoneTweening(transitions[oInd].obj, transitions[oInd].speed, transitions[oInd].tgt, timer) == 0){
 			cont = 1;
@@ -818,7 +818,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 				
 			// ... and for any objects that are not done tweening...			
 			if(objDoneTweening(currTransition.obj, currTransition.speed, currTransition.tgt, timer) == 0){
-								
+				console.log('incomplete tween');
 				// ... then if the object is a vector graphics object... 				
 				if(currTransition.obj.constructor.name != 'imgContainer'){
 					// ... then go through every color/alpha channel and update any that are not done tweening 					
@@ -829,7 +829,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 					}
 				
 				// ... on the other hand, if the object is raster image object that only has an alpha property, then update the alpha.
-				} else if (currTransition.constructor.name == 'imgContainer'){
+				} else if (currTransition.obj.constructor.name == 'imgContainer'){
 					currTransition.obj.alpha += currTransition.speed * timeToRender;
 				}
 			}
@@ -842,7 +842,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 
 	// ... on the other hand, if the tween is complete, then manually clean up any errors
 	} else{
-		//console.log('multi-tween complete');
+		console.log('multi-tween complete');
 		for(var oInd = 0; oInd < transitions.length; oInd++){
 			var currTransition = transitions[oInd];			
 			//console.log('	transition element #'.concat(String(oInd), ':'));
@@ -914,7 +914,7 @@ function colorTween(obj, tgt, duration){
 
 function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 	
-	console.log('colorTweenStep::timer');
+	//console.log('colorTweenStep::timer');
 	//console.log(timer);
 
 	// If the elapsed time is less than the min frame period, then do nothing:
@@ -980,9 +980,7 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 function objDoneTweening(obj, speed, tgt, timer){
 	var timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;	
 	var done = 0;
-	console.log('constructor.name = '.concat(obj.constructor.name));
 	if(obj.constructor.name != 'imgContainer'){
-		console.log('this should not display');
 		done = 1;		
 		for(var k = 0; k < 4; k++){
 			if (chDoneTweening(obj.rgb[k], speed[k], tgt[k], timer) == 0){				

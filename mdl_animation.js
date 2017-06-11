@@ -378,8 +378,16 @@ function step7(){
 
 function step1alt(){
 	canvas.removeEventListener('click', step1alt);
-	canvas.addEventListener('click', step2alt);
-	stateSpaceAxes.plot(stateSpaceAxes.xLength*0.5, stateSpaceAxes.yLength*0.5, 0, [0, 255, 0, 1.0], 1000);
+	//canvas.addEventListener('click', step2alt);
+	
+	console.log('step1alt');
+	//colorTween(spkrContainer, 1.0, 1000);
+	//colorTween(pyr2, [0, 255, 0, 1.0], 1000);
+	
+	transitions = [{obj:cc1, tgt:[0, 255, 0, 1.0]},
+		       {obj:spkrContainer, tgt: 1.0}
+		      ];
+	colorTweenMulti(transitions, 1000);
 }
 
 
@@ -474,5 +482,5 @@ function testColorTween(){
 	colorTween(pyr1, [0, 255, 0, 1.0], 500);
 }
 
-canvas.addEventListener('click', step1);
+canvas.addEventListener('click', step1alt);
 
