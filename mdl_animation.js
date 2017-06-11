@@ -123,7 +123,7 @@ function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
 
-	var duration = 250;
+	var duration = 500;
 
 	// prepare arrow that will be drawn in input box
 	var vertInput = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
@@ -134,7 +134,7 @@ function step1(){
 
 function step2(){
 	canvas.removeEventListener('click', step2);
-	canvas.addEventListener('click', step3);	
+	canvas.addEventListener('click', step3alt);	
 	var duration = 250;
 	var latency = 100;
 	colorTween(tc2, [0, 255, 0, 1.0], duration);	
@@ -145,18 +145,30 @@ function step2(){
 
 }
 
+function step3alt(){
+	canvas.removeEventListener('click', step3alt);	
+	var duration = 500;
+	var transitions = [{obj: pyr2, tgt:[185, 185, 185, 1.0]},
+			   {obj: tc2, tgt:[185, 185, 185, 1.0]},
+			   {obj: inh2, tgt:[185, 185, 185, 1.0]}];	
+
+	colorTweenMulti(transitions, duration);	
+	
+
+}
+
 function step3(){
 	canvas.removeEventListener('click', step3);
 	canvas.addEventListener('click', step4);
 	var duration = 250;
 	console.log('step 3');
-	colorTween	(inh2, [255, 0, 0, 1.0], duration);	
+	colorTween(inh2, [255, 0, 0, 1.0], duration);	
 }
 
 var p1x = ssAxisLength * 0.1;
 var p1y = ssAxisLength * 0.9;
-var lin1 = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); lin1.rgb = [0, 255, 0, 0.0]; 
-var lin2 = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); lin2.rgb = [0, 255, 0, 0.0]; 
+var vertGridLine = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); vertGridLine.rgb = [0, 255, 0, 0.0]; 
+var horizGridLine = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); horizGridLine.rgb = [0, 255, 0, 0.0]; 
 var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
 function step4(){
@@ -164,12 +176,12 @@ function step4(){
 	canvas.addEventListener('click', step5);
 
 	// add these objects to allObjects
-	allObjects.push(lin1);
-	allObjects.push(lin2);
+	allObjects.push(vertGridLine);
+	allObjects.push(horizGridLine);
 	allObjects.push(p);
 
 	var duration = 500;
-	colorTween(lin1, [0, 255, 0, 1.0], duration);	
+	colorTween(vertGridLine, [0, 255, 0, 1.0], duration);	
 }
 
 function step5(){
@@ -184,7 +196,7 @@ function step5(){
 	var latency2 = 250; // delay between when the point starts getting drawn and when the grid lines start being erased, in milliseconds	
 
 	// render the line	
-	colorTween(lin2, [0, 255, 0, 1.0], duration);
+	colorTween(horizGridLine, [0, 255, 0, 1.0], duration);
 
 	// after some delay, render the point
 	var drawPoint = setTimeout(function(){
@@ -193,10 +205,10 @@ function step5(){
 	}, latency1);
 
 	// now remove the grid lines
-	var rlTransition = [{obj: lin1, tgt: [0, 255, 0, 0.0]},
-			    {obj: lin2, tgt: [0, 255, 0, 0.0]}];
+	var rlTransition = [{obj: vertGridLine, tgt: [0, 255, 0, 0.0]},
+			    {obj: horizGridLine, tgt: [0, 255, 0, 0.0]}];
 	var removeLines = setTimeout(function(){
-		colorTweenMulti(rlTransition, duration/1000, 50);
+		colorTweenMulti(rlTransition, duration);
 	}, latency1 + latency2);
 }
 
