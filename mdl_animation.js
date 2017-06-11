@@ -100,7 +100,7 @@ var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
 
 // assemble objects into array
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
 for(var a = 0; a < xArrows.length; a++){
 	allObjects.push(xArrows[a]);
 }
