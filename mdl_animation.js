@@ -18,6 +18,9 @@ var ccOrigin = pyr2.LLx + pyramidalBase + 200; // x-coordinate of where the cort
 var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .75, ccOrigin); cc1.draw();
 var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.draw();
 
+var cc3 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyramidalHeight - apicalHeight * .3, ccOrigin); cc3.draw();
+var cc4 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .45, ccOrigin); cc4.draw();
+
 // draw thalamocorticals
 var tc1 = new TC(pyr1, 0, "left"); tc1.draw();
 var tc2 = new TC(pyr2, 90, "right"); tc2.draw();
@@ -67,7 +70,7 @@ var inputBox = {
 	size: inputBoxSize,
 	ULx: midpoint - inputBoxSize/2,
 	ULy: pyr1.LLy - pyramidalHeight + tcVertLength - inputBoxSize/2, 
-	rgb: [185, 185, 185, 1],
+	rgb: [100, 100, 100, 1],
 
 	draw: function(){
 		ctx.save();
