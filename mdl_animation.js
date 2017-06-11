@@ -58,9 +58,11 @@ console.log('xArrows');
 console.log(xArrows);
 
 // define and draw input box
-pyr1MidBase = pyr1.LLx + pyramidalBase/2;
-pyr2MidBase = pyr2.LLx + pyramidalBase/2;
-midpoint = (pyr1MidBase + pyr2MidBase)/2;
+var pyr1MidBase = pyr1.LLx + pyramidalBase/2;
+var pyr2MidBase = pyr2.LLx + pyramidalBase/2;
+var midpoint = (pyr1MidBase + pyr2MidBase)/2;
+var inptTxtSize = 40;
+var inptTxtColor = [100, 100, 100, 1.0];
 var inputBox = {
 	size: inputBoxSize,
 	ULx: midpoint - inputBoxSize/2,
@@ -77,12 +79,22 @@ var inputBox = {
 		ctx.rect(0, 0, this.size, this.size);
 		ctx.fill();		
 		ctx.stroke();
+
+		// draw label
+		ctx.fillStyle = rgb2str(inptTxtColor);		
+		ctx.font = String(inptTxtSize).concat("px Helvetica");
+		//ctx.font = String(inptTxtSize).concat("px Georgia");
+		//ctx.fillText("INPUT", 0, this.ULy + this.size + inptTxtSize + 10);				
+		ctx.fillText("INPUT", 15, this.size + inptTxtSize);
+
 		ctx.restore();
+
 	}
 }
 inputBox.draw();
 var inputBoxCtrX = inputBox.ULx + inputBoxSize/2;
 var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
+
 
 // assemble objects into array
 var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
