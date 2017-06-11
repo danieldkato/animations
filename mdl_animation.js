@@ -222,17 +222,24 @@ function step1(){
 }
 
 
-// activate tc2 and pyr2
+// activate tc1 and pyr1
 function step2(){
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
-	var duration = 250;
-	var latency = 100;
-	colorTween(tc2, [0, 255, 0, 1.0], duration);	
+	var transitions = [{obj: tc1, tgt: [0, 255, 0, 1.0]},
+			   {obj: pyr1, tgt: [0, 255, 0, 1.0]}
+			  ];
+		
+	//{obj: inh1, tgt: [255, 0, 0, 1.0]},
 	
+	colorTweenMulti(transitions, 250);	
+	var colorInh = setTimeout(function(){colorTween(inh1, [255, 0, 0, 1.0], 250)}, 100);	
+
+	/*
 	var activatePyr = setTimeout(function(){
 		colorTween(pyr2, [0, 255, 0, 1.0], duration);
 	}, latency);
+	*/
 
 }
 
