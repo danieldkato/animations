@@ -28,7 +28,10 @@ var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 
 // define and draw state space axes
 var stateSpaceOriginX = width*0.45;
 var stateSpaceOriginY = height*0.55 + ssAxisLength/2;
-var stateSpaceAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, ssAxisLength, ssAxisLength); stateSpaceAxes.draw();
+var stateSpaceAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, ssAxisLength, ssAxisLength); 
+stateSpaceAxes.yLabel = "n1";
+stateSpaceAxes.xLabel = "n2";
+stateSpaceAxes.draw();
 
 /* define neurometric curve axis (but don't draw it yet). 
 It will start off in the same position as state space axes, and 
