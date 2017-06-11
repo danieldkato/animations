@@ -17,6 +17,7 @@ var pyramidalHeight = 100;
 var pyramidalBase = pyramidalHeight / Math.sin(Math.PI/3);
 var apicalHeight = height/5;
 var apicalWidth = 10;
+var labelSize = 50;
 
 // define constants for drawing axons
 var axonLength = height/5;
@@ -63,6 +64,8 @@ class Pyramidal {
 		this.LLx = x;
 		this.LLy = y;
 		this.rgb = [185, 185, 185, 1.0];
+		this.label = "pyr"; // default; will be changed for pyr2
+		this.labelPos = "left"; // default; will be changed for pyr2
 	}
 
 	draw(){
@@ -87,6 +90,16 @@ class Pyramidal {
 		ctx.lineTo(this.LLx + pyramidalBase/2 + boutonBase/2, this.LLy + axonLength + boutonHeight - fudge);
 		ctx.fill();
 		ctx.moveTo(0, 0);
+
+		//draw label
+		var textY = this.LLy - pyramidalHeight * 0.4;
+		var textX = this.LLx - labelSize * 0.8;
+		if(this.labelPos === "right"){
+			textX = this.LLx + pyramidalBase;
+		} 
+		ctx.font = 'italic '.concat(String(labelSize), "px Georgia");
+		ctx.fillText(this.label, textX, textY);
+		
 	}
 }
 
@@ -330,59 +343,53 @@ class Axes {
 		// color: rgba quadruple specifying final point color
 		// duration: duration of plotting animation, in seconds
 	
+		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
+		var horizLine = new Rectangle(this.xOrig + axisThickness, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
+		var dPoint = new dataPoint(this.xOrig + x, this.yOrig - y, [0, 255, 0, 0.0], angle); allObjects.push(dPoint); 	
+		
+		var d1 = duration * 0.25;
+		var d2 = duration * 0.25;
+		var d4 = duration * 0.25;
 
-		var drawVertLineDelay = 0; // in milliseconds!
-		var drawHorizLineDelay = 300; // in milliseconds!
-		var drawPointDelay = 600; // in milliseconds!
+		var l1 = d1 * 0.75;
+		var l3 = duration - d4;
 
-		var drawVertLineDuration = 0.5; // in seconds!
-		var drawHorizLineDuration = 0.5; // in seconds!
-		var drawPointDuration = 0.5; // inseconds!
-	
+		var l2 = l1 + d2 * 0.75;
+		var d3 = (duration - l2) * 0.75;	
+
 		var dataPointx = ssAxisLength * 0.1;
 		var dataPointy = ssAxisLength * 0.9;
 
-		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
-		var horizLine = new Rectangle(this.xOrig, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
-		var dPoint = new dataPoint(x, -y, [0, 255, 0, 0.0], angle); this.points.push(dPoint); 	
-	
-		var vTransition = [{obj: vertLine, tgt: [0, 255, 0, 1.0]},
-				   //{obj: horizLine, tgt: [0, 255, 0, 1.0]}
-				  ];
-	
-		var hTransition = [//{obj: vertLine, tgt: [0, 255, 0, 1.0]},
-				   {obj: horizLine, tgt: [0, 255, 0, 1.0]}
-				  ];
-
-		var dTransition = [{obj:dPoint, tgt:[0, 255, 0, 1.0]}];
-
-		//colorTweenMulti(vTransition, drawVertLineDuration, 50);
-
-		var drawVertLineTimeout = setTimeout(function(){
-			colorTweenMulti(vTransition, drawVertLineDuration, 50);}
-		, drawVertLineDelay);
-		
-		var drawHorizLineTimeout = setTimeout(function(){
-			colorTweenMulti(hTransition, drawHorizLineDuration, 50);}
-		, drawHorizLineDelay);	
+		colorTween(vertLine, [0, 255, 0, 1.0], d1)
 
 		var drawPointTimeout = setTimeout(function(){
-			colorTweenMulti(dTransition, drawPointDuration, 50);}
-		, drawPointDelay);
+			colorTween(dPoint, color, d3);}
+		, l2);
 
+		var drawHorizLineTimeout = setTimeout(function(){
+			colorTween(horizLine, [0, 255, 0, 1.0], d2);}
+		, l1);	
 
-		var vTransitionRev = [{obj: vertLine, tgt: [0, 255, 0, 0.0]}];
-		var hTransitionRev = [{obj: horizLine, tgt: [0, 255, 0, 0.0]}];
+		var eraseGridLinesTransition = [{obj: vertLine, tgt: [0, 255, 0, 0.0]},
+						{obj: horizLine, tgt: [0, 255, 0, 0.0]}
+				     	       ];	
+
+		var eraseGridLines = setTimeout(function(){
+			console.log('erase grid lines');
+			colorTweenMulti(eraseGridLinesTransition, d4);}
+		, l3);
 		
-		var eraseVertLineTimeout = setTimeout(function(){
-			colorTweenMulti(vTransitionRev, drawVertLineDuration, 50);}
-		, drawPointDelay + drawPointDuration + 600);
-		
-		var eraseHorizLineTimeout = setTimeout(function(){
-			colorTweenMulti(hTransitionRev, drawHorizLineDuration, 50);}
-		, drawPointDelay + drawPointDuration + 600);	
+		self = this;
 
-
+		var cleanup = setTimeout(function(){
+			dPoint.ctrX = x;
+			dPoint.ctrY = -y;
+			self.points.push(dPoint);
+			allObjects.pop();
+			allObjects.pop();
+			allObjects.pop();
+		}, duration + 10)
+	
 		/*
 		var drawVertLineTimeout = setTimeout(function(){
 			}
@@ -496,7 +503,7 @@ class Timer{
 
 
 function animate(allTheThings){
-	ctx.clearRect(0, 0, width, height);	
+	ctx.clearRect(0, 0, 3000, 3000);	
 	for(i = 0; i < allTheThings.length; i++){
 		allTheThings[i].draw();
 	}
@@ -942,8 +949,14 @@ function rgb2str(rgb){
 
 
 // draw pyramidals
-var pyr1 = new Pyramidal(width*0.125, height*0.4 + pyramidalHeight/2); pyr1.draw();
-var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); pyr2.draw();
+var pyr1 = new Pyramidal(width*0.125, height*0.4 + pyramidalHeight/2); 
+pyr1.label = "n1";
+pyr1.draw();
+
+var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); 
+pyr2.label = "n2";
+pyr2.labelPos = "right";
+pyr2.draw();
 
 // draw inhibitory neurons
 var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr2); inh1.draw(); //inh1.target(pyr2);
@@ -1016,6 +1029,9 @@ inputBox.draw();
 var inputBoxCtrX = inputBox.ULx + inputBoxSize/2;
 var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
+ctx.font = "20px Georgia";
+ctx.fillText('n1', width/2, height/2);
+
 // assemble objects into array
 var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
 for(var a = 0; a < xArrows.length; a++){
@@ -1026,6 +1042,7 @@ for(var a = 0; a < xArrows.length; a++){
 var transition2 = [
 {obj: inh1, tgt: [255, 0, 0]},
 ];
+
 
 
 function testStep1(){
@@ -1043,6 +1060,8 @@ function testStep1(){
 	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep2); } , (totalDur) + 50);
 }
 
+
+
 function testStep2(){
 	canvas.removeEventListener('click', testStep2);
 	var duration = 2;
@@ -1053,6 +1072,8 @@ function testStep2(){
 	var tmr6 = setTimeout( function(){ canvas.addEventListener('click', testStep3); } , (duration) + 50);
 }
 
+
+
 function testStep3(){
 	canvas.removeEventListener('click', testStep3);
 	var duration = 2;
@@ -1061,6 +1082,7 @@ function testStep3(){
 }
 
 
+// draw input arrow
 function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
@@ -1074,6 +1096,8 @@ function step1(){
 	colorTween(vertInput, [0, 0, 0, 1.0], duration);
 }
 
+
+// activate tc2 and pyr2
 function step2(){
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
@@ -1087,6 +1111,8 @@ function step2(){
 
 }
 
+
+// activate inh2
 function step3(){
 	canvas.removeEventListener('click', step3);
 	canvas.addEventListener('click', step4);
@@ -1101,6 +1127,8 @@ var vertGridLine = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOri
 var horizGridLine = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); horizGridLine.rgb = [0, 255, 0, 0.0]; 
 var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
+
+// draw vertical gridline in ssAxes
 function step4(){
 	canvas.removeEventListener('click', step4);
 	canvas.addEventListener('click', step5);
@@ -1114,6 +1142,8 @@ function step4(){
 	colorTween(vertGridLine, [0, 255, 0, 1.0], duration);	
 }
 
+
+// draw horizontal gridline in ssAxes, plot point, and erase gridline
 function step5(){
 	canvas.removeEventListener('click', step5);
 	canvas.addEventListener('click', step6);
@@ -1272,9 +1302,24 @@ function step6(){
 
 function step7(){
 	canvas.removeEventListener('click', step7);
-	console.log('stateSpaceAxes.points:');
-	console.log(stateSpaceAxes.points);
-	nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 2);	
+	//console.log('stateSpaceAxes.points:');
+	//console.log(stateSpaceAxes.points);
+	//nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 1000);
+	nmAxes.plot(nmAxes.xLength * 0.5, nmAxes.yLength * 0.5, 0, [0, 255, 0, 1.0], 1000);	
+}
+
+
+function step1alt(){
+	canvas.removeEventListener('click', step1alt);
+	canvas.addEventListener('click', step2alt);
+	stateSpaceAxes.plot(stateSpaceAxes.xLength*0.5, stateSpaceAxes.yLength*0.5, 0, [0, 255, 0, 1.0], 1000);
+}
+
+
+function step2alt(){
+	canvas.removeEventListener('click', step2alt);
+	console.log('step2alt');
+	animate(allObjects);
 }
 
 /*

@@ -1,7 +1,13 @@
 
 // draw pyramidals
-var pyr1 = new Pyramidal(width*0.125, height*0.4 + pyramidalHeight/2); pyr1.draw();
-var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); pyr2.draw();
+var pyr1 = new Pyramidal(width*0.125, height*0.4 + pyramidalHeight/2); 
+pyr1.label = "n1";
+pyr1.draw();
+
+var pyr2 = new Pyramidal(pyr1.LLx + pyramidalBase + 20, pyr1.LLy); 
+pyr2.label = "n2";
+pyr2.labelPos = "right";
+pyr2.draw();
 
 // draw inhibitory neurons
 var inh1 = new Inhibitory(pyr1.LLx + pyramidalBase/2, pyr1.LLy + axonLength - fudge + boutonHeight + gap + inhibitoryRadius, pyr2); inh1.draw(); //inh1.target(pyr2);
@@ -73,6 +79,9 @@ var inputBox = {
 inputBox.draw();
 var inputBoxCtrX = inputBox.ULx + inputBoxSize/2;
 var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
+
+ctx.font = "20px Georgia";
+ctx.fillText('n1', width/2, height/2);
 
 // assemble objects into array
 var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, tc1, tc2, spkrContainer, stateSpaceAxes, nmAxes, inputBox];
