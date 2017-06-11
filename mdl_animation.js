@@ -389,7 +389,7 @@ function step6(){
 			console.log('finish translation');			
 	
 			// ...clean up any errors in the tweening
-			nmAxes.xOrig = nmAxesFinal;
+			nmAxes.xOrig = nmAxesFinal - 20; // no idea why I hae to do this fudge but I do
 			vertGradScale2 = nmAxesFinal;
 			animate(allObjects);
 
