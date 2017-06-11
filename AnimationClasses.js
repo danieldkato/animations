@@ -693,9 +693,26 @@ function colorTweenMulti(transitions, dur){
 		tmr.initialize();
 		transitions = computeColorStep(transitions, dur);
 
-		console.log('colorTweenMulti::transitions:');
-		console.log(transitions);	
- 
+		//console.log('colorTweenMulti::transitions:');
+		//console.log(transitions);	
+		for (var p = 0; p < transitions.length; p++){
+			// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
+			console.log('transition element #'.concat(String(p), ':'));
+			console.log('	obj: '.concat(transitions[p].obj.constructor.name));
+			
+			if(transitions[p].obj.constructor.name != "imgContainer"){
+				console.log('	starting color: '.concat(rgb2str(transitions[p].original.slice())));		
+				console.log('	target color: '.concat(rgb2str(transitions[p].tgt.slice())));
+				console.log('	speed:'.concat(rgb2str(transitions[p].speed.slice())));
+			}
+			else if (transitions[p].obj.constructor.name == "imgContainer"){
+				console.log('	starting alpha: '.concat(String(transitions[p].original)));		
+				console.log('	target alpha: '.concat(String(transitions[p].tgt)));
+				console.log('	step:'.concat(String(transitions[p].speed)));
+			}				
+		}
+
+
 		colorTweenMultiStep(timestamp, transitions, dur, tmr);});
 }
 
@@ -730,6 +747,8 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 			// ... and for any objects that are not done tweening...			
 			if(objDoneTweening(currTransition.obj, currTransition.speed, currTransition.tgt, timer) == 0){
 				
+				console.log('speed:');
+				console.log(currTransition.speed);
 				// ... then if the object is a vector graphics object... 				
 				if(currTransition.obj.constructor.name != 'imageContainer'){
 					// ... then go through every color/alpha channel and update any that are not done tweening 					
