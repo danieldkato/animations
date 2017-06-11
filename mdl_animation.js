@@ -134,7 +134,7 @@ function step1(){
 
 function step2(){
 	canvas.removeEventListener('click', step2);
-	canvas.addEventListener('click', step3alt);	
+	canvas.addEventListener('click', step3);	
 	var duration = 250;
 	var latency = 100;
 	colorTween(tc2, [0, 255, 0, 1.0], duration);	
@@ -143,37 +143,6 @@ function step2(){
 		colorTween(pyr2, [0, 255, 0, 1.0], duration);
 	}, latency);
 
-}
-
-function step3alt(){
-	canvas.removeEventListener('click', step3alt);	
-	var duration = 500;
-	var transitions = [{obj: pyr2, tgt:[185, 185, 185, 1.0]},
-			   {obj: tc2, tgt:[185, 185, 185, 1.0]}
-			   ];	
-
-	colorTweenMulti(transitions, duration);	
-	
-
-}
-
-function step1alt(){
-	canvas.removeEventListener('click', step1alt);
-	canvas.addEventListener('click', step2alt);
-	var duration = 500;
-	var transitions = [{obj:pyr2, tgt:[0, 255, 0, 1.0]},
-			   {obj:tc2, tgt:[0, 255, 0, 1.0]}
-			  ];
-	colorTweenMulti(transitions, duration);
-}
-
-function step2alt(){
-	canvas.removeEventListener('click', step);
-	var duration = 500;
-	var transitions = [{obj:pyr2, tgt:[185, 185, 185, 1.0]},
-			   {obj:tc2, tgt:[185, 185, 185, 1.0]}
-			  ];
-	colorTweenMulti(transitions, duration);
 }
 
 function step3(){
@@ -273,8 +242,8 @@ function step6(){
 	
 	// variables controlling timing of translation:	
 	var distance = nmAxesFinal - nmAxes.xOrig;	
-	var slideDuration = 1;
-	var vel = distance / (slideDuration * 1000);  
+	var slideDuration = 500;
+	var vel = distance / slideDuration;  
 	
 	// variables controlling timing of x-scaling:
 	var scaleDuration = 0.25;
@@ -283,28 +252,42 @@ function step6(){
 	var scaleStep = nmXaxisLength/numScaleSteps;
 
 	// variables needed for plotting arrows along x-axis:
-	var timePerArrow = 0.5; // time it takes to draw each individual arrow;
+	var timePerArrow = 100; // time it takes to draw each individual arrow;
 	var arrowDurTotal = 1; // time between beginning to draw first arrow and beginning to draw last arrow
 	
 	// local functions needed for animation:	
-	function initializeLastFrame(timeStamp){
-		lastFrameTimeMs = timeStamp;
-	};
+	window.requestAnimationFrame(function(timeStamp){
+		var tmr = new Timer;
+		tmr.lastTime = timeStamp;
+		translateNM(timeStamp, tmr);
+	});
 
 	function updateXorig(delta){
 		nmAxes.xOrig += vel * delta;		
 		animate(allObjects);
 	};
 
-	function translateNM(timeStamp){
-	
-		var delta = timeStamp - lastFrameTimeMs;
-		lastFrameTimeMs = timeStamp;
-		updateXorig(delta);		
+	function translateNM(timeStamp, tmr){
+		if( timeStamp - tmr.lastTime < framePeriod ){
+			window.requestAnimationFrame(function(timeStamp2){translateNM(timeStamp2, tmr);});
+			return;
+		}		
 
-		if(nmAxes.xOrig + vel * delta < nmAxesFinal){
-			window.requestAnimationFrame(translateNM);
-		} else { // Once the translation is done...
+		tmr.delta += timeStamp - tmr.lastTime;
+		tmr.lastTime = timeStamp;
+		timeToRender = Math.floor(tmr.delta/framePeriod) * framePeriod;		
+
+		// If the slide isn't done yet...
+		if(nmAxes.xOrig + vel * timeToRender < nmAxesFinal){
+			nmAxes.xOrig += vel * timeToRender;
+			tmr.delta -= timeToRender;
+			animate(allObjects); 
+			window.requestAnimationFrame(function(timeStamp3){
+				translateNM(timeStamp3, tmr)
+			});
+		
+		// If the slide is done...
+		} else { 
 			console.log('finish translation');			
 	
 			// ...clean up any errors in the tweening
@@ -341,8 +324,8 @@ function step6(){
 		}
 	};
 
-	window.requestAnimationFrame(initializeLastFrame);
-	window.requestAnimationFrame(translateNM);
+	//window.requestAnimationFrame(initializeLastFrame);
+	//window.requestAnimationFrame(translateNM);
 }
 
 function step7(){
