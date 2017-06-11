@@ -883,12 +883,19 @@ function computeColorStep(transitions, duration){
 function colorTween(obj, tgt, duration){
 
 	// compute color steps and stuff
-	var speed = new Array(4);
-	var initColor = obj.rgb.slice();
+	var speed;
 
-	for (var c = 0; c < 4; c++){
-		speed[c] = (tgt[c] - initColor[c])/duration;
-	}	
+	if(obj.constructor.name != 'imgContainer'){
+		var initColor = obj.rgb.slice();		
+		for (var c = 0; c < 4; c++){
+			speed[c] = (tgt[c] - initColor[c])/duration;
+		}	
+	} else if(obj.constructor.name == 'imgContainer'){
+		console.log('alpha tweening image container	');
+		speed = (tgt - obj.alpha)/duration
+		console.log('obj.alpha = '.concat(String(obj.alpha)));
+		console.log('tgt = '.concat(String(tgt)));
+	}
 
 	// initialize timer
 	tmr = new Timer;
@@ -902,7 +909,7 @@ function colorTween(obj, tgt, duration){
 
 function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 	
-	//console.log('colorTweenStep::timer');
+	console.log('colorTweenStep::timer');
 	//console.log(timer);
 
 	// If the elapsed time is less than the min frame period, then do nothing:
@@ -917,33 +924,49 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 
 	// Evaluate if the tween is complete; if even one color will not be at its target wirh one more step, then it's not complete
 	var cont = 0;
-	for (var c = 0; c < 4; c++){
-		if( chDoneTweening(obj.rgb[c], speed[c], tgt[c], timer) == 0 ){
+	if(obj.constructor.name != 'imgContainer'){
+		for (var c = 0; c < 4; c++){
+			if( chDoneTweening(obj.rgb[c], speed[c], tgt[c], timer) == 0 ){
+				cont = 1;
+			};
+		};
+	} else if(obj.constructor.name == 'imgContainer'){
+		console.log("	evaluating whenther alpha tween is complete");
+		if( chDoneTweening(obj.alpha, speed, tgt, timer)==0 ){
 			cont = 1;
 		};
-	};
+	}
+
 
 	// If the tween is not complete...	
 	if(cont == 1){
 
-		for(var d = 0; d < 4; d++){
-		// ...only update colors that need updating; recall that the tween is incomplete if AT LEAST one color will not reach its target with one more step, meaning that the tween could be incomplete 			even if some of the colors are already going to reach their targets
-			if( chDoneTweening(obj.rgb[d], speed[d], tgt[d], timer) == 0 ){  
-				obj.rgb[d] += speed[d] * timeToRender;
-				//console.log('adding color');
+		if(obj.constructor.name != 'imgContainer'){
+			for(var d = 0; d < 4; d++){
+			// ...only update colors that need updating; recall that the tween is incomplete if AT LEAST one color will not reach its target with one more step, meaning that the tween could be incomplete 			even if some of the colors are already going to reach their targets
+				if( chDoneTweening(obj.rgb[d], speed[d], tgt[d], timer) == 0 ){  
+					obj.rgb[d] += speed[d] * timeToRender;
+					//console.log('adding color');
+				};
 			};
-		};
-
+		} else if(obj.constructor.name == 'imgContainer'){
+			obj.alpha += speed * timeToRender;
+		}
 		animate(allObjects);
 		timer.delta -= Math.floor(timer.delta/framePeriod) * framePeriod;		
 		window.requestAnimationFrame(function(timeStamp3){colorTweenStep(timeStamp3, obj, tgt, speed, timer);});	
 	
 	// If the tween is complete, manually fix any errors	
 	} else {
-		for(var e = 0; e < 4; e++){
-			obj.rgb[e] = tgt[e];
-			//console.log('tween complete');
+		if(obj.constructor.name != 'imgContainer'	){
+			for(var e = 0; e < 4; e++){
+				obj.rgb[e] = tgt[e];
+				//console.log('tween complete');
+			}
+		} else if(obj.constructor.name == 'imgContainer'){
+			obj.alpha = tgt;
 		}
+	
 		animate(allObjects);
 	}
 };
