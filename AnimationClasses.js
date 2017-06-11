@@ -330,59 +330,45 @@ class Axes {
 		// color: rgba quadruple specifying final point color
 		// duration: duration of plotting animation, in seconds
 	
+		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
+		var horizLine = new Rectangle(this.xOrig + axisThickness, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
+		var dPoint = new dataPoint(x, -y, [0, 255, 0, 0.0], angle); this.points.push(dPoint); 	
+		
+		var d1 = duration * 0.25;
+		var d2 = duration * 0.25;
+		var d4 = duration * 0.25;
 
-		var drawVertLineDelay = 0; // in milliseconds!
-		var drawHorizLineDelay = 300; // in milliseconds!
-		var drawPointDelay = 600; // in milliseconds!
+		var l1 = d1 * 0.75;
+		var l3 = duration - d4;
 
-		var drawVertLineDuration = 0.5; // in seconds!
-		var drawHorizLineDuration = 0.5; // in seconds!
-		var drawPointDuration = 0.5; // inseconds!
-	
+		var l2 = l1 + d2 * 0.75;
+		var d3 = (duration - l2) * 0.75;	
+
 		var dataPointx = ssAxisLength * 0.1;
 		var dataPointy = ssAxisLength * 0.9;
 
-		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
-		var horizLine = new Rectangle(this.xOrig, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
-		var dPoint = new dataPoint(x, -y, [0, 255, 0, 0.0], angle); this.points.push(dPoint); 	
-	
-		var vTransition = [{obj: vertLine, tgt: [0, 255, 0, 1.0]},
-				   //{obj: horizLine, tgt: [0, 255, 0, 1.0]}
-				  ];
-	
-		var hTransition = [//{obj: vertLine, tgt: [0, 255, 0, 1.0]},
-				   {obj: horizLine, tgt: [0, 255, 0, 1.0]}
-				  ];
-
-		var dTransition = [{obj:dPoint, tgt:[0, 255, 0, 1.0]}];
-
-		//colorTweenMulti(vTransition, drawVertLineDuration, 50);
-
-		var drawVertLineTimeout = setTimeout(function(){
-			colorTweenMulti(vTransition, drawVertLineDuration, 50);}
-		, drawVertLineDelay);
-		
-		var drawHorizLineTimeout = setTimeout(function(){
-			colorTweenMulti(hTransition, drawHorizLineDuration, 50);}
-		, drawHorizLineDelay);	
+		colorTween(vertLine, [0, 255, 0, 1.0], d1)
 
 		var drawPointTimeout = setTimeout(function(){
-			colorTweenMulti(dTransition, drawPointDuration, 50);}
-		, drawPointDelay);
+			colorTween(dPoint, color, d3);}
+		, l2);
 
+		var drawHorizLineTimeout = setTimeout(function(){
+			colorTween(horizLine, [0, 255, 0, 1.0], d2);}
+		, l1);	
 
-		var vTransitionRev = [{obj: vertLine, tgt: [0, 255, 0, 0.0]}];
-		var hTransitionRev = [{obj: horizLine, tgt: [0, 255, 0, 0.0]}];
+		var eraseGridLinesTransition = [{obj: vertLine, tgt: [0, 255, 0, 0.0]},
+						{obj: horizLine, tgt: [0, 255, 0, 0.0]}
+				     	       ];	
+
+		var eraseGridLines = setTimeout(function(){
+			console.log('erase grid lines');
+			colorTweenMulti(eraseGridLinesTransition, d4);}
+		, l3);
 		
-		var eraseVertLineTimeout = setTimeout(function(){
-			colorTweenMulti(vTransitionRev, drawVertLineDuration, 50);}
-		, drawPointDelay + drawPointDuration + 600);
+
 		
-		var eraseHorizLineTimeout = setTimeout(function(){
-			colorTweenMulti(hTransitionRev, drawHorizLineDuration, 50);}
-		, drawPointDelay + drawPointDuration + 600);	
-
-
+	
 		/*
 		var drawVertLineTimeout = setTimeout(function(){
 			}

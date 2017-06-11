@@ -86,6 +86,7 @@ var transition2 = [
 ];
 
 
+
 function testStep1(){
 	canvas.removeEventListener('click', testStep1);
 	var numCycles = 2;
@@ -101,6 +102,8 @@ function testStep1(){
 	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep2); } , (totalDur) + 50);
 }
 
+
+
 function testStep2(){
 	canvas.removeEventListener('click', testStep2);
 	var duration = 2;
@@ -111,6 +114,8 @@ function testStep2(){
 	var tmr6 = setTimeout( function(){ canvas.addEventListener('click', testStep3); } , (duration) + 50);
 }
 
+
+
 function testStep3(){
 	canvas.removeEventListener('click', testStep3);
 	var duration = 2;
@@ -119,6 +124,7 @@ function testStep3(){
 }
 
 
+// draw input arrow
 function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
@@ -132,6 +138,8 @@ function step1(){
 	colorTween(vertInput, [0, 0, 0, 1.0], duration);
 }
 
+
+// activate tc2 and pyr2
 function step2(){
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
@@ -145,6 +153,8 @@ function step2(){
 
 }
 
+
+// activate inh2
 function step3(){
 	canvas.removeEventListener('click', step3);
 	canvas.addEventListener('click', step4);
@@ -159,6 +169,8 @@ var vertGridLine = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOri
 var horizGridLine = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); horizGridLine.rgb = [0, 255, 0, 0.0]; 
 var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
+
+// draw vertical gridline in ssAxes
 function step4(){
 	canvas.removeEventListener('click', step4);
 	canvas.addEventListener('click', step5);
@@ -172,6 +184,8 @@ function step4(){
 	colorTween(vertGridLine, [0, 255, 0, 1.0], duration);	
 }
 
+
+// draw horizontal gridline in ssAxes, plot point, and erase gridline
 function step5(){
 	canvas.removeEventListener('click', step5);
 	canvas.addEventListener('click', step6);
@@ -332,7 +346,12 @@ function step7(){
 	canvas.removeEventListener('click', step7);
 	console.log('stateSpaceAxes.points:');
 	console.log(stateSpaceAxes.points);
-	nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 2);	
+	nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 1000);	
+}
+
+
+function step1alt(){
+	stateSpaceAxes.plot(stateSpaceAxes.xLength*0.5, stateSpaceAxes.yLength*0.5, 0, [0, 255, 0, 1.0], 1000);
 }
 
 /*
@@ -420,5 +439,5 @@ function testColorTween(){
 	colorTween(pyr1, [0, 255, 0, 1.0], 500);
 }
 
-canvas.addEventListener('click', step1);
+canvas.addEventListener('click', step1alt);
 
