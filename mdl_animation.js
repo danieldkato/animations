@@ -19,8 +19,8 @@ var cc1 = new CC(pyr1.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr1.LLy - pyra
 var cc2 = new CC(pyr2.LLx + pyramidalBase/2 + axonWidth/2 + gap, pyr2.LLy - pyramidalHeight - apicalHeight * .9, ccOrigin); cc2.draw();
 
 // draw thalamocorticals
-var tc1 = new TC(pyr1, 90, "left"); tc1.draw();
-var tc2 = new TC(pyr2, 0, "right"); tc2.draw();
+var tc1 = new TC(pyr1, 0, "left"); tc1.draw();
+var tc2 = new TC(pyr2, 90, "right"); tc2.draw();
 
 // render speaker png
 var spkrContainer = new imgContainer(spkrSrc, ccOrigin + gap, (cc1.y + cc2.y)/2 - spkrSize/2, spkrSize, spkrSize, 0.5); //spkrContainer.draw();
