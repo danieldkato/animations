@@ -18,6 +18,7 @@ var pyramidalBase = pyramidalHeight / Math.sin(Math.PI/3);
 var apicalHeight = height/5;
 var apicalWidth = 10;
 var pyrLabelSize = 50;
+var pyrLabelColor = [185, 185, 185, 1.0];
 
 // define constants for drawing axons
 var axonLength = height/5;
@@ -93,6 +94,7 @@ class Pyramidal {
 		ctx.moveTo(0, 0);
 
 		//draw label
+		ctx.fillStyle = rgb2str(pyrLabelColor);
 		var textY = this.LLy - pyramidalHeight * 0.4;
 		var textX = this.LLx - pyrLabelSize * 0.8;
 		if(this.labelPos === "right"){
