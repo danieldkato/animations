@@ -887,9 +887,11 @@ function colorTween(obj, tgt, duration){
 
 	if(obj.constructor.name != 'imgContainer'){
 		var initColor = obj.rgb.slice();		
+		var colorSpeed = new Array(3);		
 		for (var c = 0; c < 4; c++){
-			speed[c] = (tgt[c] - initColor[c])/duration;
+			colorSpeed[c] = (tgt[c] - initColor[c])/duration;
 		}	
+		speed = colorSpeed;
 	} else if(obj.constructor.name == 'imgContainer'){
 		console.log('alpha tweening image container	');
 		speed = (tgt - obj.alpha)/duration
