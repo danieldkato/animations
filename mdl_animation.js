@@ -36,6 +36,7 @@ stateSpaceAxes.yLabel = "n1";
 stateSpaceAxes.xLabel = "n2";
 stateSpaceAxes.draw();
 
+// draw vertical gradient for state space axes
 var gradThickness = 15;
 var vertGradX = stateSpaceOriginX - gradThickness - 2;
 var vertGradY = stateSpaceOriginY;
@@ -44,13 +45,18 @@ var vertGrad = ctx.createLinearGradient(vertGradX+gradThickness/2, vertGradY, ve
 vertGrad.addColorStop(0, "rgba(185, 185, 185, 1.0)");
 vertGrad.addColorStop(1, "rgba(0, 255, 0, 1.0)");
 var vertGradScale = {
+	x: vertGradX,
+	y: vertGradY,
+	thickness: gradThickness,
+	length: vertGradHeight,
 	draw: function(){
 		ctx.fillStyle = vertGrad;
-		ctx.fillRect(vertGradX, vertGradY, gradThickness, -vertGradHeight);
+		ctx.fillRect(this.x, this.y, this.thickness, -this.length);
 	}
 };
 vertGradScale.draw(); 
 
+// draw horizontal gradient for state space axes
 var horizGradX = stateSpaceOriginX ;
 var horizGradY = stateSpaceOriginY + 5;
 var horizGradLength = ssAxisLength;
@@ -65,6 +71,18 @@ var horizGradScale = {
 };
 horizGradScale.draw(); 
 
+// make another vertical gradient (will be associated with psychometric axes)
+var vertGradScale2 = {
+	x: vertGradX,
+	y: vertGradY,
+	thickness: gradThickness,
+	length: vertGradHeight,
+	draw: function(){
+		ctx.fillStyle = vertGrad;
+		ctx.fillRect(this.x, this.y, this.thickness, -this.length);
+	}
+};
+vertGradScale2.draw();
 
 /* define neurometric curve axis (but don't draw it yet). 
 It will start off in the same position as state space axes, and 
@@ -87,8 +105,6 @@ for(var a = 0; a < numAngles; a++){
 	arrow.rgb = [185, 185, 185, 0.0];		
 	xArrows.push(arrow); 
 }
-console.log('xArrows');
-console.log(xArrows);
 
 // define and draw input box
 var pyr1MidBase = pyr1.LLx + pyramidalBase/2;
@@ -130,7 +146,7 @@ var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 
 
 // assemble objects into array
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, stateSpaceAxes, vertGradScale, nmAxes, inputBox];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, stateSpaceAxes, vertGradScale, horizGradScale, vertGradScale2, nmAxes, inputBox];
 for(var a = 0; a < xArrows.length; a++){
 	allObjects.push(xArrows[a]);
 }
@@ -139,6 +155,18 @@ for(var a = 0; a < xArrows.length; a++){
 var transition2 = [
 {obj: inh1, tgt: [255, 0, 0]},
 ];
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -349,6 +377,7 @@ function step6(){
 		// If the slide isn't done yet...
 		if(nmAxes.xOrig + vel * timeToRender < nmAxesFinal){
 			nmAxes.xOrig += vel * timeToRender;
+			vertGradScale2.x += vel * timeToRender;
 			tmr.delta -= timeToRender;
 			animate(allObjects); 
 			window.requestAnimationFrame(function(timeStamp3){
@@ -361,6 +390,7 @@ function step6(){
 	
 			// ...clean up any errors in the tweening
 			nmAxes.xOrig = nmAxesFinal;
+			vertGradScale2 = nmAxesFinal;
 			animate(allObjects);
 
 			// ... extend the x-axis...
@@ -403,6 +433,7 @@ function step7(){
 	//console.log(stateSpaceAxes.points);
 	//nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 1000);
 	nmAxes.plot(nmAxes.xLength * 0.5, nmAxes.yLength * 0.5, 0, [0, 255, 0, 1.0], 1000);	
+	//animate(allObjects);
 }
 
 
