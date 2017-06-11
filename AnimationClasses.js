@@ -747,8 +747,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 		console.log('	item #'.concat(String(oInd)));
 		console.log('		obj:'.concat(transitions[oInd].obj.constructor.name));
 		console.log('		rgb:'.concat(rgb2str(transitions[oInd].obj.rgb)));		
-		console.log('		speed:');
-		console.log(transitions[oInd].speed);
+		console.log('		speed:'.concat(rgb2str(transitions[oInd].speed)));
 		console.log('		tgt:'.concat(rgb2str(transitions[oInd].tgt)));
 		if(objDoneTweening(transitions[oInd].obj, transitions[oInd].speed, transitions[oInd].tgt, timer) == 0){
 			cont = 1;
@@ -757,7 +756,6 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 
 	// If the tween is not yet complete...
 	if(cont == 1){
-		console.log('continue = 1');
 		
 		// ... check which objects in particular are not done tweening...
 		for(var oInd = 0; oInd < transitions.length; oInd++){
@@ -767,8 +765,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 				
 			// ... and for any objects that are not done tweening...			
 			if(objDoneTweening(currTransition.obj, currTransition.speed, currTransition.tgt, timer) == 0){
-				
-				console.log('multi-tween in progress');				
+								
 				// ... then if the object is a vector graphics object... 				
 				if(currTransition.obj.constructor.name != 'imageContainer'){
 					// ... then go through every color/alpha channel and update any that are not done tweening 					
@@ -795,13 +792,13 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 		console.log('multi-tween complete');
 		for(var oInd = 0; oInd < transitions.length; oInd++){
 			var currTransition = transitions[oInd];			
-			console.log('	transition element #'.concat(String(p), ':'));
+			console.log('	transition element #'.concat(String(oInd), ':'));
 			if(currTransition.obj.constructor.name != 'imageContainer'){
-				console.log('	final color (before manual correction): '.concat(rgb2str(currTransition.obj.rgb.slice())));
+				console.log('		final color (before manual correction): '.concat(rgb2str(currTransition.obj.rgb.slice())));
 				for(var k = 0; k < 4; k++){
 					currTransition.obj.rgb[k] = currTransition.tgt[k];
 				}
-				console.log('	final color (after manual correction): '.concat(rgb2str(currTransition.obj.rgb.slice())));
+				console.log('		final color (after manual correction): '.concat(rgb2str(currTransition.obj.rgb.slice())));
 			} else if(currTransition.obj.constructor.name == 'imageContainer'){
 				currTransition.obj.alpha = currTransition.tgt;
 			}
@@ -908,13 +905,11 @@ function objDoneTweening(obj, speed, tgt, timer){
 	if(obj.constructor.name != 'imageContainer'){
 		done = 1;		
 		for(var k = 0; k < 4; k++){
-			if (chDoneTweening(obj.rgb[k], speed[k], tgt[k], timer) == 0){
-				console.log('tweeining not complete');				
+			if (chDoneTweening(obj.rgb[k], speed[k], tgt[k], timer) == 0){				
 				done = 0;
 			}
 		}
 	} else if(obj.constructor.name == 'imageContainer'){
-		console.log('this shouldnt display');
 		if ( ( speed>0 && obj.alpha+speed*timeToRender>=tgt ) || 
 		     ( speed<0 && obj.alpha+speed*timeToRender<=tgt ) ||
 		       speed == 0){done = 1;}
