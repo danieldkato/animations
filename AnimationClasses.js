@@ -844,7 +844,7 @@ function colorTween(obj, tgt, duration){
 
 	// make initial request upon next frame
 	window.requestAnimationFrame(function(timeStamp){
-		tmr.lastTime = timeStamp; 
+		tmr.lastTime = timeStamp	; 
 		colorTweenStep(timeStamp, obj, tgt, speed, tmr)});
 }
 
