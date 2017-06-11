@@ -133,7 +133,7 @@ function step1(){
 }
 
 function step2(){
-	canvas.removeEventListener('click', step);
+	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3alt);	
 	var duration = 250;
 	var latency = 100;
@@ -148,8 +148,8 @@ function step2(){
 function step3alt(){
 	canvas.removeEventListener('click', step3alt);	
 	var duration = 500;
-	var transitions = [{obj: pyr2, tgt:[185, 185, 185, 1.0]}
-			   //{obj: tc2, tgt:[185, 185, 185, 1.0]}
+	var transitions = [{obj: pyr2, tgt:[185, 185, 185, 1.0]},
+			   {obj: tc2, tgt:[185, 185, 185, 1.0]}
 			   ];	
 
 	colorTweenMulti(transitions, duration);	
@@ -437,5 +437,5 @@ function testColorTween(){
 	colorTween(pyr1, [0, 255, 0, 1.0], 500);
 }
 
-canvas.addEventListener('click', step1alt);
+canvas.addEventListener('click', step1);
 
