@@ -344,14 +344,24 @@ function step6(){
 
 function step7(){
 	canvas.removeEventListener('click', step7);
-	console.log('stateSpaceAxes.points:');
-	console.log(stateSpaceAxes.points);
-	nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 1000);	
+	//console.log('stateSpaceAxes.points:');
+	//console.log(stateSpaceAxes.points);
+	//nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 1000);
+	nmAxes.plot(nmAxes.xLength * 0.5, nmAxes.yLength * 0.5, 0, [0, 255, 0, 1.0], 1000);	
 }
 
 
 function step1alt(){
+	canvas.removeEventListener('click', step1alt);
+	canvas.addEventListener('click', step2alt);
 	stateSpaceAxes.plot(stateSpaceAxes.xLength*0.5, stateSpaceAxes.yLength*0.5, 0, [0, 255, 0, 1.0], 1000);
+}
+
+
+function step2alt(){
+	canvas.removeEventListener('click', step2alt);
+	console.log('step2alt');
+	animate(allObjects);
 }
 
 /*
@@ -439,5 +449,5 @@ function testColorTween(){
 	colorTween(pyr1, [0, 255, 0, 1.0], 500);
 }
 
-canvas.addEventListener('click', step1alt);
+canvas.addEventListener('click', step1);
 
