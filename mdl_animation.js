@@ -293,6 +293,7 @@ var vertGridLine = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOri
 var horizGridLine = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); horizGridLine.rgb = [0, 255, 0, 0.0]; 
 var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
+
 // first plot the vertical gridline
 function step6(){
 	canvas.removeEventListener('click', step6);
@@ -303,7 +304,7 @@ function step6(){
 	allObjects.push(horizGridLine);
 	allObjects.push(p);
 
-	var s6dur = 500;
+	var s6dur = 250;
 	colorTween(vertGridLine, [0, 255, 0, 1.0], s6dur);	
 }
 
@@ -314,7 +315,7 @@ function step7(){
 	canvas.addEventListener('click', step8);
 
 	// line variables
-	var duration = 500;
+	var duration = 300;
 	
 	// datapoint variables
 	var latency1 = 250; // delay between when the horizontal line starts getting drawn and when the point starts getting drawn, in milliseconds	
@@ -459,12 +460,14 @@ function step9(){
 
 	colorTween(tempGridLine, [0, 255, 0, 1.0], tmpGridlineDuration);	
 	var plotPoint = setTimeout(function(){nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], tmpGridlineDuration)}, tmpGridlineDuration);
-	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [0, 255, 0, 0.0], tmpGridlineDuration); allObjecs.pop()}, tmpGridlineDuration);
+	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [0, 255, 0, 0.0], tmpGridlineDuration);}, tmpGridlineDuration);
 }
 
 
 // show response to horizontal stimulus
 function step10(){
+	allObjects.pop(); // pop temporary pan-plot gridline from last step
+
 	canvas.removeEventListener('click', step10);
 	canvas.addEventListener('click', step11);
 
@@ -504,12 +507,14 @@ function step11(){
 	var dPointY = stateSpaceAxes.yLength * 0.1;
 	
 
-	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, nmAxes.yOrig - dPointY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - dPointY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
 	tempGridLine.rgb = [0, 255, 0, 0.0];	
 	allObjects.push(tempGridLine);	
 
 	stateSpaceAxes.plot(dPointX, dPointY, 90, blGrey, tempLineDuration);
-	colorTween(tmpGridLine, lime, tempLineDuration);
+	colorTween(tempGridLine, lime, tempLineDuration);
+	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [0, 255, 0, 0.0], tempLineDuration)}, tempLineDuration);
+	var plotNM = setTimeout(function(){nmAxes.plot(xArrows[0].ctrX - nmAxes.xOrig, dPointY, 90, blGrey, tempLineDuration)}, tempLineDuration + 25);
 	
 
 	
