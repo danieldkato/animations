@@ -515,15 +515,48 @@ function step11(){
 	colorTween(tempGridLine, inptTxtColor, tempLineDuration);
 	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [100, 100, 100, 0.0], tempLineDuration)}, tempLineDuration);
 	var plotNM = setTimeout(function(){nmAxes.plot(xArrows[0].ctrX - nmAxes.xOrig, dPointY, 90, blGrey, tempLineDuration)}, tempLineDuration + 25);
-	
-
-	
 }
 
 
+// deactivate pyr2, etc.
 function step12(){
+	canvas.removeEventListener('click', step12);
+	canvas.addEventListener('click', step13);
+	
+	var dur = 500;
+	var transitions = [{obj: tc2, tgt: blGrey},
+			   {obj: pyr2, tgt: blGrey},
+			   {obj: inh2, tgt: blGrey},
+			   {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];
+	colorTweenMulti(transitions, dur);
 }
 
+
+// present an intermediate stimulus
+function step13(){
+	canvas.removeEventListener('click', step13);
+	canvas.addEventListener('click', step14);
+	
+	var dur = 500;
+	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
+	inptArrow.angle = xArrows[4].angle;
+	
+	var transitions = [{obj: pyr1, tgt: angle2colorN1(angle)},
+			   {obj: inh1, tgt: angle2colorI1(angle)},
+			   {obj: tc1, tgt: angle2colorN1(angle)},
+			   {obj: pyr2, tgt: angle2colorN2(angle)},
+			   {obj: tc2, tgt: angle2colorN2(angle)},
+			   {obj: inh2, tgt: angle2colorI2(angle)},
+			   {obj: inptArrow, tgt: inptTxtColor}];
+
+	colorTweenMulti(transitions, 500);	
+	//var dur = ;
+
+}
+
+
+function step14(){
+}
 
 
 /*
