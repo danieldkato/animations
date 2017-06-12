@@ -557,44 +557,7 @@ function step11(){
 
 	ind = 0;
 	
-	var tempLineDuration = 500;
-
-	pt1 = stateSpacePoints[ind];
-	pt2 = psychometricPoints[ind];
-
-	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, stateSpacePoints[ind].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	var tempGridLineVert = new Rectangle(stateSpacePoints[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);
-	var tempGridLineVert2 = new Rectangle(psychometricPoints[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);		
-	
-	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];	
-	tempGridLineVert.rgb = [100, 100, 100, 0.0];	
-	tempGridLineVert2.rgb = [100, 100, 100, 0.0];
-
-	allObjects.push(tempGridLineHoriz);	
-	allObjects.push(tempGridLineVert);
-	allObjects.push(tempGridLineVert2);
-
-	var drawGLtrans = [{obj: tempGridLineHoriz, tgt: inptTxtColor},
-			   {obj: tempGridLineVert, tgt: inptTxtColor},
-			   {obj: tempGridLineVert2, tgt: inptTxtColor}];
-	colorTweenMulti(drawGLtrans, tempLineDuration);
-
-	tgt1 = pt1.rgb.slice();
-	tgt2 = pt2.rgb.slice();
-	tgt1[3] = 1.0;
-	tgt2[3] = 1.0;
-	var drawPtTrans = [{obj: pt1, tgt: tgt1},
-			   {obj: pt2, tgt: tgt2}];	
-	allObjects.push(pt1);
-	allObjects.push(pt2);
-	var plotNM = setTimeout(function(){colorTweenMulti(drawPtTrans, tempLineDuration)}, tempLineDuration + 25);
-
-	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
-		   	    {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]},
-		   	    {obj: tempGridLineVert2, tgt: [100, 100, 100, 0.0]}];
-	var eraseTempGridLine = setTimeout(function(){
-		colorTweenMulti(eraseGLtrans, tempLineDuration);
-	}, tempLineDuration + 10);
+	doublePlot(ind);
 	
 }
 
@@ -636,27 +599,122 @@ function step13(){
 }
 
 
+// plot intermediate stimulus in state space and nmAXes
 function step14(){
 	canvas.removeEventListener('click', step14);
 	canvas.addEventListener('click', step15);
+	
+	var idx = 4;
+	doublePlot(4);
+}
 
-	var interval = 1000;	
+
+// return everything to baseline, introduce CCs
+function step15(){
+	canvas.removeEventListener('click', step15);
+	canvas.addEventListener('click', step16);
+	
+		
+	// return everything to baseline
+	var blDur = 500;
+	var blTrans = [{obj: pyr1, tgt: blGrey},
+			   {obj: inh1, tgt: blGrey},
+			   {obj: tc1, tgt: blGrey},
+			   {obj: pyr2, tgt: blGrey},
+			   {obj: tc2, tgt: blGrey},
+			   {obj: inh2, tgt: blGrey},
+			   {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];
+	colorTweenMulti(blTrans, blDur);
+}
+
+
+// introduce cc's
+function step16(){
+	canvas.removeEventListener('click', step16);
+	canvas.addEventListener('click', step17);
+	
+	var ccDur = 500;
+	var ccTrans = [{obj: cc1, tgt: blGrey},
+		       {obj: cc2, tgt: blGrey}];
+	colorTweenMulti(ccTrans, ccDur);
+}
+
+
+//show that cc's do little on their own in naive state
+function step17(){
+	canvas.removeEventListener('click', step17);
+	canvas.addEventListener('click', step18);
+	
+	var ccDur = 500;
+	var ccTrans = [   {obj: cc1, tgt: lime},
+			   {obj: cc2, tgt: lime},
+			   {obj: spkrContainer, tgt: 1.0}];
+	colorTweenMulti(ccTrans, ccDur);
+}
+
+
+//deactivate cc's
+function step18(){
+	canvas.removeEventListener('click', step18);
+	canvas.addEventListener('click', step19);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc1, tgt: blGrey},
+			   {obj: cc2, tgt: blGrey},
+			   {obj: spkrContainer, tgt: 0.0}];
+	colorTweenMulti(ccDtrans, ccDdur);
+}
+
+
+// do pairing
+function step19(){
+	canvas.removeEventListener('click', step19);
+	canvas.addEventListener('click', step20);
+
+	console.log('py1 color = '.concat(rgb2str(pyr1.rgb)));
+
+	inptArrow.angle = 0;
+	var pairingDur = 1000;
+	var pairingTrans = [{obj: pyr1, tgt: lime},
+			   {obj: inh1, tgt: red},
+			   {obj: tc1, tgt: lime},
+			   {obj: cc1, tgt: lime},
+			   {obj: cc2, tgt: lime},
+			   {obj: spkrContainer, tgt: 1.0},
+			   {obj: inptArrow, tgt: inptTxtColor}];
+	flash(pairingTrans, 3, pairingDur);
+
+}
+
+
+function step20(){
+}
+
+function testDoublePlot(){
+	canvas.removeEventListener('click', step14);
+	canvas.addEventListener('click', step15);
+
+	var interval = 250;	
 	var idx = 0;
 		
 
 	var doPlots = setInterval(function(){
-		if (idx > xArrows.length){
+		if (idx >= xArrows.length){
 			clearInterval(doPlots);
 		}
+		inptArrow.angle = xArrows[idx].angle;
+		colorTween(inptArrow, 100);		
 		doublePlot(idx);
+		var eraseArrow = setTimeout(function(){colorTween(inptArrow, [100, 100, 100, 0.0])}, 100)
 		idx++;
 	}, interval)
 
 }
 
-
+/*
 function step15(){
 }
+*/
 
 /*
 
