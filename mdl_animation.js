@@ -496,19 +496,24 @@ function step9(){
 	var tmpGridlineDuration = 500;
 
 	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, psychometricPoints[7].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	var tempGridLineVert = new Rectangle(psychometricPoints[7].ctrX, nmAxes.yOrig, axisThickness, nmAxes.yLength);
+	var tempGridLineVert = new Rectangle(psychometricPoints[7].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
 	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];
 	tempGridLineVert.rgb = [100, 100, 100, 0.0];		
 	allObjects.push(tempGridLineHoriz);	
 	allObjects.push(tempGridLineVert);
 
-	colorTween(tempGridLineHoriz, inptTxtColor, tmpGridlineDuration);	
+	var drawGLtrans = [{obj: tempGridLineHoriz, tgt: inptTxtColor},
+			  {obj: tempGridLineVert, tgt: inptTxtColor}] 
+	colorTweenMulti(drawGLtrans, tmpGridlineDuration);	
 		
 	var tgt = psychometricPoints[7].rgb.slice();
 	tgt[3] = 1.0;	
-	allObjects.push(psychometricPoints[7])
+	allObjects.push(psychometricPoints[7]);
 	var plotPoint = setTimeout(function(){colorTween(psychometricPoints[7], tgt, tmpGridlineDuration)}, tmpGridlineDuration);
-	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLineHoriz, [100, 100, 100, 0.0], tmpGridlineDuration);}, tmpGridlineDuration);
+	
+	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
+			  {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]}] 
+	var eraseTempGridLine = setTimeout(function(){colorTweenMulti(eraseGLtrans, tmpGridlineDuration);}, tmpGridlineDuration);
 }
 
 
