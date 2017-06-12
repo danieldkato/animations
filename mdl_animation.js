@@ -461,8 +461,40 @@ function step9(){
 }
 
 
+// show response to horizontal stimulus, plot in state space and psychometric space
 function step10(){
+	canvas.removeEventListener('click', step10);
+	canvas.addEventListener('click', step11);
+
+	// deactivate n1, tc1, inh1 and input arrow
+	var deactivateDur = 200;
+	var s10erase = [{obj: tc1, tgt: [185, 185, 185, 1.0]},
+			{obj: pyr1, tgt: [185, 185, 185, 1.0]},
+			{obj: inptArrow, tgt: [100, 100, 100, 0.0]},
+			{obj: inh1, tgt: [185, 185, 185, 1.0]}];
+	colorTweenMulti(s10erase, deactivateDur);
+
+	// present horizontal stimulus, plot
+	var t2dur = 500;
+	var t2latency = deactivateDur + 25;
+	var transitions2 = [{obj: tc2, tgt: [0, 255, 0, 1.0]},
+			    {obj: pyr2, tgt: [0, 255, 0, 1.0]},
+			    {obj: inptArrow, tgt: [100, 100, 100, 1.0]}];
+	var doTrans2 = setTimeout(function(){
+				inptArrow.angle = 90;
+				colorTweenMulti(transitions2, t2dur);
+			}, t2latency);
+
+	var activateInh = setTimeout(function(){
+		colorTween(inh2, [255, 0, 0, 1.0], t2dur * 0.75);
+	}, t2latency + t2dur * 0.75);	
 }
+
+
+function step11(){
+}
+
+
 
 /*
 
