@@ -1241,6 +1241,7 @@ function doublePlotB(idx){
 
 function singlePlotSS(point){
 
+	allObjects.push(point);
 	var tmpGridlineDuration = 500;
 	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, stateSpaceAxes.xLength, axisThickness);
 	var tempGridLineVert = new Rectangle(point.ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);

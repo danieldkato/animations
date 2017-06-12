@@ -435,11 +435,464 @@ function step7(){
 }
 
 
-// have the psychometric axes slide out from the state space
+// plot response to vertical line on psychometric axes with horizontal line connecting to state space
+/*
+function step9(){
+	canvas.removeEventListener('click', step9);
+	canvas.addEventListener('click', step10);
+
+	var tmpGridlineDuration = 500;
+	
+	allObjects.push(pmPointsPre[7]);
+
+	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, pmPointsPre[7].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	var tempGridLineVert = new Rectangle(pmPointsPre[7].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];
+	tempGridLineVert.rgb = [100, 100, 100, 0.0];		
+	allObjects.push(tempGridLineHoriz);	
+	allObjects.push(tempGridLineVert);
+
+	var drawGLtrans = [{obj: tempGridLineHoriz, tgt: inptTxtColor},
+			  {obj: tempGridLineVert, tgt: inptTxtColor}] 
+	colorTweenMulti(drawGLtrans, tmpGridlineDuration);	
+		
+	var tgt = pmPointsPre[7].rgb.slice();
+	tgt[3] = 1.0;	
+	var plotPoint = setTimeout(function(){colorTween(pmPointsPre[7], tgt, tmpGridlineDuration)}, tmpGridlineDuration);
+	
+	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
+			  {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]}] 
+	var eraseTempGridLine = setTimeout(function(){colorTweenMulti(eraseGLtrans, tmpGridlineDuration);}, tmpGridlineDuration);
+}
+*/
+
+
+// show response to horizontal stimulus
 function step8(){
 	canvas.removeEventListener('click', step8);
 	canvas.addEventListener('click', step9);
 
+	// deactivate n1, tc1, inh1 and input arrow
+	var deactivateDur = 200;
+	var s10erase = [{obj: tc1, tgt: [185, 185, 185, 1.0]},
+			{obj: pyr1, tgt: [185, 185, 185, 1.0]},
+			{obj: inptArrow, tgt: [100, 100, 100, 0.0]},
+			{obj: inh1, tgt: [185, 185, 185, 1.0]}];
+	colorTweenMulti(s10erase, deactivateDur);
+
+	// present horizontal stimulus, plot
+	var t2dur = 500;
+	var t2latency = deactivateDur + 25;
+	var transitions2 = [{obj: tc2, tgt: [0, 255, 0, 1.0]},
+			    {obj: pyr2, tgt: [0, 255, 0, 1.0]},
+			    {obj: inptArrow, tgt: [100, 100, 100, 1.0]}];
+	var doTrans2 = setTimeout(function(){
+				inptArrow.angle = 90;
+				colorTweenMulti(transitions2, t2dur);
+			}, t2latency);
+
+	var activateInh = setTimeout(function(){
+		colorTween(inh2, [255, 0, 0, 1.0], t2dur * 0.75);
+	}, t2latency + t2dur * 0.75);	
+}
+
+
+//plot in state space and psychometric space
+function step9(){
+	canvas.removeEventListener('click', step9);
+	canvas.addEventListener('click', step10);
+
+	var ind = 0;
+	var point = ssPointsPre[ind];
+	singlePlotSS(point);
+	
+}
+
+
+// deactivate pyr2, etc.
+function step10(){
+	canvas.removeEventListener('click', step10);
+	canvas.addEventListener('click', step11);
+	
+	var dur = 500;
+	var transitions = [{obj: tc2, tgt: blGrey},
+			   {obj: pyr2, tgt: blGrey},
+			   {obj: inh2, tgt: blGrey},
+			   {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];
+	colorTweenMulti(transitions, dur);
+}
+
+
+// present an intermediate stimulus
+function step11(){
+	canvas.removeEventListener('click', step11);
+	canvas.addEventListener('click', step12);
+	
+	var dur = 500;
+	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
+	inptArrow.angle = xArrows[4].angle;
+	
+	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
+			   {obj: inh1, tgt: frac2color(0.3, red)},
+			   {obj: tc1, tgt: frac2color(0.3, lime)},
+			   {obj: pyr2, tgt: frac2color(0.3, lime)},
+			   {obj: tc2, tgt: frac2color(0.3, lime)},
+			   {obj: inh2, tgt: frac2color(0.3, red)},
+			   {obj: inptArrow, tgt: inptTxtColor}];
+
+	colorTweenMulti(transitions, 500);	
+	//var dur = ;
+
+}
+
+
+// plot intermediate stimulus in state space and nmAXes
+function step12(){
+	canvas.removeEventListener('click', step12);
+	canvas.addEventListener('click', step13);
+	
+	var idx = 4;
+	var point = ssPointsPre[idx];
+	singlePlotSS(point);
+}
+
+
+// return everything to baseline, introduce CCs
+function step13(){
+	canvas.removeEventListener('click', step13);
+	canvas.addEventListener('click', step14);
+	
+		
+	// return everything to baseline
+	var blDur = 500;
+	var blTrans = [{obj: pyr1, tgt: blGrey},
+			   {obj: inh1, tgt: blGrey},
+			   {obj: tc1, tgt: blGrey},
+			   {obj: pyr2, tgt: blGrey},
+			   {obj: tc2, tgt: blGrey},
+			   {obj: inh2, tgt: blGrey},
+			   {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];
+	colorTweenMulti(blTrans, blDur);
+}
+
+
+// introduce cc's
+function step14(){
+	canvas.removeEventListener('click', step14);
+	canvas.addEventListener('click', step15);
+	
+	var ccDur = 500;
+	var ccTrans = [{obj: cc1, tgt: blGrey},
+		       {obj: cc2, tgt: blGrey}];
+	colorTweenMulti(ccTrans, ccDur);
+}
+
+
+//show that cc's do little on their own in naive state
+function step15(){
+	canvas.removeEventListener('click', step15);
+	canvas.addEventListener('click', step16);
+	
+	var ccDur = 500;
+	var ccTrans = [   {obj: cc1, tgt: lime},
+			   {obj: cc2, tgt: lime},
+			   {obj: spkrContainer, tgt: 1.0}];
+	colorTweenMulti(ccTrans, ccDur);
+}
+
+
+//deactivate cc's
+function step16(){
+	canvas.removeEventListener('click', step16);
+	canvas.addEventListener('click', step17);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc1, tgt: blGrey},
+			   {obj: cc2, tgt: blGrey},
+			   {obj: spkrContainer, tgt: 0.0}];
+	colorTweenMulti(ccDtrans, ccDdur);
+}
+
+
+// do pairing
+function step17(){
+	canvas.removeEventListener('click', step17);
+	canvas.addEventListener('click', step18);
+
+	console.log('py1 color = '.concat(rgb2str(pyr1.rgb)));
+
+	inptArrow.angle = 0;
+	var pairingDur = 2000;
+	var pairingTrans = [{obj: pyr1, tgt: lime},
+			   {obj: inh1, tgt: red},
+			   {obj: tc1, tgt: lime},
+			   {obj: cc1, tgt: lime},
+			   {obj: cc2, tgt: lime},
+			   {obj: spkrContainer, tgt: 1.0},
+			   {obj: inptArrow, tgt: inptTxtColor}];
+	flash(pairingTrans, 3, pairingDur);
+
+}
+
+
+// potentiate
+function step18(){
+	canvas.removeEventListener('click', step18);
+	canvas.addEventListener('click', step19);
+
+	cc1.potentiate(2, 1, 50);
+}
+
+
+// show that cc on its own still doesn't do anything after potentiaton
+function step19(){
+	canvas.removeEventListener('click', step19);
+	canvas.addEventListener('click', step20);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc1, tgt: lime},
+			   {obj: cc2, tgt: lime},
+			   {obj: spkrContainer, tgt: 1.0}];
+	colorTweenMulti(ccDtrans, ccDdur);
+}
+
+
+// deactivate cc's
+function step20(){
+	canvas.removeEventListener('click', step20);
+	canvas.addEventListener('click', step21);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc1, tgt: blGrey},
+			   {obj: cc2, tgt: blGrey},
+			   {obj: spkrContainer, tgt: 0.0}];
+	colorTweenMulti(ccDtrans, ccDdur);
+}
+
+
+// once again present intermediate sitm
+function step21(){
+	canvas.removeEventListener('click', step21);
+	canvas.addEventListener('click', step22);
+
+	var dur = 500;
+	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
+	inptArrow.angle = xArrows[4].angle;
+	
+	var transitions = [{obj: pyr1, tgt: frac2color(0.4, lime)},
+			   {obj: inh1, tgt: frac2color(0.4, red)},
+			   {obj: tc1, tgt: frac2color(0.4, lime)},
+			   {obj: pyr2, tgt: frac2color(0.4, lime)},
+			   {obj: tc2, tgt: frac2color(0.4, lime)},
+			   {obj: inh2, tgt: frac2color(0.4, red)},
+			   {obj: inptArrow, tgt: inptTxtColor}];
+
+	colorTweenMulti(transitions, 500);	
+}
+
+
+// present auditory stimulus in addition to it
+function step22(){
+	canvas.removeEventListener('click', step22);
+	canvas.addEventListener('click', step23);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc1, tgt: lime},
+			   {obj: cc2, tgt: lime},
+			   {obj: spkrContainer, tgt: 1.0}];
+	colorTweenMulti(ccDtrans, ccDdur);
+}
+
+
+// and now the system responds as if it has been presented with a vertical stimulus
+function step23(){
+	canvas.removeEventListener('click', step23);
+	canvas.addEventListener('click', step24);
+
+	var transitions = [{obj: pyr1, tgt: lime},
+			   {obj: inh1, tgt: red},
+			   {obj: tc1, tgt: frac2color(0.4, lime)},
+			   {obj: pyr2, tgt: blGrey},
+			   {obj: tc2, tgt: frac2color(0.4, lime)},
+			   {obj: inh2, tgt: blGrey}];
+
+	colorTweenMulti(transitions, 500);	
+}
+
+
+// plot response in state space
+function step24(){
+	canvas.removeEventListener('click', step24);
+	canvas.addEventListener('click', step25);
+	
+	var point = ssPointsPost[4];	
+
+	allObjects.push(point);
+	var ppDur = 500;
+	var colorTgt = point.rgb.slice();
+	colorTgt[3] = 1.0;
+	colorTween(point, colorTgt, ppDur);
+	
+}
+
+
+// the response in state space moves towards the response to the vertical stimulus
+function step25(){
+	canvas.removeEventListener('click', step25);
+	canvas.addEventListener('click', step26);
+
+	var point = ssPointsPost[4];
+	var moveDur = 500;
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0] - txtFudgeX, stateSpaceAxes.yOrig - postPairFinalPositions[4][1] + txtFudgeY], moveDur);
+}
+
+
+// return everything to baseline
+function step26(){
+	canvas.removeEventListener('click', step26);
+	canvas.addEventListener('click', step27);
+
+	var step3dur = 200;
+	var step3transitions = [{obj: tc1, tgt: blGrey},
+			        {obj: pyr1, tgt: blGrey},
+				{obj: inh1, tgt: blGrey},
+				{obj: tc2, tgt: blGrey},
+				{obj: cc1, tgt: blGrey},
+				{obj: cc2, tgt: blGrey},
+				{obj: spkrContainer, tgt: 0.0},
+			        {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];	
+	colorTweenMulti(step3transitions, step3dur);
+
+}
+
+
+// introduce new cc's
+function step27(){
+	canvas.removeEventListener('click', step27);
+	canvas.addEventListener('click', step28);
+
+	var ccDur = 500;
+	var ccTrans = [{obj: cc3, tgt: blGrey},
+		       {obj: cc4, tgt: blGrey}];
+	colorTweenMulti(ccTrans, ccDur);	
+}
+
+
+// pair new cc's with horizontal
+function step28(){
+	canvas.removeEventListener('click', step28);
+	canvas.addEventListener('click', step29);
+	inptArrow.angle = 90;
+	var pairingDur = 2000;
+	var pairingTrans = [{obj: pyr2, tgt: lime},
+			   {obj: inh2, tgt: red},
+			   {obj: tc2, tgt: lime},
+			   {obj: cc3, tgt: lime},
+			   {obj: cc4, tgt: lime},
+			   {obj: spkrContainer2, tgt: 1.0},
+			   {obj: inptArrow, tgt: inptTxtColor}];
+	flash(pairingTrans, 3, pairingDur);
+
+	var pot = setTimeout(function(){cc4.potentiate(2, 1, 50)}, pairingDur + 25);	
+}
+
+
+// show an intrmediate stimulus, slightly towards horizontal
+function step29(){
+	canvas.removeEventListener('click', step29);
+	canvas.addEventListener('click', step30);
+
+	var ind = 3;
+	inptArrow.angle = preAngles[ind];
+
+		
+	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
+			   {obj: inh1, tgt: frac2color(0.3, red)},
+			   {obj: tc1, tgt: frac2color(0.3, lime)},
+			   {obj: pyr2, tgt: frac2color(0.3, lime)},
+			   {obj: tc2, tgt: frac2color(0.3, lime)},
+			   {obj: inh2, tgt: frac2color(0.3, red)},
+			   {obj: inptArrow, tgt: inptTxtColor}];
+
+	colorTweenMulti(transitions, 500);
+}
+
+
+// plot response in state space
+function step30(){
+	canvas.removeEventListener('click', step30);
+	canvas.addEventListener('click', step31);
+	console.log('step32');
+
+	var ind = 3;
+	var point = ssPointsPre[ind];
+	allObjects.push(point);
+	
+	singlePlotSS(point);
+	
+	/*
+	var tgt = point.rgb.slice();
+	tgt[3] = 1.0;
+	colorTween(point, tgt, 500);
+	*/
+}
+
+
+// now present auditory stim on top of it
+function step31(){
+	canvas.removeEventListener('click', step31);
+	canvas.addEventListener('click', step32);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc3, tgt: lime},
+			   {obj: cc4, tgt: lime},
+			   {obj: pyr2, tgt: lime},
+			   {obj: inh2, tgt: red},
+			   {obj: pyr1, tgt: blGrey},
+			   {obj: inh1, tgt: blGrey},
+			   {obj: spkrContainer2, tgt: 1.0}];
+	colorTweenMulti(ccDtrans, ccDdur);	
+}
+
+
+// plot response in state space	
+function step32(){
+	canvas.removeEventListener('click', step32);
+	canvas.addEventListener('click', step33);	
+	
+	var ind = 3;
+	var point = ssPointsPost[ind];
+	allObjects.push(point);
+	point.rgb[3] = 1.0;	
+	point.draw();
+	
+
+	var plotResp = setTimeout(function(){
+		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0] - txtFudgeX, stateSpaceAxes.yOrig -postPairFinalPositions[ind][1] + txtFudgeY], 500)
+	}, 50);
+}
+
+
+// return everything to baseline
+function step33(){
+	canvas.removeEventListener('click', step33);
+	canvas.addEventListener('click', step34);	
+
+	var step3dur = 200;
+	var step3transitions = [{obj: tc2, tgt: blGrey},
+			        {obj: pyr2, tgt: blGrey},
+				{obj: inh2, tgt: blGrey},
+				{obj: tc1, tgt: blGrey},
+				{obj: cc3, tgt: blGrey},
+				{obj: cc4, tgt: blGrey},
+				{obj: spkrContainer2, tgt: 0.0},
+			        {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];	
+	colorTweenMulti(step3transitions, step3dur);	
+}
+
+
+// have psychometric space slide out from state space
+function step34(){
 	// pop out those grid lines objects, which we don't need anymore	
 	allObjects.pop(); 
 	allObjects.pop();
@@ -534,466 +987,6 @@ function step8(){
 		}
 	};
 
-}
-
-
-// plot response to vertical line on psychometric axes with horizontal line connecting to state space
-function step9(){
-	canvas.removeEventListener('click', step9);
-	canvas.addEventListener('click', step10);
-
-	var tmpGridlineDuration = 500;
-	
-	allObjects.push(pmPointsPre[7]);
-
-	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, pmPointsPre[7].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	var tempGridLineVert = new Rectangle(pmPointsPre[7].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
-	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];
-	tempGridLineVert.rgb = [100, 100, 100, 0.0];		
-	allObjects.push(tempGridLineHoriz);	
-	allObjects.push(tempGridLineVert);
-
-	var drawGLtrans = [{obj: tempGridLineHoriz, tgt: inptTxtColor},
-			  {obj: tempGridLineVert, tgt: inptTxtColor}] 
-	colorTweenMulti(drawGLtrans, tmpGridlineDuration);	
-		
-	var tgt = pmPointsPre[7].rgb.slice();
-	tgt[3] = 1.0;	
-	var plotPoint = setTimeout(function(){colorTween(pmPointsPre[7], tgt, tmpGridlineDuration)}, tmpGridlineDuration);
-	
-	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
-			  {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]}] 
-	var eraseTempGridLine = setTimeout(function(){colorTweenMulti(eraseGLtrans, tmpGridlineDuration);}, tmpGridlineDuration);
-}
-
-
-// show response to horizontal stimulus
-function step10(){
-	allObjects.pop(); // pop temporary pan-plot gridline from last step
-	allObjects.pop();
-
-	canvas.removeEventListener('click', step10);
-	canvas.addEventListener('click', step11);
-
-	// deactivate n1, tc1, inh1 and input arrow
-	var deactivateDur = 200;
-	var s10erase = [{obj: tc1, tgt: [185, 185, 185, 1.0]},
-			{obj: pyr1, tgt: [185, 185, 185, 1.0]},
-			{obj: inptArrow, tgt: [100, 100, 100, 0.0]},
-			{obj: inh1, tgt: [185, 185, 185, 1.0]}];
-	colorTweenMulti(s10erase, deactivateDur);
-
-	// present horizontal stimulus, plot
-	var t2dur = 500;
-	var t2latency = deactivateDur + 25;
-	var transitions2 = [{obj: tc2, tgt: [0, 255, 0, 1.0]},
-			    {obj: pyr2, tgt: [0, 255, 0, 1.0]},
-			    {obj: inptArrow, tgt: [100, 100, 100, 1.0]}];
-	var doTrans2 = setTimeout(function(){
-				inptArrow.angle = 90;
-				colorTweenMulti(transitions2, t2dur);
-			}, t2latency);
-
-	var activateInh = setTimeout(function(){
-		colorTween(inh2, [255, 0, 0, 1.0], t2dur * 0.75);
-	}, t2latency + t2dur * 0.75);	
-}
-
-
-//plot in state space and psychometric space
-function step11(){
-	canvas.removeEventListener('click', step11);
-	canvas.addEventListener('click', step12);
-
-	ind = 0;
-	
-	doublePlot(ind);
-	
-}
-
-
-// deactivate pyr2, etc.
-function step12(){
-	canvas.removeEventListener('click', step12);
-	canvas.addEventListener('click', step13);
-	
-	var dur = 500;
-	var transitions = [{obj: tc2, tgt: blGrey},
-			   {obj: pyr2, tgt: blGrey},
-			   {obj: inh2, tgt: blGrey},
-			   {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];
-	colorTweenMulti(transitions, dur);
-}
-
-
-// present an intermediate stimulus
-function step13(){
-	canvas.removeEventListener('click', step13);
-	canvas.addEventListener('click', step14);
-	
-	var dur = 500;
-	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
-	inptArrow.angle = xArrows[4].angle;
-	
-	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
-			   {obj: inh1, tgt: frac2color(0.3, red)},
-			   {obj: tc1, tgt: frac2color(0.3, lime)},
-			   {obj: pyr2, tgt: frac2color(0.3, lime)},
-			   {obj: tc2, tgt: frac2color(0.3, lime)},
-			   {obj: inh2, tgt: frac2color(0.3, red)},
-			   {obj: inptArrow, tgt: inptTxtColor}];
-
-	colorTweenMulti(transitions, 500);	
-	//var dur = ;
-
-}
-
-
-// plot intermediate stimulus in state space and nmAXes
-function step14(){
-	canvas.removeEventListener('click', step14);
-	canvas.addEventListener('click', step15);
-	
-	var idx = 4;
-	doublePlot(4);
-}
-
-
-// return everything to baseline, introduce CCs
-function step15(){
-	canvas.removeEventListener('click', step15);
-	canvas.addEventListener('click', step16);
-	
-		
-	// return everything to baseline
-	var blDur = 500;
-	var blTrans = [{obj: pyr1, tgt: blGrey},
-			   {obj: inh1, tgt: blGrey},
-			   {obj: tc1, tgt: blGrey},
-			   {obj: pyr2, tgt: blGrey},
-			   {obj: tc2, tgt: blGrey},
-			   {obj: inh2, tgt: blGrey},
-			   {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];
-	colorTweenMulti(blTrans, blDur);
-}
-
-
-// introduce cc's
-function step16(){
-	canvas.removeEventListener('click', step16);
-	canvas.addEventListener('click', step17);
-	
-	var ccDur = 500;
-	var ccTrans = [{obj: cc1, tgt: blGrey},
-		       {obj: cc2, tgt: blGrey}];
-	colorTweenMulti(ccTrans, ccDur);
-}
-
-
-//show that cc's do little on their own in naive state
-function step17(){
-	canvas.removeEventListener('click', step17);
-	canvas.addEventListener('click', step18);
-	
-	var ccDur = 500;
-	var ccTrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
-			   {obj: spkrContainer, tgt: 1.0}];
-	colorTweenMulti(ccTrans, ccDur);
-}
-
-
-//deactivate cc's
-function step18(){
-	canvas.removeEventListener('click', step18);
-	canvas.addEventListener('click', step19);
-
-	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc1, tgt: blGrey},
-			   {obj: cc2, tgt: blGrey},
-			   {obj: spkrContainer, tgt: 0.0}];
-	colorTweenMulti(ccDtrans, ccDdur);
-}
-
-
-// do pairing
-function step19(){
-	canvas.removeEventListener('click', step19);
-	canvas.addEventListener('click', step20);
-
-	console.log('py1 color = '.concat(rgb2str(pyr1.rgb)));
-
-	inptArrow.angle = 0;
-	var pairingDur = 2000;
-	var pairingTrans = [{obj: pyr1, tgt: lime},
-			   {obj: inh1, tgt: red},
-			   {obj: tc1, tgt: lime},
-			   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
-			   {obj: spkrContainer, tgt: 1.0},
-			   {obj: inptArrow, tgt: inptTxtColor}];
-	flash(pairingTrans, 3, pairingDur);
-
-}
-
-
-// potentiate
-function step20(){
-	canvas.removeEventListener('click', step20);
-	canvas.addEventListener('click', step21);
-
-	cc1.potentiate(2, 1, 50);
-}
-
-
-// show that cc on its own still doesn't do anything after potentiaton
-function step21(){
-	canvas.removeEventListener('click', step21);
-	canvas.addEventListener('click', step22);
-
-	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
-			   {obj: spkrContainer, tgt: 1.0}];
-	colorTweenMulti(ccDtrans, ccDdur);
-}
-
-
-// deactivate cc's
-function step22(){
-	canvas.removeEventListener('click', step22);
-	canvas.addEventListener('click', step23);
-
-	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc1, tgt: blGrey},
-			   {obj: cc2, tgt: blGrey},
-			   {obj: spkrContainer, tgt: 0.0}];
-	colorTweenMulti(ccDtrans, ccDdur);
-}
-
-
-// once again present intermediate sitm
-function step23(){
-	canvas.removeEventListener('click', step23);
-	canvas.addEventListener('click', step24);
-
-	var dur = 500;
-	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
-	inptArrow.angle = xArrows[4].angle;
-	
-	var transitions = [{obj: pyr1, tgt: frac2color(0.4, lime)},
-			   {obj: inh1, tgt: frac2color(0.4, red)},
-			   {obj: tc1, tgt: frac2color(0.4, lime)},
-			   {obj: pyr2, tgt: frac2color(0.4, lime)},
-			   {obj: tc2, tgt: frac2color(0.4, lime)},
-			   {obj: inh2, tgt: frac2color(0.4, red)},
-			   {obj: inptArrow, tgt: inptTxtColor}];
-
-	colorTweenMulti(transitions, 500);	
-}
-
-
-// present auditory stimulus in addition to it
-function step24(){
-	canvas.removeEventListener('click', step24);
-	canvas.addEventListener('click', step25);
-
-	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
-			   {obj: spkrContainer, tgt: 1.0}];
-	colorTweenMulti(ccDtrans, ccDdur);
-}
-
-
-// and now the system responds as if it has been presented with a vertical stimulus
-function step25(){
-	canvas.removeEventListener('click', step25);
-	canvas.addEventListener('click', step26);
-
-	var transitions = [{obj: pyr1, tgt: lime},
-			   {obj: inh1, tgt: red},
-			   {obj: tc1, tgt: frac2color(0.4, lime)},
-			   {obj: pyr2, tgt: blGrey},
-			   {obj: tc2, tgt: frac2color(0.4, lime)},
-			   {obj: inh2, tgt: blGrey}];
-
-	colorTweenMulti(transitions, 500);	
-}
-
-
-// plot response in state space
-function step26(){
-	canvas.removeEventListener('click', step26);
-	canvas.addEventListener('click', step27);
-	
-	var point = ssPointsPost[4];	
-
-	allObjects.push(point);
-	var ppDur = 500;
-	var colorTgt = point.rgb.slice();
-	colorTgt[3] = 1.0;
-	colorTween(point, colorTgt, ppDur);
-	
-}
-
-
-// the response in state space moves towards the response to the vertical stimulus
-function step27(){
-	canvas.removeEventListener('click', step27);
-	canvas.addEventListener('click', step28);
-
-	var point = ssPointsPost[4];
-	var moveDur = 500;
-	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0] - txtFudgeX, stateSpaceAxes.yOrig - postPairFinalPositions[4][1] + txtFudgeY], moveDur);
-}
-
-
-// return everything to baseline
-function step28(){
-	canvas.removeEventListener('click', step28);
-	canvas.addEventListener('click', step29);
-
-	var step3dur = 200;
-	var step3transitions = [{obj: tc1, tgt: blGrey},
-			        {obj: pyr1, tgt: blGrey},
-				{obj: inh1, tgt: blGrey},
-				{obj: tc2, tgt: blGrey},
-				{obj: cc1, tgt: blGrey},
-				{obj: cc2, tgt: blGrey},
-				{obj: spkrContainer, tgt: 0.0},
-			        {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];	
-	colorTweenMulti(step3transitions, step3dur);
-
-}
-
-
-// introduce new cc's
-function step29(){
-	canvas.removeEventListener('click', step29);
-	canvas.addEventListener('click', step30);
-
-	var ccDur = 500;
-	var ccTrans = [{obj: cc3, tgt: blGrey},
-		       {obj: cc4, tgt: blGrey}];
-	colorTweenMulti(ccTrans, ccDur);	
-}
-
-
-// pair new cc's with horizontal
-function step30(){
-	canvas.removeEventListener('click', step30);
-	canvas.addEventListener('click', step31);
-	inptArrow.angle = 90;
-	var pairingDur = 2000;
-	var pairingTrans = [{obj: pyr2, tgt: lime},
-			   {obj: inh2, tgt: red},
-			   {obj: tc2, tgt: lime},
-			   {obj: cc3, tgt: lime},
-			   {obj: cc4, tgt: lime},
-			   {obj: spkrContainer2, tgt: 1.0},
-			   {obj: inptArrow, tgt: inptTxtColor}];
-	flash(pairingTrans, 3, pairingDur);
-
-	var pot = setTimeout(function(){cc4.potentiate(2, 1, 50)}, pairingDur + 25);	
-}
-
-
-// show an intrmediate stimulus, slightly towards horizontal
-function step31(){
-	canvas.removeEventListener('click', step31);
-	canvas.addEventListener('click', step32);
-
-	var ind = 3;
-	inptArrow.angle = preAngles[ind];
-
-		
-	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
-			   {obj: inh1, tgt: frac2color(0.3, red)},
-			   {obj: tc1, tgt: frac2color(0.3, lime)},
-			   {obj: pyr2, tgt: frac2color(0.3, lime)},
-			   {obj: tc2, tgt: frac2color(0.3, lime)},
-			   {obj: inh2, tgt: frac2color(0.3, red)},
-			   {obj: inptArrow, tgt: inptTxtColor}];
-
-	colorTweenMulti(transitions, 500);
-}
-
-
-// plot response in state space
-function step32(){
-	canvas.removeEventListener('click', step32);
-	canvas.addEventListener('click', step33);
-	console.log('step32');
-
-	var ind = 3;
-	var point = ssPointsPre[ind];
-	allObjects.push(point);
-	
-	singlePlotSS(point);
-	
-	/*
-	var tgt = point.rgb.slice();
-	tgt[3] = 1.0;
-	colorTween(point, tgt, 500);
-	*/
-}
-
-
-// now present auditory stim on top of it
-function step33(){
-	canvas.removeEventListener('click', step33);
-	canvas.addEventListener('click', step34);
-
-	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc3, tgt: lime},
-			   {obj: cc4, tgt: lime},
-			   {obj: pyr2, tgt: lime},
-			   {obj: inh2, tgt: red},
-			   {obj: pyr1, tgt: blGrey},
-			   {obj: inh1, tgt: blGrey},
-			   {obj: spkrContainer2, tgt: 1.0}];
-	colorTweenMulti(ccDtrans, ccDdur);	
-}
-
-
-// plot response in state space	
-function step34(){
-	canvas.removeEventListener('click', step34);
-	canvas.addEventListener('click', step35);	
-	
-	var ind = 3;
-	var point = ssPointsPost[ind];
-	allObjects.push(point);
-	point.rgb[3] = 1.0;	
-	point.draw();
-	
-
-	var plotResp = setTimeout(function(){
-		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0] - txtFudgeX, stateSpaceAxes.yOrig -postPairFinalPositions[ind][1] + txtFudgeY], 500)
-	}, 50);
-}
-
-
-// return everything to baseline
-function step35(){
-	canvas.removeEventListener('click', step35);
-	canvas.addEventListener('click', step36);	
-
-	var step3dur = 200;
-	var step3transitions = [{obj: tc2, tgt: blGrey},
-			        {obj: pyr2, tgt: blGrey},
-				{obj: inh2, tgt: blGrey},
-				{obj: tc1, tgt: blGrey},
-				{obj: cc3, tgt: blGrey},
-				{obj: cc4, tgt: blGrey},
-				{obj: spkrContainer2, tgt: 0.0},
-			        {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];	
-	colorTweenMulti(step3transitions, step3dur);	
-}
-
-
-function step36(){
 }
 
 function testDoublePlot(){
