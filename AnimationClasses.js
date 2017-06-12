@@ -1040,6 +1040,88 @@ function chDoneTweening(val, speed, tgt, timer){
 } 
 
 
+function motionTween(obj, tgt, duration){
+	console.log('Start motion tween:');
+
+	// compute color steps and stuff
+	var speed = new Array(2);
+	
+	speed[0] = (tgt[0] - obj.ctrX) / duration; 
+	speed[1] = (tgt[1] - obj.ctrY) / duration;
+
+	console.log('	object: '.concat(obj.constructor.name));
+	console.log('	currX: '.concat(String(obj.ctrX)));
+	console.log('	currY: '.concat(String(obj.ctrY)));
+	console.log('	speedX: '.concat(String(speed[0])));
+	console.log('	speedy: '.concat(String(speed[1])));
+	
+
+	// initialize timer
+	tmr = new Timer;
+
+
+	// make initial request upon next frame
+	window.requestAnimationFrame(function(timeStamp){
+		tmr.lastTime = timeStamp	; 
+		motionTweenStep(timeStamp, obj, tgt, speed, tmr)});
+}
+
+
+function motionTweenStep(timeStamp, obj, tgt, speed, timer){
+	
+	//console.log('colorTweenStep::timer');
+	//console.log(timer);
+
+	// If the elapsed time is less than the min frame period, then do nothing:
+	if( timeStamp - timer.lastTime < framePeriod ){
+		window.requestAnimationFrame(function(timeStamp2){motionTweenStep(timeStamp2, obj, tgt, speed, timer);});
+		return;
+	}
+	
+	timer.delta += timeStamp - timer.lastTime;
+	timer.lastTime = timeStamp;
+	timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;
+
+	// Evaluate if the tween is complete; if even one color will not be at its target wirh one more step, then it's not complete
+	var cont = 0;
+
+	if (chDoneTweening(obj.ctrX, speed[0], tgt[0], timer) == 0 || chDoneTweening(obj.ctrY, speed[1], tgt[1], timer) == 0){
+		console.log('motion tweening in progress');
+		if( chDoneTweening(obj.ctrX, speed[0], tgt[0], timer) == 0){
+				console.log('x-tweening in progress');
+				obj.ctrX += speed[0] * timeToRender;
+		}
+	
+		if( chDoneTweening(obj.ctrY, speed[1], tgt[1], timer) == 0 ){
+			console.log('y-tweening in progress');
+			obj.ctrY += speed[1] * timeToRender;
+		}	
+		
+		animate(allObjects);
+		timer.delta -= Math.floor(timer.delta/framePeriod) * framePeriod;		
+		window.requestAnimationFrame(function(timeStamp3){motionTweenStep(timeStamp3, obj, tgt, speed, timer);});	
+	} else{
+		obj.ctrX = tgt[0];
+		obj.ctrY = tgt[1];
+		animate(alObjects);
+	}
+};
+
+
+/*
+function objDoneMotionTweening(obj, speed, tgt, timer){
+	var timeToRender = Math.floor(timer.delta/framePeriod) * framePeriod;	
+	var done = 1;		
+	if (chDoneTweening(obj.ctrX, speed[0], tgt[0], timer) == 0 ||
+chDoneTweening(obj.ctrX, speed[0], tgt[0], timer) == 0
+		){				
+		done = 0;
+	}
+	//console.log('done = '.concat(String(done)));
+	return done;
+}
+*/
+
 function rgb2str(rgb){
 	colorStr = colorBaseStr.concat(String(Math.floor(rgb[0])), ',', String(Math.floor(rgb[1])), ',', String(Math.floor(rgb[2])), ',', String(rgb[3]), ')');
 	//console.log(colorStr);
