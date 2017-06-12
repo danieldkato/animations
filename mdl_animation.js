@@ -557,18 +557,43 @@ function step11(){
 
 	var tempLineDuration = 500;
 
-	var dPointX = stateSpaceAxes.xLength * 0.9;
-	var dPointY = stateSpaceAxes.yLength * 0.1;
+	ind = 0;
 	
+	pt1 = stateSpacePoints[ind];
+	pt2 = psychometricPoints[ind];
 
-	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - dPointY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	tempGridLine.rgb = [100, 100, 100, 0.0];	
-	allObjects.push(tempGridLine);	
+	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, stateSpacePoints[ind].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	var tempGridLineVert = new Rectangle(stateSpacePoints[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);
+	var tempGridLineVert2 = new Rectangle(psychometricPoints[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);		
+	
+	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];	
+	tempGridLineVert.rgb = [100, 100, 100, 0.0];	
+	tempGridLineVert2.rgb = [100, 100, 100, 0.0];
 
-	stateSpaceAxes.plot(dPointX, dPointY, 90, blGrey, tempLineDuration);
-	colorTween(tempGridLine, inptTxtColor, tempLineDuration);
-	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [100, 100, 100, 0.0], tempLineDuration)}, tempLineDuration);
-	var plotNM = setTimeout(function(){nmAxes.plot(xArrows[0].ctrX - nmAxes.xOrig, dPointY, 90, blGrey, tempLineDuration)}, tempLineDuration + 25);
+	allObjects.push(tempGridLineHoriz);	
+	allObjects.push(tempGridLineVert);
+	allObjects.push(tempGridLineVert2);
+
+	var drawGLtrans = [{obj: tempGridLineHoriz, tgt: inptTxtColor},
+			   {obj: tempGridLineVert, tgt: inptTxtColor},
+			   {obj: tempGridLineVert2, tgt: inptTxtColor}];
+	colorTweenMulti(drawGLtrans, tempLineDuration);
+
+	tgt1 = pt1.rgb.slice();
+	tgt2 = pt2.rgb.slice();
+	tgt1[3] = 1.0;
+	tgt2[3] = 1.0;
+	var drawPtTrans = [{obj: pt1, tgt: tgt1},
+			   {obj: pt2, tgt: tgt2}];	
+	allObjects.push(pt1);
+	allObjects.push(pt2);
+	var plotNM = setTimeout(function(){colorTweenMulti(drawPtTrans, tempLineDuration)}, tempLineDuration + 25);
+
+	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
+		   	    {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]},
+		   	    {obj: tempGridLineVert2, tgt: [100, 100, 100, 0.0]}];
+	var eraseTempGridLine = setTimeout(function(){colorTweenMulti(eraseGLtrans, tempLineDuration)}, tempLineDuration + 10);
+	
 }
 
 
