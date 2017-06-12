@@ -585,12 +585,12 @@ function step13(){
 	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
 	inptArrow.angle = xArrows[4].angle;
 	
-	var transitions = [{obj: pyr1, tgt: frac2color(0.85, lime)},
-			   {obj: inh1, tgt: frac2color(0.85, red)},
-			   {obj: tc1, tgt: frac2color(0.85, lime)},
-			   {obj: pyr2, tgt: frac2color(0.15, lime)},
-			   {obj: tc2, tgt: frac2color(0.15, lime)},
-			   {obj: inh2, tgt: frac2color(0.15, red)},
+	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
+			   {obj: inh1, tgt: frac2color(0.3, red)},
+			   {obj: tc1, tgt: frac2color(0.3, lime)},
+			   {obj: pyr2, tgt: frac2color(0.3, lime)},
+			   {obj: tc2, tgt: frac2color(0.3, lime)},
+			   {obj: inh2, tgt: frac2color(0.3, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
 	colorTweenMulti(transitions, 500);	
@@ -674,7 +674,7 @@ function step19(){
 	console.log('py1 color = '.concat(rgb2str(pyr1.rgb)));
 
 	inptArrow.angle = 0;
-	var pairingDur = 1000;
+	var pairingDur = 2000;
 	var pairingTrans = [{obj: pyr1, tgt: lime},
 			   {obj: inh1, tgt: red},
 			   {obj: tc1, tgt: lime},
@@ -687,8 +687,94 @@ function step19(){
 }
 
 
+// potentiate
 function step20(){
+	canvas.removeEventListener('click', step20);
+	canvas.addEventListener('click', step21);
+
+	cc1.potentiate(2, 1, 50);
 }
+
+
+// show that cc on its own still doesn't do anything after potentiaton
+function step21(){
+	canvas.removeEventListener('click', step21);
+	canvas.addEventListener('click', step22);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc1, tgt: lime},
+			   {obj: cc2, tgt: lime},
+			   {obj: spkrContainer, tgt: 1.0}];
+	colorTweenMulti(ccDtrans, ccDdur);
+}
+
+
+// deactivate cc's
+function step22(){
+	canvas.removeEventListener('click', step22);
+	canvas.addEventListener('click', step23);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc1, tgt: blGrey},
+			   {obj: cc2, tgt: blGrey},
+			   {obj: spkrContainer, tgt: 0.0}];
+	colorTweenMulti(ccDtrans, ccDdur);
+}
+
+
+// once again present intermediate sitm
+function step23(){
+	canvas.removeEventListener('click', step23);
+	canvas.addEventListener('click', step24);
+
+	var dur = 500;
+	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
+	inptArrow.angle = xArrows[4].angle;
+	
+	var transitions = [{obj: pyr1, tgt: frac2color(0.4, lime)},
+			   {obj: inh1, tgt: frac2color(0.4, red)},
+			   {obj: tc1, tgt: frac2color(0.4, lime)},
+			   {obj: pyr2, tgt: frac2color(0.4, lime)},
+			   {obj: tc2, tgt: frac2color(0.4, lime)},
+			   {obj: inh2, tgt: frac2color(0.4, red)},
+			   {obj: inptArrow, tgt: inptTxtColor}];
+
+	colorTweenMulti(transitions, 500);	
+}
+
+
+// present auditory stimulus in addition to it
+function step24(){
+	canvas.removeEventListener('click', step24);
+	canvas.addEventListener('click', step25);
+
+	var ccDdur = 500;
+	var ccDtrans = [   {obj: cc1, tgt: lime},
+			   {obj: cc2, tgt: lime},
+			   {obj: spkrContainer, tgt: 1.0}];
+	colorTweenMulti(ccDtrans, ccDdur);
+}
+
+
+// and now the system responds as if it has been presented with a vertical stimulus
+function step25(){
+	canvas.removeEventListener('click', step25);
+	canvas.addEventListener('click', step26);
+
+	var transitions = [{obj: pyr1, tgt: lime},
+			   {obj: inh1, tgt: red},
+			   {obj: tc1, tgt: frac2color(0.4, lime)},
+			   {obj: pyr2, tgt: blGrey},
+			   {obj: tc2, tgt: frac2color(0.4, lime)},
+			   {obj: inh2, tgt: blGrey}];
+
+	colorTweenMulti(transitions, 500);	
+}
+
+
+function step26(){
+}
+
 
 function testDoublePlot(){
 	canvas.removeEventListener('click', step14);
