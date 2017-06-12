@@ -120,13 +120,17 @@ for(var a = 0; a < numAngles; a++){
 
 // define post-pairing angles
 var postAngles = new Array(xArrows.length);
+var rotationFactor = 0.75;
 for (var k = 0; k < 4; k++){ // angles in the first half will become more like the first element
-	postAngles[k] = xArrows[k].angle + 0.8*(xArrows[0].angle - xArrows[k].angle);	
+	postAngles[k] = xArrows[k].angle + rotationFactor*(xArrows[0].angle - xArrows[k].angle);	
 }
 for (var m = 4; m < xArrows.length; m++){ // angles in the second half will become more like the last element
-	postAngles[m] = xArrows[m].angle + 0.8*(xArrows[numAngles-1].angle - xArrows[m].angle);
+	postAngles[m] = xArrows[m].angle + rotationFactor*(xArrows[numAngles-1].angle - xArrows[m].angle);
 }
 
+
+console.log('postAngles');
+console.log(postAngles);
 
 // define all the points that will appear in state space axes (but don't render them yet)
 stateSpaceAxes.draw();
@@ -153,9 +157,11 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointX = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(postAngles[p]/180) );
 	var dPointY = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(postAngles[p]/180) );
 
-	postPairFinalPositions[p] = [dPointY, dPointX];
+	postPairFinalPositions[p] = [dPointX, dPointY];
 }
 
+console.log('pos pair final positions');
+console.log(postPairFinalPositions);
 
 // define all the points that will appear on the psychometric axes (but don't render them yet) for the unpaired stimuli
 var pmPointsPre = new Array(xArrows.length);
@@ -168,8 +174,8 @@ for (var q = 0; q < xArrows.length; q++){
 	nmPointPre.rgb[3] = 0.0;
 
 	var dPointXpost = xArrows[q].ctrX;
-	var dPointYpst = postPairFinalPositions[q].ctrY;
-	var nmPointPost = new dataPointAsterisk(dPointX, dPointY, angle2colorN1(xArrows[q].angle));		
+	var dPointYpost = stateSpaceAxes.yOrig - postPairFinalPositions[q][1];
+	var nmPointPost = new dataPointAsterisk(dPointXpost, dPointYpost, angle2colorN1(xArrows[q].angle)); nmPointPost.draw();		
 	nmPointPost.rgb[3] = 0.0;
 	
 	pmPointsPre[q] = nmPointPre;
