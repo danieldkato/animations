@@ -1070,3 +1070,21 @@ function frac2color(frac, tgt){
 	console.log(colorOut);
 	return colorOut;
 }
+
+
+function doublePlot(idx){
+	var tempLineDuration = 500;
+
+	var dPointX = stateSpaceAxes.xLength * Math.sin( Math.PI*(xArrows[idx].angle/180) );
+	var dPointY = stateSpaceAxes.yLength * Math.cos( Math.PI*(xArrows[idx].angle/180) );
+	
+
+	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - dPointY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	tempGridLine.rgb = [100, 100, 100, 0.0];	
+	allObjects.push(tempGridLine);	
+
+	stateSpaceAxes.plot(dPointX, dPointY, xArrows[idx].angle, angle2colorN1(xArrows[idx].angle), tempLineDuration);
+	colorTween(tempGridLine, inptTxtColor, tempLineDuration);
+	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [100, 100, 100, 0.0], tempLineDuration)}, tempLineDuration);
+	var plotNM = setTimeout(function(){nmAxes.plot(xArrows[idx].ctrX - nmAxes.xOrig, dPointY, xArrows[4].angle, angle2colorN1(xArrows[idx].angle), tempLineDuration)}, tempLineDuration + 25);
+}
