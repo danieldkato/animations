@@ -105,21 +105,23 @@ var xArrowLength = 30;
 
 // define stimulus angles to be presented
 var numAngles = 8;
-var xArrows = new Array(8);
+var xArrows = new Array(numAngles);
+var preAngles = new Array(numAngles);
 for(var a = 0; a < numAngles; a++){
 	angle = 90 - (a * (90/(numAngles-1)));
 	var arrow = new Arrow(arrowsXstart + a*nmXaxisLength/numAngles, arrowsY, xArrowLength, xArrowWidth, angle);		
 	arrow.rgb = [185, 185, 185, 0.0];		
-	xArrows[a] = arrow; 
+	xArrows[a] = arrow;
+	preAngles[a] = angle; 
 }
 console.log('xArrows');
 console.log(xArrows);
 
+console.log('preAngles');
+console.log(preAngles);
 
-// define all the points that will appear in state space axes (but don't render them yet)
+// define all the points that will appear in state space axes for unpaired stimuli (but don't render them yet)
 stateSpaceAxes.draw();
-
-// first, for the unpaired stimuli
 var stateSpacePoints = new Array(xArrows.length);
 for (var p = 0; p < xArrows.length; p++){
 	var dPointX = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
@@ -132,8 +134,9 @@ for (var p = 0; p < xArrows.length; p++){
 
 console.log('stateSpacePoints');
 console.log(stateSpacePoints);
-// define all the points that will appear on the psychometric axes (but don't render them yet)
-// first, for the unpaired stimuli
+
+
+// define all the points that will appear on the psychometric axes (but don't render them yet) for the unpaired stimuli
 var psychometricPoints = new Array(xArrows.length);
 for (var q = 0; q < xArrows.length; q++){
 	var dPointX = xArrows[q].ctrX;
@@ -144,9 +147,44 @@ for (var q = 0; q < xArrows.length; q++){
 	var nmPoint = new dataPoint(dPointX, dPointY, angle2colorN1(xArrows[q].angle), xArrows[q].angle);
 	nmPoint.rgb[3] = 0.0; 	
 	psychometricPoints[q] = nmPoint;
-	
 }
 
+
+// define the post-pairing points that will appear in state space axes
+var postAngles = new Array(xArrows.length);
+for (var k = 0; k < 4; k++){ // angles in the first half will become more like the first element
+	postAngles[k] = xArrows[k].angle + 0.8*(xArrows[0].angle - xArrows[k].angle);
+	
+}
+for (var m = 4; m < xArrows.length; m++){ // angles in the second half will become more like the last element
+	postAngles[m] = xArrows[m].angle + 0.8*(xArrows[numAngles-1].angle - xArrows[m].angle);
+}
+console.log('postAngles');
+console.log(postAngles);
+
+
+// define post-pairing points in state space
+var stateSpacePointsPost = new Array(xArrows.length);
+for (var p = 0; p < xArrows.length; p++){
+	var dPointX = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(postAngles[p]/180) );
+	var dPointY = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(postAngles[p]/180) );
+
+	var ssPoint = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, angle2colorN1(xArrows[p].angle)); ssPoint.draw();
+	//ssPoint.rgb[3] = 0.0 // initialize to be invisible 
+	stateSpacePointsPost[p] = ssPoint;
+}
+
+
+// define post-pairing points in psychometric
+var psychometricPointsPost = new Array(xArrows.length);
+for (var q = 0; q < xArrows.length; q++){
+	var dPointX = xArrows[q].ctrX;
+	var dPointY = stateSpacePointsPost[q].ctrY;
+
+	var nmPoint = new dataPointAsterisk(dPointX, dPointY, angle2colorN1(xArrows[q].angle)); nmPoint.draw();
+	//nmPoint.rgb[3] = 0.0; 	
+	psychometricPointsPost[q] = nmPoint;
+}
 
 
 // define and draw input box
@@ -209,7 +247,7 @@ var transition2 = [
 
 
 
-
+var testStarPoint = new dataPointAsterisk(width/2, height/2, blGrey); testStarPoint.draw();
 
 
 

@@ -473,6 +473,29 @@ class dataPoint {
 }
 
 
+class dataPointAsterisk {
+	// x: x-coordinate of center of datapoint
+	// y: y-coordinate of center of datapoint
+	// color: rgb array specifying color of datapoint
+	// angle: clockwise angle of inscribed arrow relative to vertical, in degrees
+	constructor(x, y, color){
+		this.ctrX = x;
+		this.ctrY = y;
+		this.rgb = color;
+	}
+
+	draw(){
+		ctx.fillStyle = rgb2str(this.rgb);
+		ctx.font = "bold 50px Georgia";		
+		ctx.save();
+		ctx.translate(this.ctrX, this.ctrY);
+		ctx.beginPath();
+		ctx.fillText("*", 0, 0);
+		ctx.restore();
+	}
+}
+
+
 class imgContainer{
 	// src: image source
 	// x: UL corner x
