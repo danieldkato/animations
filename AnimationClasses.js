@@ -490,7 +490,7 @@ class dataPointAsterisk {
 		ctx.fillStyle = rgb2str(this.rgb);
 		ctx.font = "bold ".concat(String(ptSize), "px Georgia");		
 		ctx.save();
-		ctx.translate(this.ctrX, this.ctrY);
+		ctx.translate(this.ctrX - txtFudgeX, this.ctrY + txtFudgeY);
 		ctx.beginPath();
 		ctx.fillText("*", 0, 0);
 		ctx.restore();

@@ -140,8 +140,8 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointXpre = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
 	var dPointYpre = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
 	
-	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]); //ssPointPre.draw();
-	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre - txtFudgeX, stateSpaceAxes.yOrig - dPointYpre + txtFudgeY, angle2colorN1(preAngles[p])); ssPointPost.draw(); // post points will be initialize to same position
+	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]); ssPointPre.draw();
+	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p])); ssPointPost.draw(); // post points will be initialize to same position
 
 	ssPointPre.rgb[3] = 0.0 // initialize to be invisible 
 	ssPointPost.rgb[3] = 0.0 // initialize to be invisible 
@@ -160,7 +160,7 @@ for (var p = 0; p < xArrows.length; p++){
 
 	postPairFinalPositions[p] = [dPointX, dPointY];
 
-	var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX - txtFudgeX, stateSpaceAxes.yOrig - dPointY + txtFudgeY, blGrey); testPt.draw();
+	var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, blGrey); testPt.draw();
 }
 
 console.log('pos pair final positions');
