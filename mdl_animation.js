@@ -865,8 +865,6 @@ function step28(){
 			        {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];	
 	colorTweenMulti(step3transitions, step3dur);
 
-	canvas.removeEventListener('click', step28);
-	canvas.addEventListener('click', step29);
 }
 
 
@@ -961,6 +959,9 @@ function step33(){
 
 // plot response in state space	
 function step34(){
+	canvas.removeEventListener('click', step34);
+	canvas.addEventListener('click', step35);	
+	
 	var ind = 3;
 	var point = ssPointsPost[ind];
 	allObjects.push(point);
@@ -973,6 +974,27 @@ function step34(){
 	}, 50);
 }
 
+
+// return everything to baseline
+function step35(){
+	canvas.removeEventListener('click', step35);
+	canvas.addEventListener('click', step36);	
+
+	var step3dur = 200;
+	var step3transitions = [{obj: tc2, tgt: blGrey},
+			        {obj: pyr2, tgt: blGrey},
+				{obj: inh2, tgt: blGrey},
+				{obj: tc1, tgt: blGrey},
+				{obj: cc3, tgt: blGrey},
+				{obj: cc4, tgt: blGrey},
+				{obj: spkrContainer2, tgt: 0.0},
+			        {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];	
+	colorTweenMulti(step3transitions, step3dur);	
+}
+
+
+function step36(){
+}
 
 function testDoublePlot(){
 	canvas.removeEventListener('click', step14);
