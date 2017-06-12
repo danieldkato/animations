@@ -1,3 +1,4 @@
+// define objects that will appear on axes and 
 
 // draw pyramidals
 var pyr1 = new Pyramidal(width*0.125, height*0.4 + pyramidalHeight/2); 
@@ -152,11 +153,10 @@ var inputBoxCtrY = inputBox.ULy + inputBoxSize/2;
 // define stimulus arrow that will be drawn in input box
 var inptArrow = new Arrow(inputBoxCtrX, inputBoxCtrY, inputBoxSize*0.6, inputBoxSize*0.33, 0);
 inptArrow.rgb[3] = 0.0; // initialize alpha to 0 
-allObjects.push(vertInput);
 
 
 // assemble objects into array
-var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, inputBox];
+var allObjects = [pyr1, pyr2, inh1, inh2, cc1, cc2, cc3, cc4, tc1, tc2, spkrContainer, inputBox, inptArrow];
 for(var a = 0; a < xArrows.length; a++){
 	allObjects.push(xArrows[a]);
 }
@@ -180,52 +180,17 @@ var transition2 = [
 
 
 
-function testStep1(){
-	canvas.removeEventListener('click', testStep1);
-	var numCycles = 2;
-	var halfCycleDur = 0.25;
-	var numStepsPerCycle = 100;
-	var transition1 = [{obj: pyr1, tgt: [0, 255, 0, 1.0]},
-			   {obj: pyr2, tgt: [0, 255, 0, 1.0]},
-			   {obj: spkrContainer, tgt: 1.0}
-			  ];
-	flash(transition1, numCycles, halfCycleDur, numStepsPerCycle);
-	var totalDur = numCycles * 2 * halfCycleDur * 1000;
-	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (totalDur) + 50);
-	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep2); } , (totalDur) + 50);
-}
 
-
-
-function testStep2(){
-	canvas.removeEventListener('click', testStep2);
-	var duration = 2;
-	d1 = new dataPoint(width/2, height/2, [185, 185, 185, 1.0], 45); // var keyword must be omitted here to make d1 a global variable
-	var transition2 = [{obj:d1, tgt: [0, 255, 0, 1, 1.0]}];
-	allObjects.push(d1);
-	colorTweenMulti(transition2, duration, 100);
-	var tmr6 = setTimeout( function(){ canvas.addEventListener('click', testStep3); } , (duration) + 50);
-}
-
-
-
-function testStep3(){
-	canvas.removeEventListener('click', testStep3);
-	var duration = 2;
-	var transition3 = [{obj:d1, tgt: [255, 0, 0, 1.0]}];
-	colorTweenMulti(transition3, duration, 100);
-}
 
 
 // draw input arrow
 function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
-
-
-
-
-	colorTween(vertInput, inputColor, duration);
+	var step1transitions = [{obj: tc1, tgt: [0, 255, 0, 1.0]},
+			        {obj: pyr1, tgt: [0, 255, 0, 1.0]},
+				{obj: inptArrow, tgt: inptTxtColor}];
+	colorTweenMulti(step1transitions, 200);
 }
 
 
@@ -233,9 +198,7 @@ function step1(){
 function step2(){
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
-	var transitions = [{obj: tc1, tgt: [0, 255, 0, 1.0]},
-			   {obj: pyr1, tgt: [0, 255, 0, 1.0]}
-			  ];
+	
 		
 	//{obj: inh1, tgt: [255, 0, 0, 1.0]},
 	
@@ -564,6 +527,42 @@ function step5(){
 function testColorTween(){
 	canvas.removeEventListener('click', step1);
 	colorTween(pyr1, [0, 255, 0, 1.0], 500);
+}
+
+function testStep1(){
+	canvas.removeEventListener('click', testStep1);
+	var numCycles = 2;
+	var halfCycleDur = 0.25;
+	var numStepsPerCycle = 100;
+	var transition1 = [{obj: pyr1, tgt: [0, 255, 0, 1.0]},
+			   {obj: pyr2, tgt: [0, 255, 0, 1.0]},
+			   {obj: spkrContainer, tgt: 1.0}
+			  ];
+	flash(transition1, numCycles, halfCycleDur, numStepsPerCycle);
+	var totalDur = numCycles * 2 * halfCycleDur * 1000;
+	var tmr4 = setTimeout( function(){ console.log('next step initiated') }, (totalDur) + 50);
+	var tmr5 = setTimeout( function(){ canvas.addEventListener('click', testStep2); } , (totalDur) + 50);
+}
+
+
+
+function testStep2(){
+	canvas.removeEventListener('click', testStep2);
+	var duration = 2;
+	d1 = new dataPoint(width/2, height/2, [185, 185, 185, 1.0], 45); // var keyword must be omitted here to make d1 a global variable
+	var transition2 = [{obj:d1, tgt: [0, 255, 0, 1, 1.0]}];
+	allObjects.push(d1);
+	colorTweenMulti(transition2, duration, 100);
+	var tmr6 = setTimeout( function(){ canvas.addEventListener('click', testStep3); } , (duration) + 50);
+}
+
+
+
+function testStep3(){
+	canvas.removeEventListener('click', testStep3);
+	var duration = 2;
+	var transition3 = [{obj:d1, tgt: [255, 0, 0, 1.0]}];
+	colorTweenMulti(transition3, duration, 100);
 }
 
 canvas.addEventListener('click', step1);
