@@ -125,7 +125,8 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointX = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
 	var dPointY = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
 
-	var ssPoint = new dataPoint(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, angle2colorN1(xArrows[p].angle), xArrows[p].angle); ssPoint.draw();
+	var ssPoint = new dataPoint(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, angle2colorN1(xArrows[p].angle), xArrows[p].angle);
+	ssPoint.rgb[3] = 0.0 // initialize to be invisible 
 	stateSpacePoints[p] = ssPoint;
 }
 
@@ -140,7 +141,8 @@ for (var q = 0; q < xArrows.length; q++){
 	console.log(stateSpacePoints[q]);
 	var dPointY = stateSpacePoints[q].ctrY;
 
-	var nmPoint = new dataPoint(dPointX, dPointY, angle2colorN1(xArrows[q].angle), xArrows[q].angle); nmPoint.draw();	
+	var nmPoint = new dataPoint(dPointX, dPointY, angle2colorN1(xArrows[q].angle), xArrows[q].angle);
+	nmPoint.rgb[3] = 0.0; 	
 	psychometricPoints[q] = nmPoint;
 	
 }
@@ -353,6 +355,7 @@ function step7(){
 	canvas.removeEventListener('click', step7);
 	canvas.addEventListener('click', step8);
 
+
 	// line variables
 	var duration = 300;
 	
@@ -360,13 +363,17 @@ function step7(){
 	var latency1 = 250; // delay between when the horizontal line starts getting drawn and when the point starts getting drawn, in milliseconds	
 	var latency2 = 250; // delay between when the point starts getting drawn and when the grid lines start being erased, in milliseconds	
 
+	// push the data point we're going to plot	
+	allObjects.push(stateSpacePoints[7]);
+
 	// render the line	
 	colorTween(horizGridLine, inptTxtColor, duration);
 
 	// after some delay, render the point
 	var drawPoint = setTimeout(function(){
-		console.log('draw point');
-		colorTween(p, [0, 255, 0, 1.0], duration);
+		tgt = stateSpacePoints[7].rgb.slice();	// alpha of point initially set to 0; want to set tgt that is the same but alpha = 1
+		tgt[3] = 1.0; 
+		colorTween(stateSpacePoints[7], tgt, duration);
 	}, latency1);
 
 	// now remove the grid lines
@@ -382,16 +389,12 @@ function step7(){
 function step8(){
 	canvas.removeEventListener('click', step8);
 	canvas.addEventListener('click', step9);
-	
-	// after the point is rendered, remove it from allObjects and make it a child of stateSpaceAxes
-	allObjects.pop();	
-	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
-	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes
-	stateSpaceAxes.points.push(p);
 
-	// also pop out those grid lines objects, which we don't need anymore	
+	// pop out those grid lines objects, which we don't need anymore	
 	allObjects.pop(); 
 	allObjects.pop();
+	allObjects.pop();
+	allObjects.push(stateSpacePoints[7]);
 
 	// push objects to start being drawn:
 	allObjects.push(nmAxes);
