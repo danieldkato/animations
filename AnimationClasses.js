@@ -472,7 +472,9 @@ class dataPoint {
 	}
 }
 
-
+var ptSize = 50;
+var txtFudgeX = 12;
+var txtFudgeY = 22;
 class dataPointAsterisk {
 	// x: x-coordinate of center of datapoint
 	// y: y-coordinate of center of datapoint
@@ -486,7 +488,7 @@ class dataPointAsterisk {
 
 	draw(){
 		ctx.fillStyle = rgb2str(this.rgb);
-		ctx.font = "bold 50px Georgia";		
+		ctx.font = "bold ".concat(String(ptSize), "px Georgia");		
 		ctx.save();
 		ctx.translate(this.ctrX, this.ctrY);
 		ctx.beginPath();
@@ -1234,4 +1236,29 @@ function doublePlotB(idx){
 	colorTween(tempGridLine, inptTxtColor, tempLineDuration);
 	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [100, 100, 100, 0.0], tempLineDuration)}, tempLineDuration);
 	var plotNM = setTimeout(function(){nmAxes.plot(xArrows[idx].ctrX - nmAxes.xOrig, dPointY, xArrows[4].angle, angle2colorN1(xArrows[idx].angle), tempLineDuration)}, tempLineDuration + 25);
+}
+
+
+function singlePLotSS(point){
+
+	var tmpGridlineDuration = 500;
+	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, stateSpaceAxes.xLength, axisThickness);
+	var tempGridLineVert = new Rectangle(point.ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];
+	tempGridLineVert.rgb = [100, 100, 100, 0.0];		
+	allObjects.push(tempGridLineHoriz);	
+	allObjects.push(tempGridLineVert);
+
+	var drawGLtrans = [{obj: tempGridLineHoriz, tgt: inptTxtColor},
+			  {obj: tempGridLineVert, tgt: inptTxtColor}] 
+	colorTweenMulti(drawGLtrans, tmpGridlineDuration);	
+		
+	var tgt = point.rgb.slice();
+	tgt[3] = 1.0;	
+	var plotPoint = setTimeout(function(){colorTween(point, tgt, tmpGridlineDuration)}, tmpGridlineDuration);
+	
+	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
+			  {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]}] 
+	var eraseTempGridLine = setTimeout(function(){colorTweenMulti(eraseGLtrans, tmpGridlineDuration);}, tmpGridlineDuration);
+		
 }
