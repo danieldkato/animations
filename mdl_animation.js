@@ -140,8 +140,8 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointXpre = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
 	var dPointYpre = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
 	
-	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]);
-	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p])); // post points will be initialize to same position
+	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]); ssPointPre.draw();
+	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre - txtFudgeY, stateSpaceAxes.yOrig - dPointYpre + ptSize/2, angle2colorN1(preAngles[p])); ssPointPost.draw(); // post points will be initialize to same position
 
 	ssPointPre.rgb[3] = 0.0 // initialize to be invisible 
 	ssPointPost.rgb[3] = 0.0 // initialize to be invisible 
@@ -818,9 +818,25 @@ function step25(){
 }
 
 
+// plot response in state space
 function step26(){
+	canvas.removeEventListener('click', step26);
+	canvas.addEventListener('click', step27);
+	
+	var point = ssPointsPost[4];	
+
+	allObjects.push(point);
+	var ppDur = 500;
+	var colorTgt = point.rgb.slice();
+	point.rgb[3] = 0;
+	colorTween(point, ppDur);
+	
 }
 
+
+function step27(){
+	
+}
 
 function testDoublePlot(){
 	canvas.removeEventListener('click', step14);
