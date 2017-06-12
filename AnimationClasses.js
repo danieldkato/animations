@@ -1239,7 +1239,7 @@ function doublePlotB(idx){
 }
 
 
-function singlePLotSS(point){
+function singlePlotSS(point){
 
 	var tmpGridlineDuration = 500;
 	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, stateSpaceAxes.xLength, axisThickness);

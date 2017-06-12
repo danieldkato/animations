@@ -931,9 +931,14 @@ function step32(){
 	var ind = 3;
 	var point = ssPointsPre[ind];
 	allObjects.push(point);
+	
+	singlePlotSS(point);
+	
+	/*
 	var tgt = point.rgb.slice();
 	tgt[3] = 1.0;
 	colorTween(point, tgt, 500);
+	*/
 }
 
 
