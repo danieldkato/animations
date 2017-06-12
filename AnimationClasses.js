@@ -11,6 +11,9 @@ var framePeriod = 1000/frameRate; // milliseconds
 // define miscellaneous constants that will be useful later
 var colorBaseStr = 'rgba(';
 var step = new Array(3);
+var blGrey = [185, 185, 185, 1.0];
+var lime = [0, 255, 0, 1.0];
+var red = [255, 0, 0, 1.0];
 
 // define constants for drawing pyramidals
 var pyramidalHeight = 100;
@@ -37,6 +40,7 @@ var inhibSynWidth = spineWidth;
 
 // define constants for drawing input box
 var inputBoxSize = 150;
+var inputColor = [100, 100, 100, 1.0];
 
 // define constants for drawing thalamocortical axons
 var tcHorizLength = 150;
@@ -216,11 +220,11 @@ class Arrow {
 		this.ctrY = ctrY;		
 		this.lengthTotal = length; 
 		this.widthTotal = width;  
-		this.angle = angle/180 * Math.PI; 
+		this.angle = angle; 
 		this.arrowHeadLength = this.widthTotal / 2 * Math.tan(Math.PI/3);
 		this.arrowBodyLength = this.lengthTotal - this.arrowHeadLength;
 		this.arrowBodyWidth = this.widthTotal / arrowHeadRatio;
-		this.rgb = [185, 185, 185, 1.0];
+		this.rgb = [255, 255, 255, 1.0];
 	}
 
 	// draws arrow with the origin in the center
@@ -229,7 +233,7 @@ class Arrow {
 		ctx.save();
 		ctx.translate(this.ctrX, this.ctrY);		
 		ctx.save();
-		ctx.rotate(this.angle);
+		ctx.rotate( Math.PI * (this.angle/180));
 		ctx.translate(0, this.arrowLengthTotal/2 - this.arrowBodyLength);
 		ctx.fillRect(-this.arrowBodyWidth/2, this.lengthTotal/2 - this.arrowBodyLength - 1, this.arrowBodyWidth, this.arrowBodyLength);
 		ctx.beginPath();
