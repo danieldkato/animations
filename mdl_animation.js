@@ -906,7 +906,7 @@ function step31(){
 	canvas.removeEventListener('click', step31);
 	canvas.addEventListener('click', step32);
 
-	var ind = 5;
+	var ind = 3;
 	inptArrow.angle = preAngles[ind];
 
 		
@@ -942,8 +942,6 @@ function step33(){
 	canvas.removeEventListener('click', step33);
 	canvas.addEventListener('click', step34);
 
-	var ind = 3;
-	var point = ssPointsPost[ind];
 	var ccDdur = 500;
 	var ccDtrans = [   {obj: cc3, tgt: lime},
 			   {obj: cc4, tgt: lime},
@@ -953,17 +951,21 @@ function step33(){
 			   {obj: inh1, tgt: blGrey},
 			   {obj: spkrContainer2, tgt: 1.0}];
 	colorTweenMulti(ccDtrans, ccDdur);	
-	point.rgb[3] = 1.0;	
-	point.draw();
-	var plotResp = setTiemout(function(){
-		motionTween(point, [stateSpaceAxes.xOrig + postPairingFinalPositions[ind][0] - txtFudgeX, stateSpaceAxes.yOrig -postPairingFinalPositions[ind][1] + txtFudgeY], 500)
-	}, ccDur + 100);
 }
 
 
-	
+// plot response in state space	
 function step34(){
+	var ind = 3;
+	var point = ssPointsPost[ind];
+	allObjects.push(point);
+	point.rgb[3] = 1.0;	
+	point.draw();
+	
 
+	var plotResp = setTimeout(function(){
+		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0] - txtFudgeX, stateSpaceAxes.yOrig -postPairFinalPositions[ind][1] + txtFudgeY], 500)
+	}, 50);
 }
 
 
