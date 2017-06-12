@@ -141,7 +141,7 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointYpre = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
 	
 	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]); ssPointPre.draw();
-	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre - txtFudgeY, stateSpaceAxes.yOrig - dPointYpre + ptSize/2, angle2colorN1(preAngles[p])); ssPointPost.draw(); // post points will be initialize to same position
+	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre - txtFudgeX, stateSpaceAxes.yOrig - dPointYpre + txtFudgeY, angle2colorN1(preAngles[p])); ssPointPost.draw(); // post points will be initialize to same position
 
 	ssPointPre.rgb[3] = 0.0 // initialize to be invisible 
 	ssPointPost.rgb[3] = 0.0 // initialize to be invisible 
@@ -158,6 +158,8 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointY = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(postAngles[p]/180) );
 
 	postPairFinalPositions[p] = [dPointX, dPointY];
+
+	//var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX - txtFudgeX, stateSpaceAxes.yOrig - dPointY + txtFudgeY, blGrey); testPt.draw();
 }
 
 console.log('pos pair final positions');
@@ -835,7 +837,16 @@ function step26(){
 
 
 function step27(){
-	
+	canvas.removeEventListener('click', step27);
+	canvas.addEventListener('click', step28);
+
+	var point = ssPointsPost[4];
+	var moveDur = 500;
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0] - txtFudgeX, stateSpaceAxes.yOrig - postPairFinalPositions[4][1]] + txtFudgeY, moveDur);
+}
+
+
+function step28(){
 }
 
 function testDoublePlot(){
