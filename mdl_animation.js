@@ -541,12 +541,12 @@ function step13(){
 	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
 	inptArrow.angle = xArrows[4].angle;
 	
-	var transitions = [{obj: pyr1, tgt: angle2colorN1(angle)},
-			   {obj: inh1, tgt: angle2colorI1(angle)},
-			   {obj: tc1, tgt: angle2colorN1(angle)},
-			   {obj: pyr2, tgt: angle2colorN2(angle)},
-			   {obj: tc2, tgt: angle2colorN2(angle)},
-			   {obj: inh2, tgt: angle2colorI2(angle)},
+	var transitions = [{obj: pyr1, tgt: frac2color(0.85, lime)},
+			   {obj: inh1, tgt: frac2color(0.85, red)},
+			   {obj: tc1, tgt: frac2color(0.85, lime)},
+			   {obj: pyr2, tgt: frac2color(0.15, lime)},
+			   {obj: tc2, tgt: frac2color(0.15, lime)},
+			   {obj: inh2, tgt: frac2color(0.15, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
 	colorTweenMulti(transitions, 500);	
