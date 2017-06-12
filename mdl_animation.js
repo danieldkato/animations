@@ -183,17 +183,17 @@ var transition2 = [
 
 
 
-// draw input arrow
+// show vertical input, activate tc1, pyr1, and inh1
 function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
 
-	var duration = 200;
+	var step1dur = 200;
 	var step1transitions = [{obj: tc1, tgt: [0, 255, 0, 1.0]},
 			        {obj: pyr1, tgt: [0, 255, 0, 1.0]},
 				{obj: inptArrow, tgt: inptTxtColor}];
-	colorTweenMulti(step1transitions, duration);
-	var colorInh = setTimeout(function(){colorTween(inh1, [255, 0, 0, 1.0], 250)}, duration);	
+	colorTweenMulti(step1transitions, step1dur);
+	var colorInh = setTimeout(function(){colorTween(inh1, [255, 0, 0, 1.0], 250)}, step1dur * 0.75);	
 
 }
 
@@ -205,9 +205,30 @@ function step2(){
 	
 		
 	//{obj: inh1, tgt: [255, 0, 0, 1.0]},
-	
-	colorTweenMulti(transitions, 250);	
+	var t1dur = 200;	
+	var transitions1 = [{obj: tc1, tgt: [185, 185, 185, 1.0]},
+			    {obj: pyr1, tgt: [185, 185, 185, 1.0]},
+			    {obj: inptArrow, tgt: [100, 100, 100, 0.0]},
+			    {obj: inh1, tgt: [185, 185, 185, 1.0]}];
+	colorTweenMulti(transitions1, t1dur);	
 
+	var t2dur = 200;
+	var t2latency = t1dur + 25;
+	var transitions2 = [{obj: tc2, tgt: [0, 255, 0, 1.0]},
+			    {obj: pyr2, tgt: [0, 255, 0, 1.0]},
+			    {obj: inptArrow, tgt: [100, 100, 100, 1.0]}];	
+	var doTrans2 = setTimeout(function(){
+		inptArrow.angle = 90;
+		colorTweenMulti(transitions2, t2dur);
+	}, t2latency);
+	
+	var activateInh = setTimeout(function(){
+		colorTween(inh2, [255, 0, 0, 1.0], t2dur * 0.75);
+	}, t2latency + t2dur * 0.75);	
+
+
+
+//{obj: inh2, tgt: [185, 185, 185, 1.0]}
 
 	/*
 	var activatePyr = setTimeout(function(){
