@@ -1026,48 +1026,47 @@ function rgb2str(rgb){
 
 // angle away from vertical
 function angle2colorN1(angle){
-	var colorOut = new Array(4);
+
 	var frac = Math.cos( Math.PI * (angle/180) ); // the greater the angle, the lower the number	
-	for(var k = 0; k<4; k++){
-		colorOut[k] = blGrey[k] + frac * (lime[k] - blGrey[k]);
-	}
-	console.log('colorOut');
-	console.log(colorOut);
+	var colorOut = frac2color(frac, lime);	
+	//console.log('colorOut');
+	//console.log(colorOut);
 	return colorOut
 }
 
 
 function angle2colorN2(angle){
-	var colorOut = new Array(4);
 	var frac = Math.sin( Math.PI * (angle/180) ); // the greater the angle, the higher the number	
-	for(var k = 0; k<4; k++){
-		colorOut[k] = blGrey[k] + frac * (lime[k] - blGrey[k]);
-	}
-	console.log('colorOut');
-	console.log(colorOut);
+	var colorOut = frac2color(frac, lime);	
+	//console.log('colorOut');
+	//console.log(colorOut);
 	return colorOut
 }
 
 
 function angle2colorI1(angle){
-	var colorOut = new Array(4);
 	var frac = Math.cos( Math.PI * (angle/180) ); // the greater the angle, the lower the number	
-	for(var k = 0; k<4; k++){
-		colorOut[k] = blGrey[k] + frac * (red[k] - blGrey[k]);
-	}
-	console.log('colorOut');
-	console.log(colorOut);
+	var colorOut = frac2color(frac, red);
+	//console.log('colorOut');
+	//console.log(colorOut);
 	return colorOut
 }
 
 
 function angle2colorI2(angle){
-	var colorOut = new Array(4);
 	var frac = Math.sin( Math.PI * (angle/180) ); // the greater the angle, the higher the number	
-	for(var k = 0; k<4; k++){
-		colorOut[k] = blGrey[k] + frac * (red[k] - blGrey[k]);
-	}
-	console.log('colorOut');
-	console.log(colorOut);
+	var colorOut = frac2color(frac, red);
+	//console.log('colorOut');
+	//console.log(colorOut);
 	return colorOut
+}
+
+function frac2color(frac, tgt){
+	var colorOut = new Array(4);	
+	for(var k = 0; k < 4; k++){
+		colorOut[k] = blGrey[k] + frac*(tgt[k] - blGrey[k]);
+	}
+	console.log('colorOut:');
+	console.log(colorOut);
+	return colorOut;
 }
