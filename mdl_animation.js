@@ -159,7 +159,7 @@ for (var p = 0; p < xArrows.length; p++){
 
 	postPairFinalPositions[p] = [dPointX, dPointY];
 
-	//var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX - txtFudgeX, stateSpaceAxes.yOrig - dPointY + txtFudgeY, blGrey); testPt.draw();
+	var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX - txtFudgeX, stateSpaceAxes.yOrig - dPointY + txtFudgeY, blGrey); testPt.draw();
 }
 
 console.log('pos pair final positions');
@@ -842,7 +842,7 @@ function step27(){
 
 	var point = ssPointsPost[4];
 	var moveDur = 500;
-	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0] - txtFudgeX, stateSpaceAxes.yOrig - postPairFinalPositions[4][1]] + txtFudgeY, moveDur);
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0] - txtFudgeX, stateSpaceAxes.yOrig - postPairFinalPositions[4][1] + txtFudgeY], moveDur);
 }
 
 
