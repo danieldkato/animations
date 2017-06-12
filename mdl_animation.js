@@ -58,7 +58,7 @@ var vertGradScale = {
 		ctx.fillRect(this.x, this.y, this.thickness, -this.length);
 	}
 };
- 
+
 
 // draw horizontal gradient for state space axes
 var horizGradX = stateSpaceOriginX ;
@@ -189,7 +189,7 @@ function step0(){
 	colorTween(inptArrow, inptTxtColor, step0dur); 
 }
 
-// show activate tc1, pyr1, and inh1
+// activate tc1, pyr1, and inh1
 function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
@@ -203,7 +203,7 @@ function step1(){
 }
 
 
-// activate tc1 and pyr1
+// deactivate tc1 and pyr1, activate tc2 and pyr2
 function step2(){
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
@@ -217,7 +217,7 @@ function step2(){
 			    {obj: inh1, tgt: [185, 185, 185, 1.0]}];
 	colorTweenMulti(transitions1, t1dur);	
 
-	var t2dur = 200;
+	var t2dur = 500;
 	var t2latency = t1dur + 25;
 	var transitions2 = [{obj: tc2, tgt: [0, 255, 0, 1.0]},
 			    {obj: pyr2, tgt: [0, 255, 0, 1.0]},
@@ -244,7 +244,7 @@ function step2(){
 }
 
 
-// activate inh2
+// return everything to baseline after initial demonstration of response properties
 function step3(){
 	canvas.removeEventListener('click', step3);
 	canvas.addEventListener('click', step4);
@@ -258,36 +258,61 @@ function step3(){
 }
 
 
+// draw state space axes
+function step4(){
+	canvas.removeEventListener('click', step4);
+	canvas.addEventListener('click', step5);
 
+	allObjects.push(stateSpaceAxes);
+	allObjects.push(vertGradScale);
+	allObjects.push(horizGradScale);
+	animate(allObjects);
+}
+
+
+
+// present vertical stimuls again
+function step5(){
+	canvas.removeEventListener('click', step5);
+	canvas.addEventListener('click', step6);
+
+	inptArrow.angle = 0	;
+	var step5dur = 200;	
+	var transitions1 = [{obj: tc1, tgt: lime},
+			    {obj: pyr1, tgt: lime},
+			    {obj: inptArrow, tgt: inptTxtColor},
+			    {obj: inh1, tgt: red}];
+	colorTweenMulti(transitions1, step5dur);	
+}
+
+
+// show how it would be represented in state space
 var p1x = ssAxisLength * 0.1;
 var p1y = ssAxisLength * 0.9;
 var vertGridLine = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); vertGridLine.rgb = [0, 255, 0, 0.0]; 
 var horizGridLine = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); horizGridLine.rgb = [0, 255, 0, 0.0]; 
 var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
-
-// draw vertical gridline in ssAxes
-function step4(){
-	canvas.removeEventListener('click', step4);
-	canvas.addEventListener('click', step5);
-
-	allObjects.push(stateSpaceAxes);		
+// first plot the vertical gridline
+function step6(){
+	canvas.removeEventListener('click', step6);
+	canvas.addEventListener('click', step7);
 
 	// add these objects to allObjects
 	allObjects.push(vertGridLine);
 	allObjects.push(horizGridLine);
 	allObjects.push(p);
 
-	var duration = 500;
-	colorTween(vertGridLine, [0, 255, 0, 1.0], duration);	
+	var s6dur = 500;
+	colorTween(vertGridLine, [0, 255, 0, 1.0], s6dur);	
 }
 
 
-// draw horizontal gridline in ssAxes, plot point, and erase gridline
-function step5(){
-	canvas.removeEventListener('click', step5);
-	canvas.addEventListener('click', step6);
-	
+// plot the horizontal gridline and the point, then erase the gridlines
+function step7(){
+	canvas.removeEventListener('click', step7);
+	canvas.addEventListener('click', step8);
+
 	// line variables
 	var duration = 500;
 	
@@ -309,48 +334,28 @@ function step5(){
 			    {obj: horizGridLine, tgt: [0, 255, 0, 0.0]}];
 	var removeLines = setTimeout(function(){
 		colorTweenMulti(rlTransition, duration);
-	}, latency1 + latency2);
+	}, latency1 + latency2);	
 }
 
-/*
-function step6(){
-	canvas.removeEventListener('click', step6);
-	canvas.addEventListener('click', step7);	
+
+// have the psychometric axes slide out from the state space
+function step8(){
+	canvas.removeEventListener('click', step8);
+	canvas.addEventListener('click', step9);
 	
-	console.log('allObjects');
-	console.log(allObjects);
-
-	console.log('xArrows');
-	console.log(xArrows);
-
 	// after the point is rendered, remove it from allObjects and make it a child of stateSpaceAxes
-	//allObjects.pop();	
-	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
-	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes
-	stateSpaceAxes.points.push(p);
-
-	// also pop out those grid lines objects, which we don't need anymore	
-	//allObjects.pop(); 
-	//allObjects.pop();
-}
-*/
-
-function step6(){
-	canvas.removeEventListener('click', step6);
-	canvas.addEventListener('click', step7);
-
-	// do some cleanup from the previous step; transfer the datapoint from allObjects to be a chile of stateSpaceAxes	
 	allObjects.pop();	
 	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
-	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes	
+	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes
 	stateSpaceAxes.points.push(p);
 
 	// also pop out those grid lines objects, which we don't need anymore	
 	allObjects.pop(); 
 	allObjects.pop();
 
-	nmAxes.draw();
-	var lastFrameTimeMs = 0;	
+	// push objects to start being drawn:
+	allObjects.push(nmAxes);
+	allObjects.push(vertGradScale2);	
 	
 	// variables controlling timing of translation:	
 	var distance = nmAxesFinal - nmAxes.xOrig;	
@@ -438,6 +443,69 @@ function step6(){
 		}
 	};
 
+}
+
+
+function step9(){
+}
+
+/*
+
+
+
+function step6(){
+
+
+	allObjects.push(stateSpaceAxes);		
+
+
+
+
+}
+
+
+// draw horizontal gridline in ssAxes, plot point, and erase gridline
+function step5(){
+
+
+
+}
+
+
+function step6(){
+
+	
+	console.log('allObjects');
+	console.log(allObjects);
+
+	console.log('xArrows');
+	console.log(xArrows);
+
+
+
+
+}
+
+
+function step6(){
+	canvas.removeEventListener('click', step6);
+	canvas.addEventListener('click', step7);
+
+	// do some cleanup from the previous step; transfer the datapoint from allObjects to be a chile of stateSpaceAxes	
+	allObjects.pop();	
+	p.ctrX = p1x; // make the coordinates relative to the origin of stateSpaceAxes
+	p.ctrY = -p1y; // make the coordinates relative to the origin of stateSpaceAxes	
+	stateSpaceAxes.points.push(p);
+
+	// also pop out those grid lines objects, which we don't need anymore	
+	allObjects.pop(); 
+	allObjects.pop();
+
+	nmAxes.draw();
+	var lastFrameTimeMs = 0;	
+	
+	
+
 	//window.requestAnimationFrame(initializeLastFrame);
 	//window.requestAnimationFrame(translateNM);
 }
@@ -456,7 +524,7 @@ function step7(){
 	//nmAxes.plot(nmAxes.xLength * 0.5, nmAxes.yLength * 0.5, 0, [0, 255, 0, 1.0], 1000);	
 	//animate(allObjects);
 }
-
+*/
 
 function step1alt(){
 	canvas.removeEventListener('click', step1alt);
