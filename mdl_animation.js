@@ -509,7 +509,7 @@ function step11(){
 	allObjects.push(tempGridLine);	
 
 	stateSpaceAxes.plot(dPointX, dPointY, 90, blGrey, tempLineDuration);
-	//colorTween(tmpGridLine, lime, tempLineDuration);
+	colorTween(tmpGridLine, lime, tempLineDuration);
 	
 
 	
