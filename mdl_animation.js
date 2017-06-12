@@ -247,7 +247,7 @@ var transition2 = [
 
 
 
-var testStarPoint = new dataPointAsterisk(width/2, height/2, blGrey); testStarPoint.draw(); allObjects.push(testStarPoint);
+//var testStarPoint = new dataPointAsterisk(width/2, height/2, blGrey); testStarPoint.draw(); allObjects.push(testStarPoint);
 
 
 
@@ -265,9 +265,9 @@ function step0(){
 	canvas.addEventListener('click', step1);
 	console.log('step 0');
 	var step0dur = 300;
-	//(inptArrow, inptTxtColor, step0dur); 
+	colorTween(inptArrow, inptTxtColor, step0dur); 
 
-	motionTween(testStarPoint, [width/4, height/2], 1000);
+	//motionTween(testStarPoint, [width/4, height/2], 1000);
 }
 
 // activate tc1, pyr1, and inh1
@@ -381,7 +381,7 @@ function step6(){
 	canvas.addEventListener('click', step7);
 
 	// push the data point we're going to plot	
-	allObjects.push(stateSpacePoints[7]);
+	allObjects.push(ssPointsPre[7]);
 
 	// add these objects to allObjects
 	allObjects.push(vertGridLine);
@@ -411,10 +411,10 @@ function step7(){
 	colorTween(horizGridLine, inptTxtColor, duration);
 
 	// after some delay, render the point
-	tgt = stateSpacePoints[7].rgb.slice();	// alpha of point initially set to 0; want to set tgt that is the same but alpha = 1
+	tgt = ssPointsPre[7].rgb.slice();	// alpha of point initially set to 0; want to set tgt that is the same but alpha = 1
 	tgt[3] = 1.0; 
 	var drawPoint = setTimeout(function(){
-		colorTween(stateSpacePoints[7], tgt, duration);
+		colorTween(ssPointsPre[7], tgt, duration);
 	}, latency1);
 
 	// now remove the grid lines
@@ -535,8 +535,8 @@ function step9(){
 
 	var tmpGridlineDuration = 500;
 
-	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, psychometricPoints[7].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	var tempGridLineVert = new Rectangle(psychometricPoints[7].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, pmPointsPre[7].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	var tempGridLineVert = new Rectangle(pmPointsPre[7].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
 	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];
 	tempGridLineVert.rgb = [100, 100, 100, 0.0];		
 	allObjects.push(tempGridLineHoriz);	
@@ -546,10 +546,10 @@ function step9(){
 			  {obj: tempGridLineVert, tgt: inptTxtColor}] 
 	colorTweenMulti(drawGLtrans, tmpGridlineDuration);	
 		
-	var tgt = psychometricPoints[7].rgb.slice();
+	var tgt = pmPointsPre[7].rgb.slice();
 	tgt[3] = 1.0;	
-	allObjects.push(psychometricPoints[7]);
-	var plotPoint = setTimeout(function(){colorTween(psychometricPoints[7], tgt, tmpGridlineDuration)}, tmpGridlineDuration);
+	allObjects.push(pmPointsPre[7]);
+	var plotPoint = setTimeout(function(){colorTween(pmPointsPre[7], tgt, tmpGridlineDuration)}, tmpGridlineDuration);
 	
 	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
 			  {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]}] 

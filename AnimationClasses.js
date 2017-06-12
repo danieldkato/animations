@@ -1103,7 +1103,7 @@ function motionTweenStep(timeStamp, obj, tgt, speed, timer){
 	} else{
 		obj.ctrX = tgt[0];
 		obj.ctrY = tgt[1];
-		animate(alObjects);
+		animate(allObjects);
 	}
 };
 
@@ -1180,12 +1180,12 @@ function frac2color(frac, tgt){
 function doublePlot(ind){
 	var tempLineDuration = 500;
 
-	pt1 = stateSpacePoints[ind];
-	pt2 = psychometricPoints[ind];
+	pt1 = ssPointsPre[ind];
+	pt2 = pmPointsPre[ind];
 
-	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, stateSpacePoints[ind].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	var tempGridLineVert = new Rectangle(stateSpacePoints[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);
-	var tempGridLineVert2 = new Rectangle(psychometricPoints[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);		
+	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, ssPointsPre[ind].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	var tempGridLineVert = new Rectangle(ssPointsPre[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);
+	var tempGridLineVert2 = new Rectangle(pmPointsPre[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);		
 	
 	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];	
 	tempGridLineVert.rgb = [100, 100, 100, 0.0];	
@@ -1202,7 +1202,7 @@ function doublePlot(ind){
 
 	tgt1 = pt1.rgb.slice();
 	tgt2 = pt2.rgb.slice();
-	tgt1[3] = 1.0;
+	tgt1[3] = 1.0;	
 	tgt2[3] = 1.0;
 	var drawPtTrans = [{obj: pt1, tgt: tgt1},
 			   {obj: pt2, tgt: tgt2}];	
