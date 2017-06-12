@@ -446,22 +446,24 @@ function step8(){
 }
 
 
+// plot response to vertical line on psychometric axes with horizontal line connecting to state space
 function step9(){
 	canvas.removeEventListener('click', step9);
 	canvas.addEventListener('click', step10);
 
 	var tmpGridlineDuration = 500;
+
 	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, nmAxes.yOrig + stateSpaceAxes.points[0].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
 	tempGridLine.rgb = [0, 255, 0, 0.0];	
-	
 	allObjects.push(tempGridLine);	
+
 	colorTween(tempGridLine, [0, 255, 0, 1.0], tmpGridlineDuration);	
 	var plotPoint = setTimeout(function(){nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], tmpGridlineDuration)}, tmpGridlineDuration);
-	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [0, 255, 0, 0.0], tmpGridlineDuration);}, tmpGridlineDuration);
+	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [0, 255, 0, 0.0], tmpGridlineDuration); allObjecs.pop()}, tmpGridlineDuration);
 }
 
 
-// show response to horizontal stimulus, plot in state space and psychometric space
+// show response to horizontal stimulus
 function step10(){
 	canvas.removeEventListener('click', step10);
 	canvas.addEventListener('click', step11);
@@ -491,7 +493,30 @@ function step10(){
 }
 
 
+//plot in state space and psychometric space
 function step11(){
+	canvas.removeEventListener('click', step11);
+	canvas.addEventListener('click', step12);
+
+	var tempLineDuration = 500;
+
+	var dPointX = stateSpaceAxes.xLength * 0.9;
+	var dPointY = stateSpaceAxes.yLength * 0.1;
+	
+
+	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, nmAxes.yOrig - dPointY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	tempGridLine.rgb = [0, 255, 0, 0.0];	
+	allObjects.push(tempGridLine);	
+
+	stateSpaceAxes.plot(dPointX, dPointY, 90, blGrey, tempLineDuration);
+	//colorTween(tmpGridLine, lime, tempLineDuration);
+	
+
+	
+}
+
+
+function step12(){
 }
 
 
