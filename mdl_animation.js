@@ -556,8 +556,28 @@ function step13(){
 
 
 function step14(){
+	canvas.removeEventListener('click', step14);
+	canvas.addEventListener('click', step15);
+
+	var tempLineDuration = 500;
+
+	var dPointX = stateSpaceAxes.xLength * Math.sin( Math.PI*(xArrows[4].angle/180) );
+	var dPointY = stateSpaceAxes.yLength * Math.cos( Math.PI*(xArrows[4].angle/180) );
+	
+
+	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - dPointY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	tempGridLine.rgb = [100, 100, 100, 0.0];	
+	allObjects.push(tempGridLine);	
+
+	stateSpaceAxes.plot(dPointX, dPointY, xArrows[4].angle, blGrey, tempLineDuration);
+	colorTween(tempGridLine, inptTxtColor, tempLineDuration);
+	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [100, 100, 100, 0.0], tempLineDuration)}, tempLineDuration);
+	var plotNM = setTimeout(function(){nmAxes.plot(xArrows[4].ctrX - nmAxes.xOrig, dPointY, xArrows[4].angle, blGrey, tempLineDuration)}, tempLineDuration + 25);
 }
 
+
+function step15(){
+}
 
 /*
 
