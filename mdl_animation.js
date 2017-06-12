@@ -187,10 +187,14 @@ var transition2 = [
 function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
+
+	var duration = 200;
 	var step1transitions = [{obj: tc1, tgt: [0, 255, 0, 1.0]},
 			        {obj: pyr1, tgt: [0, 255, 0, 1.0]},
 				{obj: inptArrow, tgt: inptTxtColor}];
-	colorTweenMulti(step1transitions, 200);
+	colorTweenMulti(step1transitions, duration);
+	var colorInh = setTimeout(function(){colorTween(inh1, [255, 0, 0, 1.0], 250)}, duration);	
+
 }
 
 
@@ -203,7 +207,7 @@ function step2(){
 	//{obj: inh1, tgt: [255, 0, 0, 1.0]},
 	
 	colorTweenMulti(transitions, 250);	
-	var colorInh = setTimeout(function(){colorTween(inh1, [255, 0, 0, 1.0], 250)}, 100);	
+
 
 	/*
 	var activatePyr = setTimeout(function(){
