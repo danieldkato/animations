@@ -1066,13 +1066,55 @@ function frac2color(frac, tgt){
 	for(var k = 0; k < 4; k++){
 		colorOut[k] = blGrey[k] + frac*(tgt[k] - blGrey[k]);
 	}
-	console.log('colorOut:');
-	console.log(colorOut);
+	//console.log('colorOut:');
+	//console.log(colorOut);
 	return colorOut;
 }
 
 
-function doublePlot(idx){
+function doublePlot(ind){
+	var tempLineDuration = 500;
+
+	pt1 = stateSpacePoints[ind];
+	pt2 = psychometricPoints[ind];
+
+	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, stateSpacePoints[ind].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	var tempGridLineVert = new Rectangle(stateSpacePoints[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);
+	var tempGridLineVert2 = new Rectangle(psychometricPoints[ind].ctrX, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength);		
+	
+	tempGridLineHoriz.rgb = [100, 100, 100, 0.0];	
+	tempGridLineVert.rgb = [100, 100, 100, 0.0];	
+	tempGridLineVert2.rgb = [100, 100, 100, 0.0];
+
+	allObjects.push(tempGridLineHoriz);	
+	allObjects.push(tempGridLineVert);
+	allObjects.push(tempGridLineVert2);
+
+	var drawGLtrans = [{obj: tempGridLineHoriz, tgt: inptTxtColor},
+			   {obj: tempGridLineVert, tgt: inptTxtColor},
+			   {obj: tempGridLineVert2, tgt: inptTxtColor}];
+	colorTweenMulti(drawGLtrans, tempLineDuration);
+
+	tgt1 = pt1.rgb.slice();
+	tgt2 = pt2.rgb.slice();
+	tgt1[3] = 1.0;
+	tgt2[3] = 1.0;
+	var drawPtTrans = [{obj: pt1, tgt: tgt1},
+			   {obj: pt2, tgt: tgt2}];	
+	allObjects.push(pt1);
+	allObjects.push(pt2);
+	var plotNM = setTimeout(function(){colorTweenMulti(drawPtTrans, tempLineDuration)}, tempLineDuration + 25);
+
+	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
+		   	    {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]},
+		   	    {obj: tempGridLineVert2, tgt: [100, 100, 100, 0.0]}];
+	var eraseTempGridLine = setTimeout(function(){
+		colorTweenMulti(eraseGLtrans, tempLineDuration);
+	}, tempLineDuration + 10);
+}
+
+
+function doublePlotB(idx){
 	var tempLineDuration = 500;
 
 	var dPointX = stateSpaceAxes.xLength * Math.sin( Math.PI*(xArrows[idx].angle/180) );
