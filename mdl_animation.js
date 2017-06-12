@@ -520,6 +520,7 @@ function step9(){
 // show response to horizontal stimulus
 function step10(){
 	allObjects.pop(); // pop temporary pan-plot gridline from last step
+	allObjects.pop();
 
 	canvas.removeEventListener('click', step10);
 	canvas.addEventListener('click', step11);
