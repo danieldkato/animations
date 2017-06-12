@@ -180,18 +180,23 @@ var transition2 = [
 
 
 
+// show vertical input
+function step0(){
+	canvas.removeEventListener('click', step0);
+	canvas.addEventListener('click', step1);
+	console.log('step 0');
+	var step0dur = 300;
+	colorTween(inptArrow, inptTxtColor, step0dur); 
+}
 
-
-
-// show vertical input, activate tc1, pyr1, and inh1
+// show activate tc1, pyr1, and inh1
 function step1(){
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
 
 	var step1dur = 200;
 	var step1transitions = [{obj: tc1, tgt: [0, 255, 0, 1.0]},
-			        {obj: pyr1, tgt: [0, 255, 0, 1.0]},
-				{obj: inptArrow, tgt: inptTxtColor}];
+			        {obj: pyr1, tgt: [0, 255, 0, 1.0]}];
 	colorTweenMulti(step1transitions, step1dur);
 	var colorInh = setTimeout(function(){colorTween(inh1, [255, 0, 0, 1.0], 250)}, step1dur * 0.75);	
 
@@ -243,10 +248,16 @@ function step2(){
 function step3(){
 	canvas.removeEventListener('click', step3);
 	canvas.addEventListener('click', step4);
-	var duration = 250;
-	console.log('step 3');
-	colorTween(inh2, [255, 0, 0, 1.0], duration);	
+	
+	var step3dur = 200;
+	var step3transitions = [{obj: tc2, tgt: blGrey},
+			        {obj: pyr2, tgt: blGrey},
+				{obj: inh2, tgt: blGrey},
+			        {obj: inptArrow, tgt: [100, 100, 100, 0.0]}];	
+	colorTweenMulti(step3transitions, step3dur);
 }
+
+
 
 var p1x = ssAxisLength * 0.1;
 var p1y = ssAxisLength * 0.9;
@@ -259,6 +270,8 @@ var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0
 function step4(){
 	canvas.removeEventListener('click', step4);
 	canvas.addEventListener('click', step5);
+
+	allObjects.push(stateSpaceAxes);		
 
 	// add these objects to allObjects
 	allObjects.push(vertGridLine);
@@ -590,5 +603,5 @@ function testStep3(){
 	colorTweenMulti(transition3, duration, 100);
 }
 
-canvas.addEventListener('click', step1);
+canvas.addEventListener('click', step0);
 
