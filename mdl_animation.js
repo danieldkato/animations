@@ -555,10 +555,10 @@ function step11(){
 	canvas.removeEventListener('click', step11);
 	canvas.addEventListener('click', step12);
 
-	var tempLineDuration = 500;
-
 	ind = 0;
 	
+	var tempLineDuration = 500;
+
 	pt1 = stateSpacePoints[ind];
 	pt2 = psychometricPoints[ind];
 
@@ -592,7 +592,9 @@ function step11(){
 	var eraseGLtrans = [{obj: tempGridLineHoriz, tgt: [100, 100, 100, 0.0]},
 		   	    {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]},
 		   	    {obj: tempGridLineVert2, tgt: [100, 100, 100, 0.0]}];
-	var eraseTempGridLine = setTimeout(function(){colorTweenMulti(eraseGLtrans, tempLineDuration)}, tempLineDuration + 10);
+	var eraseTempGridLine = setTimeout(function(){
+		colorTweenMulti(eraseGLtrans, tempLineDuration);
+	}, tempLineDuration + 10);
 	
 }
 
