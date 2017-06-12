@@ -107,84 +107,86 @@ var xArrowLength = 30;
 var numAngles = 8;
 var xArrows = new Array(numAngles);
 var preAngles = new Array(numAngles);
+var postAngles = new Array(postAngles);
 for(var a = 0; a < numAngles; a++){
 	angle = 90 - (a * (90/(numAngles-1)));
+	preAngles[a] = angle; 
+	
 	var arrow = new Arrow(arrowsXstart + a*nmXaxisLength/numAngles, arrowsY, xArrowLength, xArrowWidth, angle);		
 	arrow.rgb = [185, 185, 185, 0.0];		
 	xArrows[a] = arrow;
-	preAngles[a] = angle; 
-}
-console.log('xArrows');
-console.log(xArrows);
-
-console.log('preAngles');
-console.log(preAngles);
-
-// define all the points that will appear in state space axes for unpaired stimuli (but don't render them yet)
-stateSpaceAxes.draw();
-var stateSpacePoints = new Array(xArrows.length);
-for (var p = 0; p < xArrows.length; p++){
-	var dPointX = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
-	var dPointY = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
-
-	var ssPoint = new dataPoint(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, angle2colorN1(xArrows[p].angle), xArrows[p].angle);
-	ssPoint.rgb[3] = 0.0 // initialize to be invisible 
-	stateSpacePoints[p] = ssPoint;
-}
-
-console.log('stateSpacePoints');
-console.log(stateSpacePoints);
-
-
-// define all the points that will appear on the psychometric axes (but don't render them yet) for the unpaired stimuli
-var psychometricPoints = new Array(xArrows.length);
-for (var q = 0; q < xArrows.length; q++){
-	var dPointX = xArrows[q].ctrX;
-	console.log('ssPoint:');
-	console.log(stateSpacePoints[q]);
-	var dPointY = stateSpacePoints[q].ctrY;
-
-	var nmPoint = new dataPoint(dPointX, dPointY, angle2colorN1(xArrows[q].angle), xArrows[q].angle);
-	nmPoint.rgb[3] = 0.0; 	
-	psychometricPoints[q] = nmPoint;
 }
 
 
-// define the post-pairing points that will appear in state space axes
+// define post-pairing angles
 var postAngles = new Array(xArrows.length);
 for (var k = 0; k < 4; k++){ // angles in the first half will become more like the first element
-	postAngles[k] = xArrows[k].angle + 0.8*(xArrows[0].angle - xArrows[k].angle);
-	
+	postAngles[k] = xArrows[k].angle + 0.8*(xArrows[0].angle - xArrows[k].angle);	
 }
 for (var m = 4; m < xArrows.length; m++){ // angles in the second half will become more like the last element
 	postAngles[m] = xArrows[m].angle + 0.8*(xArrows[numAngles-1].angle - xArrows[m].angle);
 }
-console.log('postAngles');
-console.log(postAngles);
 
 
-// define post-pairing points in state space
-var stateSpacePointsPost = new Array(xArrows.length);
+// define all the points that will appear in state space axes (but don't render them yet)
+stateSpaceAxes.draw();
+var ssPointsPre = new Array(xArrows.length);
+var ssPointsPost = new Array(xArrows.length);
+for (var p = 0; p < xArrows.length; p++){
+	var dPointXpre = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
+	var dPointYpre = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
+	
+	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]);
+	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p])); // post points will be initialize to same position
+
+	ssPointPre.rgb[3] = 0.0 // initialize to be invisible 
+	ssPointPost.rgb[3] = 0.0 // initialize to be invisible 
+
+	ssPointsPre[p] = ssPointPre;
+	ssPointsPost[p] = ssPointPost;
+}
+
+
+// define the final state space coordinates of post-pairing responses
+var postPairFinalPositions = new Array(xArrows.length);
 for (var p = 0; p < xArrows.length; p++){
 	var dPointX = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(postAngles[p]/180) );
 	var dPointY = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(postAngles[p]/180) );
 
-	var ssPoint = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, angle2colorN1(xArrows[p].angle)); ssPoint.draw();
-	//ssPoint.rgb[3] = 0.0 // initialize to be invisible 
-	stateSpacePointsPost[p] = ssPoint;
+	postPairFinalPositions[p] = [dPointY, dPointX];
 }
 
 
-// define post-pairing points in psychometric
-var psychometricPointsPost = new Array(xArrows.length);
+// define all the points that will appear on the psychometric axes (but don't render them yet) for the unpaired stimuli
+var pmPointsPre = new Array(xArrows.length);
+var pmPointsPost = new Array(numAngles);
 for (var q = 0; q < xArrows.length; q++){
-	var dPointX = xArrows[q].ctrX;
-	var dPointY = stateSpacePointsPost[q].ctrY;
 
-	var nmPoint = new dataPointAsterisk(dPointX, dPointY, angle2colorN1(xArrows[q].angle)); nmPoint.draw();
-	//nmPoint.rgb[3] = 0.0; 	
-	psychometricPointsPost[q] = nmPoint;
+	var dPointXpre = xArrows[q].ctrX;
+	var dPointYpre = ssPointsPre[q].ctrY;
+	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, angle2colorN1(xArrows[q].angle), xArrows[q].angle);
+	nmPointPre.rgb[3] = 0.0;
+
+	var dPointXpost = xArrows[q].ctrX;
+	var dPointYpst = postPairFinalPositions[q].ctrY;
+	var nmPointPost = new dataPointAsterisk(dPointX, dPointY, angle2colorN1(xArrows[q].angle));		
+	nmPointPost.rgb[3] = 0.0;
+	
+	pmPointsPre[q] = nmPointPre;
+	pmPointsPost[q] = nmPointPost;
 }
+
+
+// define the post-pairing points that will appear in state space axes
+
+
+
+//console.log('postAngles');
+//console.log(postAngles);
+
+
+// define final positions of post-pairing points in state space
+
 
 
 // define and draw input box
@@ -237,9 +239,7 @@ for(var a = 0; a < xArrows.length; a++){
 	allObjects.push(xArrows[a]);
 }
 
-for(var i = 0; i < psychometricPoints.length; i++){
-	allObjects.push(psychometricPoints[i]);
-}
+
 
 var transition2 = [
 {obj: inh1, tgt: [255, 0, 0]},
@@ -247,7 +247,7 @@ var transition2 = [
 
 
 
-var testStarPoint = new dataPointAsterisk(width/2, height/2, blGrey); testStarPoint.draw();
+var testStarPoint = new dataPointAsterisk(width/2, height/2, blGrey); testStarPoint.draw(); allObjects.push(testStarPoint);
 
 
 
@@ -265,7 +265,9 @@ function step0(){
 	canvas.addEventListener('click', step1);
 	console.log('step 0');
 	var step0dur = 300;
-	colorTween(inptArrow, inptTxtColor, step0dur); 
+	//(inptArrow, inptTxtColor, step0dur); 
+
+	motionTween(testStarPoint, [width/4, height/2], 1000);
 }
 
 // activate tc1, pyr1, and inh1
