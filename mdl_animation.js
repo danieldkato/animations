@@ -289,8 +289,8 @@ function step5(){
 // show how it would be represented in state space
 var p1x = ssAxisLength * 0.1;
 var p1y = ssAxisLength * 0.9;
-var vertGridLine = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); vertGridLine.rgb = [0, 255, 0, 0.0]; 
-var horizGridLine = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); horizGridLine.rgb = [0, 255, 0, 0.0]; 
+var vertGridLine = new Rectangle(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig, axisThickness, -stateSpaceAxes.yLength); vertGridLine.rgb = [0, 0, 0, 0.0]; 
+var horizGridLine = new Rectangle(stateSpaceAxes.xOrig + axisThickness, stateSpaceAxes.yOrig - p1y, stateSpaceAxes.xLength - axisThickness, axisThickness); horizGridLine.rgb = [0, 0, 0, 0.0]; 
 var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0, 255, 0, 0.0], 0); 
 
 
@@ -305,7 +305,7 @@ function step6(){
 	allObjects.push(p);
 
 	var s6dur = 250;
-	colorTween(vertGridLine, [0, 255, 0, 1.0], s6dur);	
+	colorTween(vertGridLine, inptTxtColor, s6dur);	
 }
 
 
@@ -322,7 +322,7 @@ function step7(){
 	var latency2 = 250; // delay between when the point starts getting drawn and when the grid lines start being erased, in milliseconds	
 
 	// render the line	
-	colorTween(horizGridLine, [0, 255, 0, 1.0], duration);
+	colorTween(horizGridLine, inptTxtColor, duration);
 
 	// after some delay, render the point
 	var drawPoint = setTimeout(function(){
@@ -331,8 +331,8 @@ function step7(){
 	}, latency1);
 
 	// now remove the grid lines
-	var rlTransition = [{obj: vertGridLine, tgt: [0, 255, 0, 0.0]},
-			    {obj: horizGridLine, tgt: [0, 255, 0, 0.0]}];
+	var rlTransition = [{obj: vertGridLine, tgt: [100, 100, 100, 0.0]},
+			    {obj: horizGridLine, tgt: [100, 100, 100, 0.0]}];
 	var removeLines = setTimeout(function(){
 		colorTweenMulti(rlTransition, duration);
 	}, latency1 + latency2);	
@@ -455,12 +455,12 @@ function step9(){
 	var tmpGridlineDuration = 500;
 
 	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, nmAxes.yOrig + stateSpaceAxes.points[0].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	tempGridLine.rgb = [0, 255, 0, 0.0];	
+	tempGridLine.rgb = [100, 100, 100, 0.0];	
 	allObjects.push(tempGridLine);	
 
-	colorTween(tempGridLine, [0, 255, 0, 1.0], tmpGridlineDuration);	
+	colorTween(tempGridLine, inptTxtColor, tmpGridlineDuration);	
 	var plotPoint = setTimeout(function(){nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], tmpGridlineDuration)}, tmpGridlineDuration);
-	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [0, 255, 0, 0.0], tmpGridlineDuration);}, tmpGridlineDuration);
+	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [100, 100, 100, 0.0], tmpGridlineDuration);}, tmpGridlineDuration);
 }
 
 
@@ -508,12 +508,12 @@ function step11(){
 	
 
 	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - dPointY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	tempGridLine.rgb = [0, 255, 0, 0.0];	
+	tempGridLine.rgb = [100, 100, 100, 0.0];	
 	allObjects.push(tempGridLine);	
 
 	stateSpaceAxes.plot(dPointX, dPointY, 90, blGrey, tempLineDuration);
-	colorTween(tempGridLine, lime, tempLineDuration);
-	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [0, 255, 0, 0.0], tempLineDuration)}, tempLineDuration);
+	colorTween(tempGridLine, inptTxtColor, tempLineDuration);
+	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [100, 100, 100, 0.0], tempLineDuration)}, tempLineDuration);
 	var plotNM = setTimeout(function(){nmAxes.plot(xArrows[0].ctrX - nmAxes.xOrig, dPointY, 90, blGrey, tempLineDuration)}, tempLineDuration + 25);
 	
 
