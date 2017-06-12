@@ -358,9 +358,9 @@ class Axes {
 		// color: rgba quadruple specifying final point color
 		// duration: duration of plotting animation, in seconds
 	
-		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [0, 255, 0, 0.0]; allObjects.push(vertLine); 	
-		var horizLine = new Rectangle(this.xOrig + axisThickness, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [0, 255, 0, 0.0]; allObjects.push(horizLine); 	
-		var dPoint = new dataPoint(this.xOrig + x, this.yOrig - y, [0, 255, 0, 0.0], angle); allObjects.push(dPoint); 	
+		var vertLine = new Rectangle(this.xOrig + x, this.yOrig, axisThickness, -this.yLength); vertLine.rgb = [100, 100, 100, 0.0]; allObjects.push(vertLine); 	
+		var horizLine = new Rectangle(this.xOrig + axisThickness, this.yOrig - y, this.xLength, axisThickness); horizLine.rgb = [100, 100, 100, 0.0]; allObjects.push(horizLine); 	
+		var dPoint = new dataPoint(this.xOrig + x, this.yOrig - y, [0, 0, 0, 0.0], angle); allObjects.push(dPoint); 	
 		
 		var d1 = duration * 0.25;
 		var d2 = duration * 0.25;
@@ -375,18 +375,18 @@ class Axes {
 		var dataPointx = ssAxisLength * 0.1;
 		var dataPointy = ssAxisLength * 0.9;
 
-		colorTween(vertLine, [0, 255, 0, 1.0], d1)
+		colorTween(vertLine, [0, 0, 0, 1.0], d1)
 
 		var drawPointTimeout = setTimeout(function(){
 			colorTween(dPoint, color, d3);}
 		, l2);
 
 		var drawHorizLineTimeout = setTimeout(function(){
-			colorTween(horizLine, [0, 255, 0, 1.0], d2);}
+			colorTween(horizLine, [0, 0, 0, 1.0], d2);}
 		, l1);	
 
-		var eraseGridLinesTransition = [{obj: vertLine, tgt: [0, 255, 0, 0.0]},
-						{obj: horizLine, tgt: [0, 255, 0, 0.0]}
+		var eraseGridLinesTransition = [{obj: vertLine, tgt: [100, 100, 100, 0.0]},
+						{obj: horizLine, tgt: [100, 100, 100, 0.0]}
 				     	       ];	
 
 		var eraseGridLines = setTimeout(function(){
@@ -1021,4 +1021,53 @@ function rgb2str(rgb){
 	colorStr = colorBaseStr.concat(String(Math.floor(rgb[0])), ',', String(Math.floor(rgb[1])), ',', String(Math.floor(rgb[2])), ',', String(rgb[3]), ')');
 	//console.log(colorStr);
 	return colorStr;
+}
+
+
+// angle away from vertical
+function angle2colorN1(angle){
+	var colorOut = new Array(4);
+	var frac = Math.cos( Math.PI * (angle/180) ); // the greater the angle, the lower the number	
+	for(var k = 0; k<4; k++){
+		colorOut[k] = blGrey[k] + frac * (lime[k] - blGrey[k]);
+	}
+	console.log('colorOut');
+	console.log(colorOut);
+	return colorOut
+}
+
+
+function angle2colorN2(angle){
+	var colorOut = new Array(4);
+	var frac = Math.sin( Math.PI * (angle/180) ); // the greater the angle, the higher the number	
+	for(var k = 0; k<4; k++){
+		colorOut[k] = blGrey[k] + frac * (lime[k] - blGrey[k]);
+	}
+	console.log('colorOut');
+	console.log(colorOut);
+	return colorOut
+}
+
+
+function angle2colorI1(angle){
+	var colorOut = new Array(4);
+	var frac = Math.cos( Math.PI * (angle/180) ); // the greater the angle, the lower the number	
+	for(var k = 0; k<4; k++){
+		colorOut[k] = blGrey[k] + frac * (red[k] - blGrey[k]);
+	}
+	console.log('colorOut');
+	console.log(colorOut);
+	return colorOut
+}
+
+
+function angle2colorI2(angle){
+	var colorOut = new Array(4);
+	var frac = Math.sin( Math.PI * (angle/180) ); // the greater the angle, the higher the number	
+	for(var k = 0; k<4; k++){
+		colorOut[k] = blGrey[k] + frac * (red[k] - blGrey[k]);
+	}
+	console.log('colorOut');
+	console.log(colorOut);
+	return colorOut
 }
