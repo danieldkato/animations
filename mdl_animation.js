@@ -447,6 +447,21 @@ function step8(){
 
 
 function step9(){
+	canvas.removeEventListener('click', step9);
+	canvas.addEventListener('click', step10);
+
+	var tmpGridlineDuration = 500;
+	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, nmAxes.yOrig + stateSpaceAxes.points[0].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
+	tempGridLine.rgb = [0, 255, 0, 0.0];	
+	
+	allObjects.push(tempGridLine);	
+	colorTween(tempGridLine, [0, 255, 0, 1.0], tmpGridlineDuration);	
+	var plotPoint = setTimeout(function(){nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], tmpGridlineDuration)}, tmpGridlineDuration);
+	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [0, 255, 0, 0.0], tmpGridlineDuration);}, tmpGridlineDuration);
+}
+
+
+function step10(){
 }
 
 /*
@@ -511,15 +526,12 @@ function step6(){
 }
 
 function step7(){
-	canvas.removeEventListener('click', step7);
+
 	//console.log('stateSpaceAxes.points:');
 	//console.log(stateSpaceAxes.points);
-	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, nmAxes.yOrig + stateSpaceAxes.points[0].ctrY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	tempGridLine.rgb = [0, 255, 0, 0.0];	
+
 	//tempGridLine.draw();	
-	allObjects.push(tempGridLine);	
-	colorTween(tempGridLine, [0, 255, 0, 1.0], 500);	
-	var plotPoint = setTimeout(function(){nmAxes.plot(xArrows[7].ctrX - nmAxes.xOrig, -stateSpaceAxes.points[0].ctrY, 0, [0, 255, 0, 1.0], 1000)}, 500);
+
 	
 	//nmAxes.plot(nmAxes.xLength * 0.5, nmAxes.yLength * 0.5, 0, [0, 255, 0, 1.0], 1000);	
 	//animate(allObjects);
