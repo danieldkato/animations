@@ -97,18 +97,54 @@ var nmXaxisLength = width/4;
 var nmAxes = new Axes(stateSpaceOriginX, stateSpaceOriginY, 0, ssAxisLength); // initialize x-origin to the same as that for the state space Axes
 nmAxes.yLabel = "n1";
 var nmAxesFinal = width * 0.8;  
-var numAngles = 8;
 var arrowsY = nmAxes.yOrig + 20;
 var arrowsXstart = nmAxesFinal + 25;
 var xArrowWidth = 9;
 var xArrowLength = 30;
-var xArrows = [];
+
+
+// define stimulus angles to be presented
+var numAngles = 8;
+var xArrows = new Array(8);
 for(var a = 0; a < numAngles; a++){
 	angle = 90 - (a * (90/(numAngles-1)));
 	var arrow = new Arrow(arrowsXstart + a*nmXaxisLength/numAngles, arrowsY, xArrowLength, xArrowWidth, angle);		
 	arrow.rgb = [185, 185, 185, 0.0];		
-	xArrows.push(arrow); 
+	xArrows[a] = arrow; 
 }
+console.log('xArrows');
+console.log(xArrows);
+
+
+// define all the points that will appear in state space axes (but don't render them yet)
+stateSpaceAxes.draw();
+
+// first, for the unpaired stimuli
+var stateSpacePoints = new Array(xArrows.length);
+for (var p = 0; p < xArrows.length; p++){
+	var dPointX = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
+	var dPointY = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
+
+	var ssPoint = new dataPoint(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, angle2colorN1(xArrows[p].angle), xArrows[p].angle); ssPoint.draw();
+	stateSpacePoints[p] = ssPoint;
+}
+
+console.log('stateSpacePoints');
+console.log(stateSpacePoints);
+// define all the points that will appear on the psychometric axes (but don't render them yet)
+// first, for the unpaired stimuli
+var psychometricPoints = new Array(xArrows.length);
+for (var q = 0; q < xArrows.length; q++){
+	var dPointX = xArrows[q].ctrX;
+	console.log('ssPoint:');
+	console.log(stateSpacePoints[q]);
+	var dPointY = stateSpacePoints[q].ctrY;
+
+	var nmPoint = new dataPoint(dPointX, dPointY, angle2colorN1(xArrows[q].angle), xArrows[q].angle); nmPoint.draw();	
+	psychometricPoints[q] = nmPoint;
+	
+}
+
 
 
 // define and draw input box
@@ -161,6 +197,9 @@ for(var a = 0; a < xArrows.length; a++){
 	allObjects.push(xArrows[a]);
 }
 
+for(var i = 0; i < psychometricPoints.length; i++){
+	allObjects.push(psychometricPoints[i]);
+}
 
 var transition2 = [
 {obj: inh1, tgt: [255, 0, 0]},
@@ -559,20 +598,18 @@ function step14(){
 	canvas.removeEventListener('click', step14);
 	canvas.addEventListener('click', step15);
 
-	var tempLineDuration = 500;
+	var interval = 1000;	
+	var idx = 0;
+		
 
-	var dPointX = stateSpaceAxes.xLength * Math.sin( Math.PI*(xArrows[4].angle/180) );
-	var dPointY = stateSpaceAxes.yLength * Math.cos( Math.PI*(xArrows[4].angle/180) );
-	
+	var doPlots = setInterval(function(){
+		if (idx > xArrows.length){
+			clearInterval(doPlots);
+		}
+		doublePlot(idx);
+		idx++;
+	}, interval)
 
-	var tempGridLine = new Rectangle(stateSpaceAxes.xOrig, stateSpaceAxes.yOrig - dPointY, (nmAxes.xOrig - stateSpaceAxes.xOrig) + nmAxes.xLength, axisThickness);
-	tempGridLine.rgb = [100, 100, 100, 0.0];	
-	allObjects.push(tempGridLine);	
-
-	stateSpaceAxes.plot(dPointX, dPointY, xArrows[4].angle, blGrey, tempLineDuration);
-	colorTween(tempGridLine, inptTxtColor, tempLineDuration);
-	var eraseTempGridLine = setTimeout(function(){colorTween(tempGridLine, [100, 100, 100, 0.0], tempLineDuration)}, tempLineDuration);
-	var plotNM = setTimeout(function(){nmAxes.plot(xArrows[4].ctrX - nmAxes.xOrig, dPointY, xArrows[4].angle, blGrey, tempLineDuration)}, tempLineDuration + 25);
 }
 
 
