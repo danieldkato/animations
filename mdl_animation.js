@@ -172,7 +172,7 @@ for (var q = 0; q < xArrows.length; q++){
 
 	var dPointXpre = xArrows[q].ctrX;
 	var dPointYpre = ssPointsPre[q].ctrY;
-	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, angle2colorN1(xArrows[q].angle), xArrows[q].angle);
+	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, angle2colorN1(xArrows[q].angle), xArrows[q].angle); nmPointPre.draw();
 	nmPointPre.rgb[3] = 0.0;
 
 	var dPointXpost = xArrows[q].ctrX;
@@ -959,9 +959,45 @@ function step33(){
 }
 
 
-// have psychometric space slide out from state space
+// plot the remaining pre-pairing data points
+var leftOverPoints = [1, 2, 5, 6];
 function step34(){
 	console.log("step34");
+	canvas.removeEventListener('click', step34);
+	canvas.addEventListener('click', step35);	
+
+	var pLOint = 500;
+	var i = 0;
+	var plotLeftOvers = setInterval(function(){
+		if(i >= leftOverPoints.length-1){
+			clearInterval(plotLeftOvers);
+		}		
+	
+		singlePlotSS(ssPointsPre[leftOverPoints[i]]);		
+
+		/*
+		inptArrow.angle = preAngles[leftOverPoints[i]];
+		var ploTrans = [{obj: pyr1, tgt: angle2colorN1(preAngles[leftOverPoints[i]])},
+				{obj: tc1, tgt: angle2colorN1(preAngles[leftOverPoints[i]])},
+				{obj: inh1, tgt: angle2colorI1(preAngles[leftOverPoints[i]])},
+				{obj: pyr2, tgt: angle2colorN2(preAngles[leftOverPoints[i]])},
+				{obj: tc2, tgt: angle2colorN2(preAngles[leftOverPoints[i]])},
+				{obj: inh2, tgt: angle2colorI2(preAngles[leftOverPoints[i]])},
+				{obj: inptArrow, tgt: inptTxtColor},]
+		flash(ploTrans, 1, 500);
+		*/
+
+		i++;
+	},pLOint)
+}
+
+
+// have psychometric space slide out from state space
+function step35(){
+	console.log("step35");
+	canvas.removeEventListener('click', step35);
+	canvas.addEventListener('click', step36);	
+
 	// pop out those grid lines objects, which we don't need anymore	
 	allObjects.pop(); 
 	allObjects.pop();	
@@ -1057,6 +1093,53 @@ function step34(){
 	};
 
 }
+
+
+// project pre-points onto pm space
+function step36(){
+	console.log('step36');
+	canvas.removeEventListener('click', step36);
+	canvas.addEventListener('click', step37);
+
+	var i = 0;
+	var int = 500;
+	var plotPMpre = setInterval(function(){
+		if(i >= numAngles -1){
+			clearInterval(plotPMpre);
+		}		
+		
+
+		singlePlotPMpre(i);
+
+		i++;
+	}, int);	
+}
+
+
+
+function step37(){
+	console.log('step37');
+	canvas.removeEventListener('click', step37);
+	canvas.addEventListener('click', step38);
+
+	var i = 0;
+	var int = 500;
+	var plotPMpre = setInterval(function(){
+		if(i >= numAngles -1){
+			clearInterval(plotPMpre);
+		}		
+		
+
+		singlePlotPMpost(i);
+
+		i++;
+	}, int);	
+}
+
+
+function step38(){
+}
+
 
 function testDoublePlot(){
 	canvas.removeEventListener('click', step14);

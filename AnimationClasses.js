@@ -1242,7 +1242,7 @@ function doublePlotB(idx){
 
 
 function singlePlotSS(point){
-	console.log("	singlePlots()");	
+	console.log("	singlePlotSS()");	
 	
 	allObjects.push(point);
 	var tmpGridlineDuration = 500;
@@ -1265,4 +1265,98 @@ function singlePlotSS(point){
 			  {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]}] 
 	var eraseTempGridLine = setTimeout(function(){colorTweenMulti(eraseGLtrans, tmpGridlineDuration);}, tmpGridlineDuration);
 		
+}
+
+
+function singlePlotPMpre(i){
+	console.log("	singlePlotPM:");
+	
+	var point = pmPointsPre[i];
+	allObjects.push(point);
+	
+	var dur = 500;
+	
+	console.log('Y');
+	console.log(point.ctrY);
+	console.log('nmAxes.xOrig');
+	console.log(nmAxes.xOrig);
+	console.log('nmAxes.xLength');
+	console.log(nmAxes.xLength);
+	console.log('ssAxes.xOrig');
+	console.log(stateSpaceAxes.xOrig);
+	console.log('width');
+	console.log(nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig);
+	console.log(point.ctrY);
+	var horizGL = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig, axisThickness);
+	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	horizGL.rgb = [100, 100, 100, 0.0];
+	vertGL.rgb = [100, 100, 100, 0.0];
+	
+	var tgtColor = point.rgb.slice();
+	tgtColor[3] = 1.0;
+		
+
+	allObjects.push(horizGL);
+	allObjects.push(vertGL);
+	allObjects.push(point);
+
+	var drawGLtrans = [{obj: horizGL, tgt: inptTxtColor},
+			   {obj: vertGL, tgt: inptTxtColor}];
+	colorTweenMulti(drawGLtrans, dur);
+	
+
+	var plotPoint = setTimeout(function(){colorTween(point, tgtColor, dur)}, dur);	
+	
+	var eraseGLtrans = [{obj: horizGL, tgt: [100, 100, 100, 0.0]}, 
+			    {obj: vertGL, tgt: [100, 100, 100, 0.0]}]
+	var eraseGL = setTimeout(function(){colorTweenMulti(eraseGLtrans, dur);}, dur)
+	
+
+}
+
+
+function singlePlotPMpost(i){
+	console.log("	singlePlotPM:");
+	
+	var point = pmPointsPost[i];
+	allObjects.push(point);
+	
+	var dur = 500;
+	
+	console.log('Y');
+	console.log(point.ctrY);
+	console.log('nmAxes.xOrig');
+	console.log(nmAxes.xOrig);
+	console.log('nmAxes.xLength');
+	console.log(nmAxes.xLength);
+	console.log('ssAxes.xOrig');
+	console.log(stateSpaceAxes.xOrig);
+	console.log('width');
+	console.log(nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig);
+	console.log(point.ctrY);
+	var horizGL = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig, axisThickness);
+	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	horizGL.rgb = [100, 100, 100, 0.0];
+	vertGL.rgb = [100, 100, 100, 0.0];
+	
+	var tgtColor = point.rgb.slice();
+	tgtColor[3] = 1.0;
+		
+
+	allObjects.push(horizGL);
+	allObjects.push(vertGL);
+	allObjects.push(point);
+
+	var drawGLtrans = [{obj: horizGL, tgt: inptTxtColor},
+			   {obj: vertGL, tgt: inptTxtColor}];
+	colorTweenMulti(drawGLtrans, dur);
+	
+
+	var plotPoint = setTimeout(function(){colorTween(point, tgtColor, dur)}, dur);	
+	
+	var eraseGLtrans = [{obj: horizGL, tgt: [100, 100, 100, 0.0]}, 
+			    {obj: vertGL, tgt: [100, 100, 100, 0.0]}]
+	var eraseGL = setTimeout(function(){colorTweenMulti(eraseGLtrans, dur);}, dur)
+	
+
 }
