@@ -188,6 +188,7 @@ bx = pmPointsPre[0].ctrX;
 by = pmPointsPre[0]. ctrY;
 ex = pmPointsPre[7].ctrX
 ey = pmPointsPre[7].ctrY;
+/*
 ctx.beginPath();
 ctx.moveTo(bx, by);
 ctx.bezierCurveTo( bx+(ex - bx)*0.75, by, bx+(ex-bx)*0.15, ey - 5, ex, ey);
@@ -198,8 +199,12 @@ ctx.beginPath();
 ctx.moveTo(bx, by);
 ctx.bezierCurveTo(bx+(ex-bx)*0.2, by, bx+(ex-bx)*0.15, ey+100, ex, ey);
 ctx.stroke();
+*/
 
-
+var postCurve = new Bezier(bx+(ex - bx)*0.75, by, bx+(ex-bx)*0.15, ey - 5, [185, 65, 245, 1.0]); //postCurve.draw();
+postCurve.rgb[3] = 0.0;
+var preCurve = new Bezier(bx+(ex-bx)*0.2, by, bx+(ex-bx)*0.15, ey+100, lime.slice()); //preCurve.draw();
+preCurve.rgb[3] = 0.0;
 
 // define the post-pairing points that will appear in state space axes
 
@@ -1162,7 +1167,7 @@ function step35(){
 function step36(){
 	console.log('step36');
 	canvas.removeEventListener('click', step36);
-	canvas.addEventListener('click', step37);
+	canvas.addEventListener('click', step36b);
 
 	var i = 0;
 	var int = 500;
@@ -1178,6 +1183,15 @@ function step36(){
 	}, int);	
 }
 
+function step36b(){
+	console.log('step36b');
+	canvas.removeEventListener('click', step36b);
+	canvas.addEventListener('click', step37);
+	
+	var dur = 500;
+	allObjects.push(preCurve);
+	colorTween(preCurve, lime.slice(), dur);
+}
 
 
 function step37(){
@@ -1201,6 +1215,12 @@ function step37(){
 
 
 function step38(){
+	console.log('step38');
+	canvas.removeEventListener('click', step38);
+	
+	var dur = 500;
+	allObjects.push(postCurve);
+	colorTween(postCurve, [185, 65, 245, 1.0], dur);
 }
 
 
