@@ -139,8 +139,8 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointXpre = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
 	var dPointYpre = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
 	
-	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]); //ssPointPre.draw();
-	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p])); //ssPointPost.draw(); // post points will be initialize to same position
+	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, lime.slice(), preAngles[p]); //ssPointPre.draw();
+	var ssPointPost = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, [185, 65, 245], preAngles[p]); //ssPointPost.draw(); // post points will be initialize to same position
 
 	ssPointPre.rgb[3] = 0.0 // initialize to be invisible 
 	ssPointPost.rgb[3] = 0.0 // initialize to be invisible 
@@ -172,12 +172,12 @@ for (var q = 0; q < xArrows.length; q++){
 
 	var dPointXpre = xArrows[q].ctrX;
 	var dPointYpre = ssPointsPre[q].ctrY;
-	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, angle2colorN1(xArrows[q].angle), xArrows[q].angle); nmPointPre.draw();
+	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, lime.slice(), xArrows[q].angle); nmPointPre.draw();
 	nmPointPre.rgb[3] = 0.0;
 
 	var dPointXpost = xArrows[q].ctrX;
 	var dPointYpost = stateSpaceAxes.yOrig - postPairFinalPositions[q][1];
-	var nmPointPost = new dataPointAsterisk(dPointXpost, dPointYpost, angle2colorN1(xArrows[q].angle)); nmPointPost.draw();		
+	var nmPointPost = new dataPoint(dPointXpost, dPointYpost, [185, 65, 245], xArrows[q].angle); nmPointPost.draw();		
 	nmPointPost.rgb[3] = 0.0;
 	
 	pmPointsPre[q] = nmPointPre;
@@ -373,8 +373,8 @@ function step5(){
 
 	inptArrow.angle = 0	;
 	var step5dur = 200;	
-	var transitions1 = [{obj: tc1, tgt: lime},
-			    {obj: pyr1, tgt: lime},
+	var transitions1 = [{obj: tc1, tgt: lime.slice()},
+			    {obj: pyr1, tgt: lime.slice()},
 			    {obj: inptArrow, tgt: inptTxtColor},
 			    {obj: inh1, tgt: red}];
 	colorTweenMulti(transitions1, step5dur);	
@@ -543,11 +543,11 @@ function step11(){
 	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
 	inptArrow.angle = xArrows[4].angle;
 	
-	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
+	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime.slice())},
 			   {obj: inh1, tgt: frac2color(0.3, red)},
-			   {obj: tc1, tgt: frac2color(0.3, lime)},
-			   {obj: pyr2, tgt: frac2color(0.3, lime)},
-			   {obj: tc2, tgt: frac2color(0.3, lime)},
+			   {obj: tc1, tgt: frac2color(0.3, lime.slice())},
+			   {obj: pyr2, tgt: frac2color(0.3, lime.slice())},
+			   {obj: tc2, tgt: frac2color(0.3, lime.slice())},
 			   {obj: inh2, tgt: frac2color(0.3, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
@@ -609,8 +609,8 @@ function step15(){
 	canvas.addEventListener('click', step16);
 	
 	var ccDur = 500;
-	var ccTrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
+	var ccTrans = [   {obj: cc1, tgt: lime.slice()},
+			   {obj: cc2, tgt: lime.slice()},
 			   {obj: spkrContainer, tgt: 1.0}];
 	colorTweenMulti(ccTrans, ccDur);
 }
@@ -640,11 +640,11 @@ function step17(){
 
 	inptArrow.angle = 0;
 	var pairingDur = 2000;
-	var pairingTrans = [{obj: pyr1, tgt: lime},
+	var pairingTrans = [{obj: pyr1, tgt: lime.slice()},
 			   {obj: inh1, tgt: red},
-			   {obj: tc1, tgt: lime},
-			   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
+			   {obj: tc1, tgt: lime.slice()},
+			   {obj: cc1, tgt: lime.slice()},
+			   {obj: cc2, tgt: lime.slice()},
 			   {obj: spkrContainer, tgt: 1.0},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 	flash(pairingTrans, 3, pairingDur);
@@ -669,8 +669,8 @@ function step19(){
 	canvas.addEventListener('click', step20);
 
 	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
+	var ccDtrans = [   {obj: cc1, tgt: lime.slice()},
+			   {obj: cc2, tgt: lime.slice()},
 			   {obj: spkrContainer, tgt: 1.0}];
 	colorTweenMulti(ccDtrans, ccDdur);
 }
@@ -700,11 +700,11 @@ function step21(){
 	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
 	inptArrow.angle = xArrows[4].angle;
 	
-	var transitions = [{obj: pyr1, tgt: frac2color(0.4, lime)},
+	var transitions = [{obj: pyr1, tgt: frac2color(0.4, lime.slice())},
 			   {obj: inh1, tgt: frac2color(0.4, red)},
-			   {obj: tc1, tgt: frac2color(0.4, lime)},
-			   {obj: pyr2, tgt: frac2color(0.4, lime)},
-			   {obj: tc2, tgt: frac2color(0.4, lime)},
+			   {obj: tc1, tgt: frac2color(0.4, lime.slice())},
+			   {obj: pyr2, tgt: frac2color(0.4, lime.slice())},
+			   {obj: tc2, tgt: frac2color(0.4, lime.slice())},
 			   {obj: inh2, tgt: frac2color(0.4, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
@@ -719,8 +719,8 @@ function step22(){
 	canvas.addEventListener('click', step23);
 
 	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
+	var ccDtrans = [   {obj: cc1, tgt: lime.slice()},
+			   {obj: cc2, tgt: lime.slice()},
 			   {obj: spkrContainer, tgt: 1.0}];
 	colorTweenMulti(ccDtrans, ccDdur);
 }
@@ -732,11 +732,11 @@ function step23(){
 	canvas.removeEventListener('click', step23);
 	canvas.addEventListener('click', step24);
 
-	var transitions = [{obj: pyr1, tgt: lime},
+	var transitions = [{obj: pyr1, tgt: lime.slice()},
 			   {obj: inh1, tgt: red},
-			   {obj: tc1, tgt: frac2color(0.4, lime)},
+			   {obj: tc1, tgt: frac2color(0.4, lime.slice())},
 			   {obj: pyr2, tgt: blGrey},
-			   {obj: tc2, tgt: frac2color(0.4, lime)},
+			   {obj: tc2, tgt: frac2color(0.4, lime.slice())},
 			   {obj: inh2, tgt: blGrey}];
 
 	colorTweenMulti(transitions, 500);	
@@ -827,11 +827,11 @@ function step28(){
 	canvas.addEventListener('click', step28b);
 	inptArrow.angle = 90;
 	var pairingDur = 2000;
-	var pairingTrans2 = [{obj: pyr2, tgt: lime},
+	var pairingTrans2 = [{obj: pyr2, tgt: lime.slice()},
 			   {obj: inh2, tgt: red},
-			   {obj: tc2, tgt: lime},
-			   {obj: cc3, tgt: lime},
-			   {obj: cc4, tgt: lime},
+			   {obj: tc2, tgt: lime.slice()},
+			   {obj: cc3, tgt: lime.slice()},
+			   {obj: cc4, tgt: lime.slice()},
 			   {obj: spkrContainer2, tgt: 1.0},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 	flash(pairingTrans2, 3, pairingDur);
@@ -856,11 +856,11 @@ function step29(){
 	inptArrow.angle = preAngles[ind];
 
 		
-	var transitionsUnique = [{obj: pyr1, tgt: frac2color(0.3, lime)},
+	var transitionsUnique = [{obj: pyr1, tgt: frac2color(0.3, lime.slice())},
 			   {obj: inh1, tgt: frac2color(0.3, red)},
-			   {obj: tc1, tgt: frac2color(0.3, lime)},
-			   {obj: pyr2, tgt: frac2color(0.3, lime)},
-			   {obj: tc2, tgt: frac2color(0.3, lime)},
+			   {obj: tc1, tgt: frac2color(0.3, lime.slice())},
+			   {obj: pyr2, tgt: frac2color(0.3, lime.slice())},
+			   {obj: tc2, tgt: frac2color(0.3, lime.slice())},
 			   {obj: inh2, tgt: frac2color(0.3, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
@@ -898,9 +898,9 @@ function step31(){
 	canvas.addEventListener('click', step32);
 
 	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc3, tgt: lime},
-			   {obj: cc4, tgt: lime},
-			   {obj: pyr2, tgt: lime},
+	var ccDtrans = [   {obj: cc3, tgt: lime.slice()},
+			   {obj: cc4, tgt: lime.slice()},
+			   {obj: pyr2, tgt: lime.slice()},
 			   {obj: inh2, tgt: red},
 			   {obj: pyr1, tgt: blGrey},
 			   {obj: inh1, tgt: blGrey},
@@ -1433,5 +1433,5 @@ function testStep3(){
 	colorTweenMulti(transition3, duration, 100);
 }
 
-canvas.addEventListener('click', step34b);
+canvas.addEventListener('click', step0);
 
