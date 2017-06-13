@@ -1019,6 +1019,24 @@ function step34b(){
 
 
 function step34c(){
+	console.log("step34c");
+	canvas.removeEventListener('click', step34c);
+	canvas.addEventListener('click', step35);
+
+	var dur = 500;
+	
+	//motionTween(ssPointsPost[0], postPairFinalPositions[0], dur);
+	
+	for(var p = 0; p < leftOverPointsPost.length; p++){
+		var point = ssPointsPost[leftOverPointsPost[p]];
+		var tgtCoords = postPairFinalPositions[leftOverPointsPost[p]];
+		var tgtCoordsCtr = new Array(2);		
+		tgtCoordsCtr[0] = stateSpaceAxes.xOrig + tgtCoords[0];
+		tgtCoordsCtr[1] = stateSpaceAxes.yOrig - tgtCoords[1];
+		motionTween(point, tgtCoordsCtr, dur); 
+	}	
+
+	
 }
 
 // have psychometric space slide out from state space
