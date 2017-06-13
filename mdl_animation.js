@@ -139,8 +139,8 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointXpre = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
 	var dPointYpre = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
 	
-	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]); ssPointPre.draw();
-	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p])); ssPointPost.draw(); // post points will be initialize to same position
+	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]); //ssPointPre.draw();
+	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p])); //ssPointPost.draw(); // post points will be initialize to same position
 
 	ssPointPre.rgb[3] = 0.0 // initialize to be invisible 
 	ssPointPost.rgb[3] = 0.0 // initialize to be invisible 
@@ -159,7 +159,7 @@ for (var p = 0; p < xArrows.length; p++){
 
 	postPairFinalPositions[p] = [dPointX, dPointY];
 
-	var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, blGrey); testPt.draw();
+	//var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, blGrey); testPt.draw();
 }
 
 console.log('pos pair final positions');
@@ -964,7 +964,7 @@ var leftOverPoints = [1, 2, 5, 6];
 function step34(){
 	console.log("step34");
 	canvas.removeEventListener('click', step34);
-	canvas.addEventListener('click', step35);	
+	canvas.addEventListener('click', step34b);	
 
 	var pLOint = 500;
 	var i = 0;
@@ -991,6 +991,35 @@ function step34(){
 	},pLOint)
 }
 
+
+// plot remaining post points in state space
+var leftOverPointsPost = [0, 1, 2, 5, 6, 7];
+function step34b(){
+	console.log("step34b");
+	canvas.removeEventListener('click', step34b);
+	canvas.addEventListener('click', step34c);	
+
+	var dur = 250;
+	var ppTrans = new Array(leftOverPointsPost.length);
+	for(var p = 0; p < leftOverPointsPost.length; p++){
+		var point = ssPointsPost[leftOverPointsPost[p]];		
+		console.log('point');
+		console.log(point);		
+		allObjects.push(point);
+		ppTrans[p] = {obj: inptArrow, tgt: blGrey} // initialize		
+		ppTrans[p].obj = point;
+		ppTrans[p].tgt = ppTrans[p].obj.rgb.slice();
+		ppTrans[p].tgt[3] = 1.0;
+	}
+	
+	console.log('ppTrans');
+	console.log(ppTrans);		
+	colorTweenMulti(ppTrans, dur);
+}
+
+
+function step34c(){
+}
 
 // have psychometric space slide out from state space
 function step35(){
@@ -1386,5 +1415,5 @@ function testStep3(){
 	colorTweenMulti(transition3, duration, 100);
 }
 
-canvas.addEventListener('click', step0);
+canvas.addEventListener('click', step34b);
 
