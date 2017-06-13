@@ -132,7 +132,7 @@ console.log('postAngles');
 console.log(postAngles);
 
 // define all the points that will appear in state space axes (but don't render them yet)
-stateSpaceAxes.draw();
+//stateSpaceAxes.draw();
 var ssPointsPre = new Array(xArrows.length);
 var ssPointsPost = new Array(xArrows.length);
 for (var p = 0; p < xArrows.length; p++){
@@ -177,12 +177,28 @@ for (var q = 0; q < xArrows.length; q++){
 
 	var dPointXpost = xArrows[q].ctrX;
 	var dPointYpost = stateSpaceAxes.yOrig - postPairFinalPositions[q][1];
-	var nmPointPost = new dataPoint(dPointXpost, dPointYpost, [185, 65, 245], xArrows[q].angle); nmPointPost.draw();		
+	var nmPointPost = new dataPoint(dPointXpost, dPointYpost, [185, 65, 245, 1.0], xArrows[q].angle); nmPointPost.draw();		
 	nmPointPost.rgb[3] = 0.0;
 	
 	pmPointsPre[q] = nmPointPre;
 	pmPointsPost[q] = nmPointPost;
 }
+
+bx = pmPointsPre[0].ctrX;
+by = pmPointsPre[0]. ctrY;
+ex = pmPointsPre[7].ctrX
+ey = pmPointsPre[7].ctrY;
+ctx.beginPath();
+ctx.moveTo(bx, by);
+ctx.bezierCurveTo( bx+(ex - bx)*0.75, by, bx+(ex-bx)*0.15, ey - 5, ex, ey);
+ctx.strokeStyle = "black";
+ctx.stroke();
+
+ctx.beginPath();
+ctx.moveTo(bx, by);
+ctx.bezierCurveTo(bx+(ex-bx)*0.2, by, bx+(ex-bx)*0.15, ey+100, ex, ey);
+ctx.stroke();
+
 
 
 // define the post-pairing points that will appear in state space axes
