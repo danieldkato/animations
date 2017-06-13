@@ -542,6 +542,30 @@ class Timer{
 }
 
 
+class Bezier{
+	constructor(c1x, c1y, c2x, c2y, rgb){
+		this.c1x = c1x;
+		this.c1y = c1y;
+		this.c2x = c2x;
+		this.c2y = c2y;
+		this.rgb = rgb;
+	}
+
+	draw(){		
+		var bx = pmPointsPre[0].ctrX;
+		var by = pmPointsPre[0].ctrY;
+		var ex = pmPointsPre[7].ctrX
+		var ey = pmPointsPre[7].ctrY;
+	
+		ctx.strokeStyle = rgb2str(this.rgb);
+		ctx.moveTo(bx, by);
+		ctx.beginPath();
+		ctx.bezierCurveTo(this.c1x, this.c1y, this.c2x, this.c2y, ex, ey);
+		ctx.stroke();
+	}
+}
+
+
 function animate(allTheThings){
 	ctx.clearRect(0, 0, 3000, 3000);	
 	for(i = 0; i < allTheThings.length; i++){
