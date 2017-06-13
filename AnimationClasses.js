@@ -1312,8 +1312,8 @@ function singlePlotPMpre(i){
 	console.log('width');
 	console.log(nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig);
 	console.log(point.ctrY);
-	var horizGL = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig, axisThickness);
-	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	var horizGL = new Rectangle(ssPointsPre[i].ctrX, point.ctrY, point.ctrX - ssPointsPre[i].ctrX,  axisThickness);
+	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -(nmAxes.yOrig - point.ctrY));
 	horizGL.rgb = [0, 255, 0, 0.0];
 	vertGL.rgb = [0, 255, 0, 0.0];
 	
@@ -1359,8 +1359,8 @@ function singlePlotPMpost(i){
 	console.log('width');
 	console.log(nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig);
 	console.log(point.ctrY);
-	var horizGL = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig, axisThickness);
-	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	var horizGL = new Rectangle(ssPointsPost[i].ctrX, point.ctrY, point.ctrX - ssPointsPost[i].ctrX, axisThickness);
+	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -(nmAxes.yOrig - point.ctrY));
 	horizGL.rgb = [185, 65, 245, 0.0];
 	vertGL.rgb = [185, 65, 245, 0.0];
 	
