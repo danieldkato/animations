@@ -558,8 +558,9 @@ class Bezier{
 		var ey = pmPointsPre[7].ctrY;
 	
 		ctx.strokeStyle = rgb2str(this.rgb);
-		ctx.moveTo(bx, by);
+		ctx.lineWidth = 5;
 		ctx.beginPath();
+		ctx.moveTo(bx, by);
 		ctx.bezierCurveTo(this.c1x, this.c1y, this.c2x, this.c2y, ex, ey);
 		ctx.stroke();
 	}
