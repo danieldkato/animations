@@ -102,7 +102,6 @@ var arrowsXstart = nmAxesFinal + 25;
 var xArrowWidth = 9;
 var xArrowLength = 30;
 
-
 // define stimulus angles to be presented
 var numAngles = 8;
 var xArrows = new Array(numAngles);
@@ -270,6 +269,7 @@ var transition2 = [
 
 // show vertical input
 function step0(){
+	console.log("step0");	
 	canvas.removeEventListener('click', step0);
 	canvas.addEventListener('click', step1);
 	console.log('step 0');
@@ -281,6 +281,7 @@ function step0(){
 
 // activate tc1, pyr1, and inh1
 function step1(){
+	console.log("step1");
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
 
@@ -295,6 +296,7 @@ function step1(){
 
 // deactivate tc1 and pyr1, activate tc2 and pyr2
 function step2(){
+	console.log("step2");
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
 	
@@ -336,6 +338,7 @@ function step2(){
 
 // return everything to baseline after initial demonstration of response properties
 function step3(){
+	console.log("step3");
 	canvas.removeEventListener('click', step3);
 	canvas.addEventListener('click', step4);
 	
@@ -350,6 +353,7 @@ function step3(){
 
 // draw state space axes
 function step4(){
+	console.log("step4");
 	canvas.removeEventListener('click', step4);
 	canvas.addEventListener('click', step5);
 
@@ -363,6 +367,7 @@ function step4(){
 
 // present vertical stimuls again
 function step5(){
+	console.log("step5");
 	canvas.removeEventListener('click', step5);
 	canvas.addEventListener('click', step6);
 
@@ -386,6 +391,7 @@ var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0
 
 // first plot the vertical gridline
 function step6(){
+	console.log("step6");
 	canvas.removeEventListener('click', step6);
 	canvas.addEventListener('click', step7);
 
@@ -404,6 +410,7 @@ function step6(){
 
 // plot the horizontal gridline and the point, then erase the gridlines
 function step7(){
+	console.log("step7");
 	canvas.removeEventListener('click', step7);
 	canvas.addEventListener('click', step8);
 
@@ -469,6 +476,7 @@ function step9(){
 
 // show response to horizontal stimulus
 function step8(){
+	console.log("step8");
 	canvas.removeEventListener('click', step8);
 	canvas.addEventListener('click', step9);
 
@@ -499,6 +507,7 @@ function step8(){
 
 //plot in state space and psychometric space
 function step9(){
+	console.log("step9");
 	canvas.removeEventListener('click', step9);
 	canvas.addEventListener('click', step10);
 
@@ -511,6 +520,7 @@ function step9(){
 
 // deactivate pyr2, etc.
 function step10(){
+	console.log("step10");
 	canvas.removeEventListener('click', step10);
 	canvas.addEventListener('click', step11);
 	
@@ -525,6 +535,7 @@ function step10(){
 
 // present an intermediate stimulus
 function step11(){
+	console.log("step11");
 	canvas.removeEventListener('click', step11);
 	canvas.addEventListener('click', step12);
 	
@@ -548,6 +559,7 @@ function step11(){
 
 // plot intermediate stimulus in state space and nmAXes
 function step12(){
+	console.log("step12");
 	canvas.removeEventListener('click', step12);
 	canvas.addEventListener('click', step13);
 	
@@ -559,6 +571,7 @@ function step12(){
 
 // return everything to baseline, introduce CCs
 function step13(){
+	console.log("step13");
 	canvas.removeEventListener('click', step13);
 	canvas.addEventListener('click', step14);
 	
@@ -578,6 +591,7 @@ function step13(){
 
 // introduce cc's
 function step14(){
+	console.log("step14");
 	canvas.removeEventListener('click', step14);
 	canvas.addEventListener('click', step15);
 	
@@ -590,6 +604,7 @@ function step14(){
 
 //show that cc's do little on their own in naive state
 function step15(){
+	console.log("step15");
 	canvas.removeEventListener('click', step15);
 	canvas.addEventListener('click', step16);
 	
@@ -603,6 +618,7 @@ function step15(){
 
 //deactivate cc's
 function step16(){
+	console.log("step16");
 	canvas.removeEventListener('click', step16);
 	canvas.addEventListener('click', step17);
 
@@ -616,6 +632,7 @@ function step16(){
 
 // do pairing
 function step17(){
+	console.log("step17");
 	canvas.removeEventListener('click', step17);
 	canvas.addEventListener('click', step18);
 
@@ -637,6 +654,7 @@ function step17(){
 
 // potentiate
 function step18(){
+	console.log("step18");
 	canvas.removeEventListener('click', step18);
 	canvas.addEventListener('click', step19);
 
@@ -646,6 +664,7 @@ function step18(){
 
 // show that cc on its own still doesn't do anything after potentiaton
 function step19(){
+	console.log("step19");
 	canvas.removeEventListener('click', step19);
 	canvas.addEventListener('click', step20);
 
@@ -659,6 +678,7 @@ function step19(){
 
 // deactivate cc's
 function step20(){
+	console.log("step20");
 	canvas.removeEventListener('click', step20);
 	canvas.addEventListener('click', step21);
 
@@ -672,6 +692,7 @@ function step20(){
 
 // once again present intermediate sitm
 function step21(){
+	console.log("step21");
 	canvas.removeEventListener('click', step21);
 	canvas.addEventListener('click', step22);
 
@@ -693,6 +714,7 @@ function step21(){
 
 // present auditory stimulus in addition to it
 function step22(){
+	console.log("step22");
 	canvas.removeEventListener('click', step22);
 	canvas.addEventListener('click', step23);
 
@@ -706,6 +728,7 @@ function step22(){
 
 // and now the system responds as if it has been presented with a vertical stimulus
 function step23(){
+	console.log("step23");
 	canvas.removeEventListener('click', step23);
 	canvas.addEventListener('click', step24);
 
@@ -722,34 +745,52 @@ function step23(){
 
 // plot response in state space
 function step24(){
+	console.log("step24");
 	canvas.removeEventListener('click', step24);
-	canvas.addEventListener('click', step25);
+	canvas.addEventListener('click', step24b);
 	
 	var point = ssPointsPost[4];	
-
-	allObjects.push(point);
-	var ppDur = 500;
-	var colorTgt = point.rgb.slice();
-	colorTgt[3] = 1.0;
-	colorTween(point, colorTgt, ppDur);
+	singlePlotSS(point);
 	
+	/*
+	var movePt = setTimeout(function(){
+		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0], stateSpaceAxes.yOrig - postPairFinalPositions[4][1]], moveDur);
+	}, 500)
+	*/
+}
+
+
+function step24b(){
+	console.log("step24b");
+	canvas.removeEventListener('click', step24b);
+	canvas.addEventListener('click', step25);
+
+	var moveDur = 500;
+	var point = ssPointsPost[4];	
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0], stateSpaceAxes.yOrig - postPairFinalPositions[4][1]], moveDur);
 }
 
 
 // the response in state space moves towards the response to the vertical stimulus
 function step25(){
+	console.log("step25; pass to 26");
+	step26();
+	/*
 	canvas.removeEventListener('click', step25);
 	canvas.addEventListener('click', step26);
-
+	
+	
 	var point = ssPointsPost[4];
 	var moveDur = 500;
-	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0] - txtFudgeX, stateSpaceAxes.yOrig - postPairFinalPositions[4][1] + txtFudgeY], moveDur);
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0], stateSpaceAxes.yOrig - postPairFinalPositions[4][1]], moveDur);
+	*/
 }
 
 
 // return everything to baseline
 function step26(){
-	canvas.removeEventListener('click', step26);
+	console.log("step26");
+	canvas.removeEventListener('click', step25);
 	canvas.addEventListener('click', step27);
 
 	var step3dur = 200;
@@ -768,6 +809,7 @@ function step26(){
 
 // introduce new cc's
 function step27(){
+	console.log("step27");
 	canvas.removeEventListener('click', step27);
 	canvas.addEventListener('click', step28);
 
@@ -780,25 +822,33 @@ function step27(){
 
 // pair new cc's with horizontal
 function step28(){
+	console.log("step28");
 	canvas.removeEventListener('click', step28);
-	canvas.addEventListener('click', step29);
+	canvas.addEventListener('click', step28b);
 	inptArrow.angle = 90;
 	var pairingDur = 2000;
-	var pairingTrans = [{obj: pyr2, tgt: lime},
+	var pairingTrans2 = [{obj: pyr2, tgt: lime},
 			   {obj: inh2, tgt: red},
 			   {obj: tc2, tgt: lime},
 			   {obj: cc3, tgt: lime},
 			   {obj: cc4, tgt: lime},
 			   {obj: spkrContainer2, tgt: 1.0},
 			   {obj: inptArrow, tgt: inptTxtColor}];
-	flash(pairingTrans, 3, pairingDur);
-
-	var pot = setTimeout(function(){cc4.potentiate(2, 1, 50)}, pairingDur + 25);	
+	flash(pairingTrans2, 3, pairingDur);
 }
 
 
+function step28b(){
+	console.log("step28b");
+	canvas.removeEventListener('click', step28b);
+	canvas.addEventListener('click', step29);
+	cc4.potentiate(2, 1, 50);
+
+}
+
 // show an intrmediate stimulus, slightly towards horizontal
 function step29(){
+	console.log("step29");
 	canvas.removeEventListener('click', step29);
 	canvas.addEventListener('click', step30);
 
@@ -806,7 +856,7 @@ function step29(){
 	inptArrow.angle = preAngles[ind];
 
 		
-	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
+	var transitionsUnique = [{obj: pyr1, tgt: frac2color(0.3, lime)},
 			   {obj: inh1, tgt: frac2color(0.3, red)},
 			   {obj: tc1, tgt: frac2color(0.3, lime)},
 			   {obj: pyr2, tgt: frac2color(0.3, lime)},
@@ -814,32 +864,36 @@ function step29(){
 			   {obj: inh2, tgt: frac2color(0.3, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
-	colorTweenMulti(transitions, 500);
+	colorTweenMulti(transitionsUnique, 500);
 }
 
 
 // plot response in state space
 function step30(){
+	console.log("step30");
 	canvas.removeEventListener('click', step30);
 	canvas.addEventListener('click', step31);
-	console.log('step32');
+	//console.log('literally do nothing');
 
+	
 	var ind = 3;
 	var point = ssPointsPre[ind];
 	allObjects.push(point);
 	
 	singlePlotSS(point);
 	
+
 	/*
 	var tgt = point.rgb.slice();
 	tgt[3] = 1.0;
 	colorTween(point, tgt, 500);
 	*/
-}
+};
 
 
 // now present auditory stim on top of it
 function step31(){
+	console.log("step31");
 	canvas.removeEventListener('click', step31);
 	canvas.addEventListener('click', step32);
 
@@ -857,24 +911,38 @@ function step31(){
 
 // plot response in state space	
 function step32(){
+	console.log("step32");
 	canvas.removeEventListener('click', step32);
-	canvas.addEventListener('click', step33);	
+	canvas.addEventListener('click', step32b);	
 	
 	var ind = 3;
 	var point = ssPointsPost[ind];
 	allObjects.push(point);
-	point.rgb[3] = 1.0;	
-	point.draw();
+	singlePlotSS(point);
 	
-
+	/*
 	var plotResp = setTimeout(function(){
-		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0] - txtFudgeX, stateSpaceAxes.yOrig -postPairFinalPositions[ind][1] + txtFudgeY], 500)
-	}, 50);
+		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0], stateSpaceAxes.yOrig -postPairFinalPositions[ind][1]], 500)
+	}, 500);
+	*/
+}
+
+
+// show it move
+function step32b(){
+	console.log("step32b");
+	canvas.removeEventListener('click', step32b);
+	canvas.addEventListener('click', step33);	
+
+	var ind = 3;
+	var point = ssPointsPost[ind];
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0], stateSpaceAxes.yOrig -postPairFinalPositions[ind][1]], 500)
 }
 
 
 // return everything to baseline
 function step33(){
+	console.log("step33");
 	canvas.removeEventListener('click', step33);
 	canvas.addEventListener('click', step34);	
 
@@ -893,9 +961,10 @@ function step33(){
 
 // have psychometric space slide out from state space
 function step34(){
+	console.log("step34");
 	// pop out those grid lines objects, which we don't need anymore	
 	allObjects.pop(); 
-	allObjects.pop();
+	allObjects.pop();	
 
 	// push objects to start being drawn:
 	allObjects.push(nmAxes);
