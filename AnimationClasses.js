@@ -200,13 +200,20 @@ class CC {
 		var step = (tgtHeight - this.boutonHeight) / numTimeSteps;
 		var start = new Date().getTime(); // start time in milliseconds (UNIX time)
 		
+		colorTween(self, lime.slice(), 250);				
+
 		var intID = setInterval(function(){
+			
+						
+
 			self.boutonHeight += step;
 			self.draw();
 			if(new Date().getTime() > start + duration * 1000){
 				clearInterval(intID);
 			}
 		}, delay)	
+
+		var returnBL = setTimeout(function(){colorTween(self, blGrey, duration);}, duration + 100)
 	}
 }
 

@@ -677,11 +677,18 @@ function step17(){
 function step18(){
 	console.log("step18");
 	canvas.removeEventListener('click', step18);
-	canvas.addEventListener('click', step19);
+	canvas.addEventListener('click', step18b);
 
 	cc1.potentiate(2, 1, 50);
 }
 
+
+function step18b(){
+		console.log("step18b");
+		canvas.removeEventListener('click', step18b);
+		canvas.addEventListener('click', step19);
+		colorTween(cc1, blGrey, 250);
+}
 
 // show that cc on its own still doesn't do anything after potentiaton
 function step19(){
@@ -862,9 +869,18 @@ function step28(){
 function step28b(){
 	console.log("step28b");
 	canvas.removeEventListener('click', step28b);
-	canvas.addEventListener('click', step29);
+	canvas.addEventListener('click', step28c);
 	cc4.potentiate(2, 1, 50);
 
+}
+
+
+function step28c(){
+	console.log("step28c");
+	canvas.removeEventListener('click', step28c);
+	canvas.addEventListener('click', step29);
+	
+	colorTween(cc4, blGrey, 250);
 }
 
 // show an intrmediate stimulus, slightly towards horizontal
