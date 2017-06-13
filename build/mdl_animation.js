@@ -51,7 +51,7 @@ var filterBoxSize = 150;
 var ssAxisLength = width/4;
 var axisThickness = 3;
 var text2axis = 50;
-var axesLabelSize = 25; 
+var axesLabelSize = 50; 
 var axesLabelColor = [185, 185, 185, 1.0];
 
 // define constants for rendering speaker
@@ -345,7 +345,7 @@ class Axes {
 
 		// draw labels
 		ctx.fillStyle = rgb2str(axesLabelColor);
-		ctx.font = 'italic'.concat(String(axesLabelSize),"px Georgia");
+		ctx.font = 'italic '.concat(String(axesLabelSize),"px Georgia");
 		ctx.fillText(this.xLabel, this.xLength/2,  text2axis + axesLabelSize) // x-axis label
 		ctx.fillText(this.yLabel, -(axesLabelSize + text2axis),  -this.yLength/2) // y-axis label
 		ctx.restore();
@@ -390,7 +390,7 @@ class Axes {
 				     	       ];	
 
 		var eraseGridLines = setTimeout(function(){
-			console.log('erase grid lines');
+			//console.log('erase grid lines');
 			colorTweenMulti(eraseGridLinesTransition, d4);}
 		, l3);
 		
@@ -536,7 +536,7 @@ class Timer{
 		self = this;
 		window.requestAnimationFrame(function(timeStamp){
 			self.lastTime = timeStamp;	
-			console.log('Timer::initialize timeStamp = '.concat(timeStamp));
+			//console.log('Timer::initialize timeStamp = '.concat(timeStamp));
 		});
 	}	
 }
@@ -556,6 +556,8 @@ function flash(transitions, numTimes, duration){
 	// duration: duration of each color/alpha transformation in seconds
 	// numSteps: number of discrete animation steps per transformation
 	
+	console.log("	flash()");	
+
 	/*
 	var totalDuration = 2*duration*1000*numTimes; // each cycle consists of 2 transitions; each transition is `duration` seconds long; multiply by 1000 to get duration of each cycle in milliseconds; there are `numTimes` cycles over the course of the flash   
 	
@@ -575,8 +577,8 @@ function flash(transitions, numTimes, duration){
 			originals[m] = transitions[m].obj.alpha;
 		}
 	}
-	console.log('originals');
-	console.log(originals);
+	//console.log('originals');
+	//console.log(originals);
 
 	// Initialize an object array representing the reverse transition by creating a 'deep copy' of the original transitions array:
 	var reverseTransitions = JSON.parse(JSON.stringify(transitions));	
@@ -600,8 +602,8 @@ function flash(transitions, numTimes, duration){
 		}
 	}
 
-	console.log(" flash: reverseTransitions");
-	console.log(reverseTransitions);
+	//console.log(" flash: reverseTransitions");
+	//console.log(reverseTransitions);
 
 	var it = 0; // current half-cycle; it goes from 0 to 2*numTimes-1
 	var accumulatedFudge = 0;
@@ -674,8 +676,8 @@ function colorTweenMulti2(transitions, dur, numTimeSteps){
 	}
 
 	// for each object to be tweened, compute the appropriate color or alpha steps
-	console.log('colorTweenMulti::transitions:');
-	console.log(transitions);
+	//console.log('colorTweenMulti::transitions:');
+	//console.log(transitions);
 	var transitions = computeColorStep(transitions, numTimeSteps);	
 
 
@@ -717,26 +719,26 @@ function colorTweenMulti2(transitions, dur, numTimeSteps){
 
 			for (var p = 0; p < transitions.length; p++){
 				// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
-				console.log('transition element #'.concat(String(p), ':'));
-				console.log('	obj: '.concat(transitions[p].obj.constructor.name));
+				//console.log('transition element #'.concat(String(p), ':'));
+				//console.log('	obj: '.concat(transitions[p].obj.constructor.name));
 				
 				if(transitions[p].obj.constructor.name != "imgContainer"){
-					console.log('	starting color: '.concat(rgb2str(transitions[p].original.slice())));		
-					console.log('	target color: '.concat(rgb2str(transitions[p].tgt.slice())));
-					console.log('	step:'.concat(rgb2str(transitions[p].step.slice())));
-					console.log('	final color (before manual correction): '.concat(rgb2str(transitions[p].obj.rgb.slice())));
+					//console.log('	starting color: '.concat(rgb2str(transitions[p].original.slice())));		
+					//console.log('	target color: '.concat(rgb2str(transitions[p].tgt.slice())));
+					//console.log('	step:'.concat(rgb2str(transitions[p].step.slice())));
+					//console.log('	final color (before manual correction): '.concat(rgb2str(transitions[p].obj.rgb.slice())));
 					for (var k = 0; k <4; k++){
 						transitions[p].obj.rgb[k] = transitions[p].tgt[k];
 					}	
-					console.log('	final color (after manual correction): '.concat(rgb2str(transitions[p].obj.rgb.slice())));
+					//console.log('	final color (after manual correction): '.concat(rgb2str(transitions[p].obj.rgb.slice())));
 				}
 				else if (transitions[p].obj.constructor.name == "imgContainer"){
-					console.log('	starting alpha: '.concat(String(transitions[p].original)));		
-					console.log('	target alpha: '.concat(String(transitions[p].tgt)));
-					console.log('	step:'.concat(String(transitions[p].step)));
-					console.log('	final alpha (before manual correction): '.concat(String(transitions[p].obj.alpha)));					
+					//console.log('	starting alpha: '.concat(String(transitions[p].original)));		
+					//console.log('	target alpha: '.concat(String(transitions[p].tgt)));
+					//console.log('	step:'.concat(String(transitions[p].step)));
+					//console.log('	final alpha (before manual correction): '.concat(String(transitions[p].obj.alpha)));					
 					transitions[p].obj.alpha = transitions[p].tgt				
-					console.log('	final alpha (after manual correction): '.concat(String(transitions[p].obj.alpha)));
+					//console.log('	final alpha (after manual correction): '.concat(String(transitions[p].obj.alpha)));
 				}				
 			}
 			animate(allObjects); // make sure to re-draw everything after manually correcting colors
@@ -755,7 +757,7 @@ function colorTweenMulti(transitions, dur){
 	// make animationFrame request	
 	window.requestAnimationFrame(function(timestamp){
 		
-		console.log('starting colorTweenMulti:');	
+		console.log('	colorTweenMulti()');	
 
 		// for debugging purposes, get the original color or alpha of every object to be tweened
 		for (var n = 0; n <transitions.length; n++){
@@ -772,25 +774,25 @@ function colorTweenMulti(transitions, dur){
 		tmr2.lastTime = timestamp;
 		transitions = computeColorStep(transitions, dur);
 
-		console.log('colorTweenMulti::transitions:');
-		console.log(transitions);
+		//console.log('colorTweenMulti::transitions:');
+		//console.log(transitions);
 	
 		for (var p = 0; p < transitions.length; p++){
 			// for debugging purposes, after tweening is complete, for each object to be tweened, display the object's original color, target color, computed color step, and current color after tweening:
-			console.log('	transition element #'.concat(String(p), ':'));
-			console.log('		obj: '.concat(transitions[p].obj.constructor.name));
+			//console.log('	transition element #'.concat(String(p), ':'));
+			//console.log('		obj: '.concat(transitions[p].obj.constructor.name));
 			
 			if(transitions[p].obj.constructor.name != "imgContainer"){
-				console.log('		starting color: '.concat(rgb2str(transitions[p].original.slice())));		
-				console.log('		target color: '.concat(rgb2str(transitions[p].tgt.slice())));
+				//console.log('		starting color: '.concat(rgb2str(transitions[p].original.slice())));		
+				//console.log('		target color: '.concat(rgb2str(transitions[p].tgt.slice())));
 				//console.log('	speed:'.concat(rgb2str(transitions[p].speed.slice())));
-				console.log('		speed:');
-				console.log(transitions[p].speed);
+				//console.log('		speed:');
+				//console.log(transitions[p].speed);
 			}
 			else if (transitions[p].obj.constructor.name == "imgContainer"){
-				console.log('		starting alpha: '.concat(String(transitions[p].original)));		
-				console.log('		target alpha: '.concat(String(transitions[p].tgt)));
-				console.log('		step:'.concat(String(transitions[p].speed)));
+				//console.log('		starting alpha: '.concat(String(transitions[p].original)));		
+				//console.log('		target alpha: '.concat(String(transitions[p].tgt)));
+				//console.log('		step:'.concat(String(transitions[p].speed)));
 			}				
 		}
 
@@ -807,7 +809,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 	}
 
 
-	console.log('colorTweenMultiStep:');
+	//console.log('colorTweenMultiStep:');
 	//console.log('	timestamp = '.concat(timestamp));		
 	//console.log('	timer.lastTime = '.concat(timer.lastTime));	
 	timer.delta += timestamp - timer.lastTime;
@@ -847,7 +849,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 				
 			// ... and for any objects that are not done tweening...			
 			if(objDoneTweening(currTransition.obj, currTransition.speed, currTransition.tgt, timer) == 0){
-				console.log('incomplete tween');
+				//console.log('incomplete tween');
 				// ... then if the object is a vector graphics object... 				
 				if(currTransition.obj.constructor.name != 'imgContainer'){
 					// ... then go through every color/alpha channel and update any that are not done tweening 					
@@ -871,7 +873,7 @@ function colorTweenMultiStep(timestamp, transitions, timer){
 
 	// ... on the other hand, if the tween is complete, then manually clean up any errors
 	} else{
-		console.log('multi-tween complete');
+		//console.log('multi-tween complete');
 		for(var oInd = 0; oInd < transitions.length; oInd++){
 			var currTransition = transitions[oInd];			
 			//console.log('	transition element #'.concat(String(oInd), ':'));
@@ -913,7 +915,7 @@ function computeColorStep(transitions, duration){
 
 
 function colorTween(obj, tgt, duration){
-
+	console.log("	colorTween()");	
 	// compute color steps and stuff
 	var speed;
 
@@ -925,10 +927,10 @@ function colorTween(obj, tgt, duration){
 		}	
 		speed = colorSpeed;
 	} else if(obj.constructor.name == 'imgContainer'){
-		console.log('alpha tweening image container	');
+		//console.log('alpha tweening image container	');
 		speed = (tgt - obj.alpha)/duration
-		console.log('obj.alpha = '.concat(String(obj.alpha)));
-		console.log('tgt = '.concat(String(tgt)));
+		//console.log('obj.alpha = '.concat(String(obj.alpha)));
+		//console.log('tgt = '.concat(String(tgt)));
 	}
 
 	// initialize timer
@@ -965,7 +967,7 @@ function colorTweenStep(timeStamp, obj, tgt, speed, timer){
 			};
 		};
 	} else if(obj.constructor.name == 'imgContainer'){
-		console.log("	evaluating whenther alpha tween is complete");
+		//console.log("	evaluating whenther alpha tween is complete");
 		if( chDoneTweening(obj.alpha, speed, tgt, timer)==0 ){
 			cont = 1;
 		};
@@ -1043,7 +1045,7 @@ function chDoneTweening(val, speed, tgt, timer){
 
 
 function motionTween(obj, tgt, duration){
-	console.log('Start motion tween:');
+	console.log('	 motion tween()');
 
 	// compute color steps and stuff
 	var speed = new Array(2);
@@ -1051,11 +1053,11 @@ function motionTween(obj, tgt, duration){
 	speed[0] = (tgt[0] - obj.ctrX) / duration; 
 	speed[1] = (tgt[1] - obj.ctrY) / duration;
 
-	console.log('	object: '.concat(obj.constructor.name));
-	console.log('	currX: '.concat(String(obj.ctrX)));
-	console.log('	currY: '.concat(String(obj.ctrY)));
-	console.log('	speedX: '.concat(String(speed[0])));
-	console.log('	speedy: '.concat(String(speed[1])));
+	//console.log('	object: '.concat(obj.constructor.name));
+	//console.log('	currX: '.concat(String(obj.ctrX)));
+	//console.log('	currY: '.concat(String(obj.ctrY)));
+	//console.log('	speedX: '.concat(String(speed[0])));
+	//console.log('	speedy: '.concat(String(speed[1])));
 	
 
 	// initialize timer
@@ -1088,14 +1090,14 @@ function motionTweenStep(timeStamp, obj, tgt, speed, timer){
 	var cont = 0;
 
 	if (chDoneTweening(obj.ctrX, speed[0], tgt[0], timer) == 0 || chDoneTweening(obj.ctrY, speed[1], tgt[1], timer) == 0){
-		console.log('motion tweening in progress');
+		//console.log('motion tweening in progress');
 		if( chDoneTweening(obj.ctrX, speed[0], tgt[0], timer) == 0){
-				console.log('x-tweening in progress');
+				//console.log('x-tweening in progress');
 				obj.ctrX += speed[0] * timeToRender;
 		}
 	
 		if( chDoneTweening(obj.ctrY, speed[1], tgt[1], timer) == 0 ){
-			console.log('y-tweening in progress');
+			//console.log('y-tweening in progress');
 			obj.ctrY += speed[1] * timeToRender;
 		}	
 		
@@ -1135,7 +1137,7 @@ function rgb2str(rgb){
 function angle2colorN1(angle){
 
 	var frac = Math.cos( Math.PI * (angle/180) ); // the greater the angle, the lower the number	
-	var colorOut = frac2color(frac, lime);	
+	var colorOut = frac2color(frac, lime.slice());	
 	//console.log('colorOut');
 	//console.log(colorOut);
 	return colorOut
@@ -1144,7 +1146,7 @@ function angle2colorN1(angle){
 
 function angle2colorN2(angle){
 	var frac = Math.sin( Math.PI * (angle/180) ); // the greater the angle, the higher the number	
-	var colorOut = frac2color(frac, lime);	
+	var colorOut = frac2color(frac, lime.slice());	
 	//console.log('colorOut');
 	//console.log(colorOut);
 	return colorOut
@@ -1240,7 +1242,8 @@ function doublePlotB(idx){
 
 
 function singlePlotSS(point){
-
+	console.log("	singlePlotSS()");	
+	
 	allObjects.push(point);
 	var tmpGridlineDuration = 500;
 	var tempGridLineHoriz = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, stateSpaceAxes.xLength, axisThickness);
@@ -1262,6 +1265,100 @@ function singlePlotSS(point){
 			  {obj: tempGridLineVert, tgt: [100, 100, 100, 0.0]}] 
 	var eraseTempGridLine = setTimeout(function(){colorTweenMulti(eraseGLtrans, tmpGridlineDuration);}, tmpGridlineDuration);
 		
+}
+
+
+function singlePlotPMpre(i){
+	console.log("	singlePlotPM:");
+	
+	var point = pmPointsPre[i];
+	allObjects.push(point);
+	
+	var dur = 500;
+	
+	console.log('Y');
+	console.log(point.ctrY);
+	console.log('nmAxes.xOrig');
+	console.log(nmAxes.xOrig);
+	console.log('nmAxes.xLength');
+	console.log(nmAxes.xLength);
+	console.log('ssAxes.xOrig');
+	console.log(stateSpaceAxes.xOrig);
+	console.log('width');
+	console.log(nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig);
+	console.log(point.ctrY);
+	var horizGL = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig, axisThickness);
+	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	horizGL.rgb = [0, 255, 0, 0.0];
+	vertGL.rgb = [0, 255, 0, 0.0];
+	
+	var tgtColor = point.rgb.slice();
+	tgtColor[3] = 1.0;
+		
+
+	allObjects.push(horizGL);
+	allObjects.push(vertGL);
+	allObjects.push(point);
+
+	var drawGLtrans = [{obj: horizGL, tgt: [0, 255, 0, 1.0]},
+			   {obj: vertGL, tgt: [0, 255, 0, 1.0]}];
+	colorTweenMulti(drawGLtrans, dur);
+	
+
+	var plotPoint = setTimeout(function(){colorTween(point, tgtColor, dur)}, dur);	
+	
+	var eraseGLtrans = [{obj: horizGL, tgt: [0, 255, 0, 0.0]}, 
+			    {obj: vertGL, tgt: [0, 255, 0, 0.0]}]
+	var eraseGL = setTimeout(function(){colorTweenMulti(eraseGLtrans, dur);}, dur)
+	
+
+}
+
+
+function singlePlotPMpost(i){
+	console.log("	singlePlotPM:");
+	
+	var point = pmPointsPost[i];
+	allObjects.push(point);
+	
+	var dur = 500;
+	
+	console.log('Y');
+	console.log(point.ctrY);
+	console.log('nmAxes.xOrig');
+	console.log(nmAxes.xOrig);
+	console.log('nmAxes.xLength');
+	console.log(nmAxes.xLength);
+	console.log('ssAxes.xOrig');
+	console.log(stateSpaceAxes.xOrig);
+	console.log('width');
+	console.log(nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig);
+	console.log(point.ctrY);
+	var horizGL = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig, axisThickness);
+	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
+	horizGL.rgb = [185, 65, 245, 0.0];
+	vertGL.rgb = [185, 65, 245, 0.0];
+	
+	var tgtColor = point.rgb.slice();
+	tgtColor[3] = 1.0;
+		
+
+	allObjects.push(horizGL);
+	allObjects.push(vertGL);
+	allObjects.push(point);
+
+	var drawGLtrans = [{obj: horizGL, tgt: [185, 65, 245, 1.0]},
+			   {obj: vertGL, tgt: [185, 65, 245, 1.0]}];
+	colorTweenMulti(drawGLtrans, dur);
+	
+
+	var plotPoint = setTimeout(function(){colorTween(point, tgtColor, dur)}, dur);	
+	
+	var eraseGLtrans = [{obj: horizGL, tgt: [185, 65, 245, 0.0]}, 
+			    {obj: vertGL, tgt: [185, 65, 245, 0.0]}]
+	var eraseGL = setTimeout(function(){colorTweenMulti(eraseGLtrans, dur);}, dur)
+	
+
 }
 
 // define objects that will appear on axes and 
@@ -1368,7 +1465,6 @@ var arrowsXstart = nmAxesFinal + 25;
 var xArrowWidth = 9;
 var xArrowLength = 30;
 
-
 // define stimulus angles to be presented
 var numAngles = 8;
 var xArrows = new Array(numAngles);
@@ -1406,8 +1502,8 @@ for (var p = 0; p < xArrows.length; p++){
 	var dPointXpre = 0.1*stateSpaceAxes.xLength + 0.8*stateSpaceAxes.xLength*Math.sin( Math.PI*(xArrows[p].angle/180) );
 	var dPointYpre = 0.1*stateSpaceAxes.yLength + 0.8*stateSpaceAxes.yLength*Math.cos( Math.PI*(xArrows[p].angle/180) );
 	
-	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p]), preAngles[p]); ssPointPre.draw();
-	var ssPointPost = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, angle2colorN1(preAngles[p])); ssPointPost.draw(); // post points will be initialize to same position
+	var ssPointPre = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, lime.slice(), preAngles[p]); //ssPointPre.draw();
+	var ssPointPost = new dataPoint(stateSpaceAxes.xOrig + dPointXpre, stateSpaceAxes.yOrig - dPointYpre, [185, 65, 245], preAngles[p]); //ssPointPost.draw(); // post points will be initialize to same position
 
 	ssPointPre.rgb[3] = 0.0 // initialize to be invisible 
 	ssPointPost.rgb[3] = 0.0 // initialize to be invisible 
@@ -1426,7 +1522,7 @@ for (var p = 0; p < xArrows.length; p++){
 
 	postPairFinalPositions[p] = [dPointX, dPointY];
 
-	var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, blGrey); testPt.draw();
+	//var testPt = new dataPointAsterisk(stateSpaceAxes.xOrig + dPointX, stateSpaceAxes.yOrig - dPointY, blGrey); testPt.draw();
 }
 
 console.log('pos pair final positions');
@@ -1439,12 +1535,12 @@ for (var q = 0; q < xArrows.length; q++){
 
 	var dPointXpre = xArrows[q].ctrX;
 	var dPointYpre = ssPointsPre[q].ctrY;
-	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, angle2colorN1(xArrows[q].angle), xArrows[q].angle);
+	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, lime.slice(), xArrows[q].angle); nmPointPre.draw();
 	nmPointPre.rgb[3] = 0.0;
 
 	var dPointXpost = xArrows[q].ctrX;
 	var dPointYpost = stateSpaceAxes.yOrig - postPairFinalPositions[q][1];
-	var nmPointPost = new dataPointAsterisk(dPointXpost, dPointYpost, angle2colorN1(xArrows[q].angle)); nmPointPost.draw();		
+	var nmPointPost = new dataPoint(dPointXpost, dPointYpost, [185, 65, 245], xArrows[q].angle); nmPointPost.draw();		
 	nmPointPost.rgb[3] = 0.0;
 	
 	pmPointsPre[q] = nmPointPre;
@@ -1536,6 +1632,7 @@ var transition2 = [
 
 // show vertical input
 function step0(){
+	console.log("step0");	
 	canvas.removeEventListener('click', step0);
 	canvas.addEventListener('click', step1);
 	console.log('step 0');
@@ -1547,6 +1644,7 @@ function step0(){
 
 // activate tc1, pyr1, and inh1
 function step1(){
+	console.log("step1");
 	canvas.removeEventListener('click', step1);
 	canvas.addEventListener('click', step2); 
 
@@ -1561,6 +1659,7 @@ function step1(){
 
 // deactivate tc1 and pyr1, activate tc2 and pyr2
 function step2(){
+	console.log("step2");
 	canvas.removeEventListener('click', step2);
 	canvas.addEventListener('click', step3);	
 	
@@ -1602,6 +1701,7 @@ function step2(){
 
 // return everything to baseline after initial demonstration of response properties
 function step3(){
+	console.log("step3");
 	canvas.removeEventListener('click', step3);
 	canvas.addEventListener('click', step4);
 	
@@ -1616,6 +1716,7 @@ function step3(){
 
 // draw state space axes
 function step4(){
+	console.log("step4");
 	canvas.removeEventListener('click', step4);
 	canvas.addEventListener('click', step5);
 
@@ -1629,13 +1730,14 @@ function step4(){
 
 // present vertical stimuls again
 function step5(){
+	console.log("step5");
 	canvas.removeEventListener('click', step5);
 	canvas.addEventListener('click', step6);
 
 	inptArrow.angle = 0	;
 	var step5dur = 200;	
-	var transitions1 = [{obj: tc1, tgt: lime},
-			    {obj: pyr1, tgt: lime},
+	var transitions1 = [{obj: tc1, tgt: lime.slice()},
+			    {obj: pyr1, tgt: lime.slice()},
 			    {obj: inptArrow, tgt: inptTxtColor},
 			    {obj: inh1, tgt: red}];
 	colorTweenMulti(transitions1, step5dur);	
@@ -1652,6 +1754,7 @@ var p = new dataPoint(stateSpaceAxes.xOrig + p1x, stateSpaceAxes.yOrig - p1y, [0
 
 // first plot the vertical gridline
 function step6(){
+	console.log("step6");
 	canvas.removeEventListener('click', step6);
 	canvas.addEventListener('click', step7);
 
@@ -1670,6 +1773,7 @@ function step6(){
 
 // plot the horizontal gridline and the point, then erase the gridlines
 function step7(){
+	console.log("step7");
 	canvas.removeEventListener('click', step7);
 	canvas.addEventListener('click', step8);
 
@@ -1735,6 +1839,7 @@ function step9(){
 
 // show response to horizontal stimulus
 function step8(){
+	console.log("step8");
 	canvas.removeEventListener('click', step8);
 	canvas.addEventListener('click', step9);
 
@@ -1765,6 +1870,7 @@ function step8(){
 
 //plot in state space and psychometric space
 function step9(){
+	console.log("step9");
 	canvas.removeEventListener('click', step9);
 	canvas.addEventListener('click', step10);
 
@@ -1777,6 +1883,7 @@ function step9(){
 
 // deactivate pyr2, etc.
 function step10(){
+	console.log("step10");
 	canvas.removeEventListener('click', step10);
 	canvas.addEventListener('click', step11);
 	
@@ -1791,6 +1898,7 @@ function step10(){
 
 // present an intermediate stimulus
 function step11(){
+	console.log("step11");
 	canvas.removeEventListener('click', step11);
 	canvas.addEventListener('click', step12);
 	
@@ -1798,11 +1906,11 @@ function step11(){
 	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
 	inptArrow.angle = xArrows[4].angle;
 	
-	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
+	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime.slice())},
 			   {obj: inh1, tgt: frac2color(0.3, red)},
-			   {obj: tc1, tgt: frac2color(0.3, lime)},
-			   {obj: pyr2, tgt: frac2color(0.3, lime)},
-			   {obj: tc2, tgt: frac2color(0.3, lime)},
+			   {obj: tc1, tgt: frac2color(0.3, lime.slice())},
+			   {obj: pyr2, tgt: frac2color(0.3, lime.slice())},
+			   {obj: tc2, tgt: frac2color(0.3, lime.slice())},
 			   {obj: inh2, tgt: frac2color(0.3, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
@@ -1814,6 +1922,7 @@ function step11(){
 
 // plot intermediate stimulus in state space and nmAXes
 function step12(){
+	console.log("step12");
 	canvas.removeEventListener('click', step12);
 	canvas.addEventListener('click', step13);
 	
@@ -1825,6 +1934,7 @@ function step12(){
 
 // return everything to baseline, introduce CCs
 function step13(){
+	console.log("step13");
 	canvas.removeEventListener('click', step13);
 	canvas.addEventListener('click', step14);
 	
@@ -1844,6 +1954,7 @@ function step13(){
 
 // introduce cc's
 function step14(){
+	console.log("step14");
 	canvas.removeEventListener('click', step14);
 	canvas.addEventListener('click', step15);
 	
@@ -1856,12 +1967,13 @@ function step14(){
 
 //show that cc's do little on their own in naive state
 function step15(){
+	console.log("step15");
 	canvas.removeEventListener('click', step15);
 	canvas.addEventListener('click', step16);
 	
 	var ccDur = 500;
-	var ccTrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
+	var ccTrans = [   {obj: cc1, tgt: lime.slice()},
+			   {obj: cc2, tgt: lime.slice()},
 			   {obj: spkrContainer, tgt: 1.0}];
 	colorTweenMulti(ccTrans, ccDur);
 }
@@ -1869,6 +1981,7 @@ function step15(){
 
 //deactivate cc's
 function step16(){
+	console.log("step16");
 	canvas.removeEventListener('click', step16);
 	canvas.addEventListener('click', step17);
 
@@ -1882,6 +1995,7 @@ function step16(){
 
 // do pairing
 function step17(){
+	console.log("step17");
 	canvas.removeEventListener('click', step17);
 	canvas.addEventListener('click', step18);
 
@@ -1889,11 +2003,11 @@ function step17(){
 
 	inptArrow.angle = 0;
 	var pairingDur = 2000;
-	var pairingTrans = [{obj: pyr1, tgt: lime},
+	var pairingTrans = [{obj: pyr1, tgt: lime.slice()},
 			   {obj: inh1, tgt: red},
-			   {obj: tc1, tgt: lime},
-			   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
+			   {obj: tc1, tgt: lime.slice()},
+			   {obj: cc1, tgt: lime.slice()},
+			   {obj: cc2, tgt: lime.slice()},
 			   {obj: spkrContainer, tgt: 1.0},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 	flash(pairingTrans, 3, pairingDur);
@@ -1903,6 +2017,7 @@ function step17(){
 
 // potentiate
 function step18(){
+	console.log("step18");
 	canvas.removeEventListener('click', step18);
 	canvas.addEventListener('click', step19);
 
@@ -1912,12 +2027,13 @@ function step18(){
 
 // show that cc on its own still doesn't do anything after potentiaton
 function step19(){
+	console.log("step19");
 	canvas.removeEventListener('click', step19);
 	canvas.addEventListener('click', step20);
 
 	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
+	var ccDtrans = [   {obj: cc1, tgt: lime.slice()},
+			   {obj: cc2, tgt: lime.slice()},
 			   {obj: spkrContainer, tgt: 1.0}];
 	colorTweenMulti(ccDtrans, ccDdur);
 }
@@ -1925,6 +2041,7 @@ function step19(){
 
 // deactivate cc's
 function step20(){
+	console.log("step20");
 	canvas.removeEventListener('click', step20);
 	canvas.addEventListener('click', step21);
 
@@ -1938,6 +2055,7 @@ function step20(){
 
 // once again present intermediate sitm
 function step21(){
+	console.log("step21");
 	canvas.removeEventListener('click', step21);
 	canvas.addEventListener('click', step22);
 
@@ -1945,11 +2063,11 @@ function step21(){
 	var angle = xArrows[4].angle; // remember, this is angle away from vertical 
 	inptArrow.angle = xArrows[4].angle;
 	
-	var transitions = [{obj: pyr1, tgt: frac2color(0.4, lime)},
+	var transitions = [{obj: pyr1, tgt: frac2color(0.4, lime.slice())},
 			   {obj: inh1, tgt: frac2color(0.4, red)},
-			   {obj: tc1, tgt: frac2color(0.4, lime)},
-			   {obj: pyr2, tgt: frac2color(0.4, lime)},
-			   {obj: tc2, tgt: frac2color(0.4, lime)},
+			   {obj: tc1, tgt: frac2color(0.4, lime.slice())},
+			   {obj: pyr2, tgt: frac2color(0.4, lime.slice())},
+			   {obj: tc2, tgt: frac2color(0.4, lime.slice())},
 			   {obj: inh2, tgt: frac2color(0.4, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
@@ -1959,12 +2077,13 @@ function step21(){
 
 // present auditory stimulus in addition to it
 function step22(){
+	console.log("step22");
 	canvas.removeEventListener('click', step22);
 	canvas.addEventListener('click', step23);
 
 	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc1, tgt: lime},
-			   {obj: cc2, tgt: lime},
+	var ccDtrans = [   {obj: cc1, tgt: lime.slice()},
+			   {obj: cc2, tgt: lime.slice()},
 			   {obj: spkrContainer, tgt: 1.0}];
 	colorTweenMulti(ccDtrans, ccDdur);
 }
@@ -1972,14 +2091,15 @@ function step22(){
 
 // and now the system responds as if it has been presented with a vertical stimulus
 function step23(){
+	console.log("step23");
 	canvas.removeEventListener('click', step23);
 	canvas.addEventListener('click', step24);
 
-	var transitions = [{obj: pyr1, tgt: lime},
+	var transitions = [{obj: pyr1, tgt: lime.slice()},
 			   {obj: inh1, tgt: red},
-			   {obj: tc1, tgt: frac2color(0.4, lime)},
+			   {obj: tc1, tgt: frac2color(0.4, lime.slice())},
 			   {obj: pyr2, tgt: blGrey},
-			   {obj: tc2, tgt: frac2color(0.4, lime)},
+			   {obj: tc2, tgt: frac2color(0.4, lime.slice())},
 			   {obj: inh2, tgt: blGrey}];
 
 	colorTweenMulti(transitions, 500);	
@@ -1988,34 +2108,52 @@ function step23(){
 
 // plot response in state space
 function step24(){
+	console.log("step24");
 	canvas.removeEventListener('click', step24);
-	canvas.addEventListener('click', step25);
+	canvas.addEventListener('click', step24b);
 	
 	var point = ssPointsPost[4];	
-
-	allObjects.push(point);
-	var ppDur = 500;
-	var colorTgt = point.rgb.slice();
-	colorTgt[3] = 1.0;
-	colorTween(point, colorTgt, ppDur);
+	singlePlotSS(point);
 	
+	/*
+	var movePt = setTimeout(function(){
+		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0], stateSpaceAxes.yOrig - postPairFinalPositions[4][1]], moveDur);
+	}, 500)
+	*/
+}
+
+
+function step24b(){
+	console.log("step24b");
+	canvas.removeEventListener('click', step24b);
+	canvas.addEventListener('click', step25);
+
+	var moveDur = 500;
+	var point = ssPointsPost[4];	
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0], stateSpaceAxes.yOrig - postPairFinalPositions[4][1]], moveDur);
 }
 
 
 // the response in state space moves towards the response to the vertical stimulus
 function step25(){
+	console.log("step25; pass to 26");
+	step26();
+	/*
 	canvas.removeEventListener('click', step25);
 	canvas.addEventListener('click', step26);
-
+	
+	
 	var point = ssPointsPost[4];
 	var moveDur = 500;
-	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0] - txtFudgeX, stateSpaceAxes.yOrig - postPairFinalPositions[4][1] + txtFudgeY], moveDur);
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[4][0], stateSpaceAxes.yOrig - postPairFinalPositions[4][1]], moveDur);
+	*/
 }
 
 
 // return everything to baseline
 function step26(){
-	canvas.removeEventListener('click', step26);
+	console.log("step26");
+	canvas.removeEventListener('click', step25);
 	canvas.addEventListener('click', step27);
 
 	var step3dur = 200;
@@ -2034,6 +2172,7 @@ function step26(){
 
 // introduce new cc's
 function step27(){
+	console.log("step27");
 	canvas.removeEventListener('click', step27);
 	canvas.addEventListener('click', step28);
 
@@ -2046,25 +2185,33 @@ function step27(){
 
 // pair new cc's with horizontal
 function step28(){
+	console.log("step28");
 	canvas.removeEventListener('click', step28);
-	canvas.addEventListener('click', step29);
+	canvas.addEventListener('click', step28b);
 	inptArrow.angle = 90;
 	var pairingDur = 2000;
-	var pairingTrans = [{obj: pyr2, tgt: lime},
+	var pairingTrans2 = [{obj: pyr2, tgt: lime.slice()},
 			   {obj: inh2, tgt: red},
-			   {obj: tc2, tgt: lime},
-			   {obj: cc3, tgt: lime},
-			   {obj: cc4, tgt: lime},
+			   {obj: tc2, tgt: lime.slice()},
+			   {obj: cc3, tgt: lime.slice()},
+			   {obj: cc4, tgt: lime.slice()},
 			   {obj: spkrContainer2, tgt: 1.0},
 			   {obj: inptArrow, tgt: inptTxtColor}];
-	flash(pairingTrans, 3, pairingDur);
-
-	var pot = setTimeout(function(){cc4.potentiate(2, 1, 50)}, pairingDur + 25);	
+	flash(pairingTrans2, 3, pairingDur);
 }
 
 
+function step28b(){
+	console.log("step28b");
+	canvas.removeEventListener('click', step28b);
+	canvas.addEventListener('click', step29);
+	cc4.potentiate(2, 1, 50);
+
+}
+
 // show an intrmediate stimulus, slightly towards horizontal
 function step29(){
+	console.log("step29");
 	canvas.removeEventListener('click', step29);
 	canvas.addEventListener('click', step30);
 
@@ -2072,47 +2219,51 @@ function step29(){
 	inptArrow.angle = preAngles[ind];
 
 		
-	var transitions = [{obj: pyr1, tgt: frac2color(0.3, lime)},
+	var transitionsUnique = [{obj: pyr1, tgt: frac2color(0.3, lime.slice())},
 			   {obj: inh1, tgt: frac2color(0.3, red)},
-			   {obj: tc1, tgt: frac2color(0.3, lime)},
-			   {obj: pyr2, tgt: frac2color(0.3, lime)},
-			   {obj: tc2, tgt: frac2color(0.3, lime)},
+			   {obj: tc1, tgt: frac2color(0.3, lime.slice())},
+			   {obj: pyr2, tgt: frac2color(0.3, lime.slice())},
+			   {obj: tc2, tgt: frac2color(0.3, lime.slice())},
 			   {obj: inh2, tgt: frac2color(0.3, red)},
 			   {obj: inptArrow, tgt: inptTxtColor}];
 
-	colorTweenMulti(transitions, 500);
+	colorTweenMulti(transitionsUnique, 500);
 }
 
 
 // plot response in state space
 function step30(){
+	console.log("step30");
 	canvas.removeEventListener('click', step30);
 	canvas.addEventListener('click', step31);
-	console.log('step32');
+	//console.log('literally do nothing');
 
+	
 	var ind = 3;
 	var point = ssPointsPre[ind];
 	allObjects.push(point);
 	
 	singlePlotSS(point);
 	
+
 	/*
 	var tgt = point.rgb.slice();
 	tgt[3] = 1.0;
 	colorTween(point, tgt, 500);
 	*/
-}
+};
 
 
 // now present auditory stim on top of it
 function step31(){
+	console.log("step31");
 	canvas.removeEventListener('click', step31);
 	canvas.addEventListener('click', step32);
 
 	var ccDdur = 500;
-	var ccDtrans = [   {obj: cc3, tgt: lime},
-			   {obj: cc4, tgt: lime},
-			   {obj: pyr2, tgt: lime},
+	var ccDtrans = [   {obj: cc3, tgt: lime.slice()},
+			   {obj: cc4, tgt: lime.slice()},
+			   {obj: pyr2, tgt: lime.slice()},
 			   {obj: inh2, tgt: red},
 			   {obj: pyr1, tgt: blGrey},
 			   {obj: inh1, tgt: blGrey},
@@ -2123,24 +2274,38 @@ function step31(){
 
 // plot response in state space	
 function step32(){
+	console.log("step32");
 	canvas.removeEventListener('click', step32);
-	canvas.addEventListener('click', step33);	
+	canvas.addEventListener('click', step32b);	
 	
 	var ind = 3;
 	var point = ssPointsPost[ind];
 	allObjects.push(point);
-	point.rgb[3] = 1.0;	
-	point.draw();
+	singlePlotSS(point);
 	
-
+	/*
 	var plotResp = setTimeout(function(){
-		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0] - txtFudgeX, stateSpaceAxes.yOrig -postPairFinalPositions[ind][1] + txtFudgeY], 500)
-	}, 50);
+		motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0], stateSpaceAxes.yOrig -postPairFinalPositions[ind][1]], 500)
+	}, 500);
+	*/
+}
+
+
+// show it move
+function step32b(){
+	console.log("step32b");
+	canvas.removeEventListener('click', step32b);
+	canvas.addEventListener('click', step33);	
+
+	var ind = 3;
+	var point = ssPointsPost[ind];
+	motionTween(point, [stateSpaceAxes.xOrig + postPairFinalPositions[ind][0], stateSpaceAxes.yOrig -postPairFinalPositions[ind][1]], 500)
 }
 
 
 // return everything to baseline
 function step33(){
+	console.log("step33");
 	canvas.removeEventListener('click', step33);
 	canvas.addEventListener('click', step34);	
 
@@ -2157,11 +2322,95 @@ function step33(){
 }
 
 
-// have psychometric space slide out from state space
+// plot the remaining pre-pairing data points
+var leftOverPoints = [1, 2, 5, 6];
 function step34(){
+	console.log("step34");
+	canvas.removeEventListener('click', step34);
+	canvas.addEventListener('click', step34b);	
+
+	var pLOint = 500;
+	var i = 0;
+	var plotLeftOvers = setInterval(function(){
+		if(i >= leftOverPoints.length-1){
+			clearInterval(plotLeftOvers);
+		}		
+	
+		singlePlotSS(ssPointsPre[leftOverPoints[i]]);		
+
+		/*
+		inptArrow.angle = preAngles[leftOverPoints[i]];
+		var ploTrans = [{obj: pyr1, tgt: angle2colorN1(preAngles[leftOverPoints[i]])},
+				{obj: tc1, tgt: angle2colorN1(preAngles[leftOverPoints[i]])},
+				{obj: inh1, tgt: angle2colorI1(preAngles[leftOverPoints[i]])},
+				{obj: pyr2, tgt: angle2colorN2(preAngles[leftOverPoints[i]])},
+				{obj: tc2, tgt: angle2colorN2(preAngles[leftOverPoints[i]])},
+				{obj: inh2, tgt: angle2colorI2(preAngles[leftOverPoints[i]])},
+				{obj: inptArrow, tgt: inptTxtColor},]
+		flash(ploTrans, 1, 500);
+		*/
+
+		i++;
+	},pLOint)
+}
+
+
+// plot remaining post points in state space
+var leftOverPointsPost = [0, 1, 2, 5, 6, 7];
+function step34b(){
+	console.log("step34b");
+	canvas.removeEventListener('click', step34b);
+	canvas.addEventListener('click', step34c);	
+
+	var dur = 250;
+	var ppTrans = new Array(leftOverPointsPost.length);
+	for(var p = 0; p < leftOverPointsPost.length; p++){
+		var point = ssPointsPost[leftOverPointsPost[p]];		
+		console.log('point');
+		console.log(point);		
+		allObjects.push(point);
+		ppTrans[p] = {obj: inptArrow, tgt: blGrey} // initialize		
+		ppTrans[p].obj = point;
+		ppTrans[p].tgt = ppTrans[p].obj.rgb.slice();
+		ppTrans[p].tgt[3] = 1.0;
+	}
+	
+	console.log('ppTrans');
+	console.log(ppTrans);		
+	colorTweenMulti(ppTrans, dur);
+}
+
+
+function step34c(){
+	console.log("step34c");
+	canvas.removeEventListener('click', step34c);
+	canvas.addEventListener('click', step35);
+
+	var dur = 500;
+	
+	//motionTween(ssPointsPost[0], postPairFinalPositions[0], dur);
+	
+	for(var p = 0; p < leftOverPointsPost.length; p++){
+		var point = ssPointsPost[leftOverPointsPost[p]];
+		var tgtCoords = postPairFinalPositions[leftOverPointsPost[p]];
+		var tgtCoordsCtr = new Array(2);		
+		tgtCoordsCtr[0] = stateSpaceAxes.xOrig + tgtCoords[0];
+		tgtCoordsCtr[1] = stateSpaceAxes.yOrig - tgtCoords[1];
+		motionTween(point, tgtCoordsCtr, dur); 
+	}	
+
+	
+}
+
+// have psychometric space slide out from state space
+function step35(){
+	console.log("step35");
+	canvas.removeEventListener('click', step35);
+	canvas.addEventListener('click', step36);	
+
 	// pop out those grid lines objects, which we don't need anymore	
 	allObjects.pop(); 
-	allObjects.pop();
+	allObjects.pop();	
 
 	// push objects to start being drawn:
 	allObjects.push(nmAxes);
@@ -2254,6 +2503,53 @@ function step34(){
 	};
 
 }
+
+
+// project pre-points onto pm space
+function step36(){
+	console.log('step36');
+	canvas.removeEventListener('click', step36);
+	canvas.addEventListener('click', step37);
+
+	var i = 0;
+	var int = 500;
+	var plotPMpre = setInterval(function(){
+		if(i >= numAngles -1){
+			clearInterval(plotPMpre);
+		}		
+		
+
+		singlePlotPMpre(i);
+
+		i++;
+	}, int);	
+}
+
+
+
+function step37(){
+	console.log('step37');
+	canvas.removeEventListener('click', step37);
+	canvas.addEventListener('click', step38);
+
+	var i = 0;
+	var int = 500;
+	var plotPMpre = setInterval(function(){
+		if(i >= numAngles -1){
+			clearInterval(plotPMpre);
+		}		
+		
+
+		singlePlotPMpost(i);
+
+		i++;
+	}, int);	
+}
+
+
+function step38(){
+}
+
 
 function testDoublePlot(){
 	canvas.removeEventListener('click', step14);

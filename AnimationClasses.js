@@ -1137,7 +1137,7 @@ function rgb2str(rgb){
 function angle2colorN1(angle){
 
 	var frac = Math.cos( Math.PI * (angle/180) ); // the greater the angle, the lower the number	
-	var colorOut = frac2color(frac, lime);	
+	var colorOut = frac2color(frac, lime.slice());	
 	//console.log('colorOut');
 	//console.log(colorOut);
 	return colorOut
@@ -1146,7 +1146,7 @@ function angle2colorN1(angle){
 
 function angle2colorN2(angle){
 	var frac = Math.sin( Math.PI * (angle/180) ); // the greater the angle, the higher the number	
-	var colorOut = frac2color(frac, lime);	
+	var colorOut = frac2color(frac, lime.slice());	
 	//console.log('colorOut');
 	//console.log(colorOut);
 	return colorOut
@@ -1289,8 +1289,8 @@ function singlePlotPMpre(i){
 	console.log(point.ctrY);
 	var horizGL = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig, axisThickness);
 	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
-	horizGL.rgb = [100, 100, 100, 0.0];
-	vertGL.rgb = [100, 100, 100, 0.0];
+	horizGL.rgb = [0, 255, 0, 0.0];
+	vertGL.rgb = [0, 255, 0, 0.0];
 	
 	var tgtColor = point.rgb.slice();
 	tgtColor[3] = 1.0;
@@ -1300,15 +1300,15 @@ function singlePlotPMpre(i){
 	allObjects.push(vertGL);
 	allObjects.push(point);
 
-	var drawGLtrans = [{obj: horizGL, tgt: inptTxtColor},
-			   {obj: vertGL, tgt: inptTxtColor}];
+	var drawGLtrans = [{obj: horizGL, tgt: [0, 255, 0, 1.0]},
+			   {obj: vertGL, tgt: [0, 255, 0, 1.0]}];
 	colorTweenMulti(drawGLtrans, dur);
 	
 
 	var plotPoint = setTimeout(function(){colorTween(point, tgtColor, dur)}, dur);	
 	
-	var eraseGLtrans = [{obj: horizGL, tgt: [100, 100, 100, 0.0]}, 
-			    {obj: vertGL, tgt: [100, 100, 100, 0.0]}]
+	var eraseGLtrans = [{obj: horizGL, tgt: [0, 255, 0, 0.0]}, 
+			    {obj: vertGL, tgt: [0, 255, 0, 0.0]}]
 	var eraseGL = setTimeout(function(){colorTweenMulti(eraseGLtrans, dur);}, dur)
 	
 
@@ -1336,8 +1336,8 @@ function singlePlotPMpost(i){
 	console.log(point.ctrY);
 	var horizGL = new Rectangle(stateSpaceAxes.xOrig, point.ctrY, nmAxes.xOrig + nmAxes.xLength - stateSpaceAxes.xOrig, axisThickness);
 	var vertGL = new Rectangle(xArrows[i].ctrX, nmAxes.yOrig, axisThickness, -nmAxes.yLength);
-	horizGL.rgb = [100, 100, 100, 0.0];
-	vertGL.rgb = [100, 100, 100, 0.0];
+	horizGL.rgb = [185, 65, 245, 0.0];
+	vertGL.rgb = [185, 65, 245, 0.0];
 	
 	var tgtColor = point.rgb.slice();
 	tgtColor[3] = 1.0;
@@ -1347,15 +1347,15 @@ function singlePlotPMpost(i){
 	allObjects.push(vertGL);
 	allObjects.push(point);
 
-	var drawGLtrans = [{obj: horizGL, tgt: inptTxtColor},
-			   {obj: vertGL, tgt: inptTxtColor}];
+	var drawGLtrans = [{obj: horizGL, tgt: [185, 65, 245, 1.0]},
+			   {obj: vertGL, tgt: [185, 65, 245, 1.0]}];
 	colorTweenMulti(drawGLtrans, dur);
 	
 
 	var plotPoint = setTimeout(function(){colorTween(point, tgtColor, dur)}, dur);	
 	
-	var eraseGLtrans = [{obj: horizGL, tgt: [100, 100, 100, 0.0]}, 
-			    {obj: vertGL, tgt: [100, 100, 100, 0.0]}]
+	var eraseGLtrans = [{obj: horizGL, tgt: [185, 65, 245, 0.0]}, 
+			    {obj: vertGL, tgt: [185, 65, 245, 0.0]}]
 	var eraseGL = setTimeout(function(){colorTweenMulti(eraseGLtrans, dur);}, dur)
 	
 
