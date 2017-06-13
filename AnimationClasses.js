@@ -51,7 +51,7 @@ var filterBoxSize = 150;
 var ssAxisLength = width/4;
 var axisThickness = 3;
 var text2axis = 50;
-var axesLabelSize = 25; 
+var axesLabelSize = 50; 
 var axesLabelColor = [185, 185, 185, 1.0];
 
 // define constants for rendering speaker
