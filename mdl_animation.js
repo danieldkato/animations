@@ -172,12 +172,12 @@ for (var q = 0; q < xArrows.length; q++){
 
 	var dPointXpre = xArrows[q].ctrX;
 	var dPointYpre = ssPointsPre[q].ctrY;
-	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, lime.slice(), xArrows[q].angle); nmPointPre.draw();
+	var nmPointPre = new dataPoint(dPointXpre, dPointYpre, lime.slice(), xArrows[q].angle); //nmPointPre.draw();
 	nmPointPre.rgb[3] = 0.0;
 
 	var dPointXpost = xArrows[q].ctrX;
 	var dPointYpost = stateSpaceAxes.yOrig - postPairFinalPositions[q][1];
-	var nmPointPost = new dataPoint(dPointXpost, dPointYpost, [185, 65, 245, 1.0], xArrows[q].angle); nmPointPost.draw();		
+	var nmPointPost = new dataPoint(dPointXpost, dPointYpost, [185, 65, 245, 1.0], xArrows[q].angle); //nmPointPost.draw();		
 	nmPointPost.rgb[3] = 0.0;
 	
 	pmPointsPre[q] = nmPointPre;

@@ -213,8 +213,8 @@ class CC {
 			}
 		}, delay)	
 
-		var returnBL = setTimeout(function(){colorTween(self, blGrey, duration);}, duration + 100)
 	}
+
 }
 
 
